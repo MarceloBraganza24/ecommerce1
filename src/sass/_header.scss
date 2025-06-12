@@ -1,0 +1,282 @@
+/* .header {
+    width: 100%;
+    height: 10vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    z-index: 1;
+    &__logo-menu {
+        width: 100%;
+        height: auto;
+        display: grid;
+        grid-template-columns: 15% 10% 75%;
+        &__hMenuContainer {
+            width: 100%;
+            @include disFC;
+            &__hMenu {
+                width: 30%;
+                height: 45%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-around;
+                &:hover {
+                    cursor: pointer;
+                }
+                &__line {
+                    background-color: var(--primary-text-color);
+                    width: 100%;
+                    height: 4px;
+                    border-radius: 1vh;
+                }
+            }
+        }
+        &__logoContainer {
+            width: 100%;
+            height: 100%;
+            @include disFC;
+            &__logo {
+                width: 100%;
+                max-height: 100%; 
+                transition: transform 0.3s ease-in-out;
+                &:hover {
+                    transform: scale(1.1);
+                    cursor: pointer;
+                }
+            }
+        }
+        &__menuContainer {
+            width: 100%;
+            height: auto;
+            display: flex;
+            align-items: center;
+            gap: 2vh;
+            padding-left: 5vh;
+            &__item {
+                color: var(--primary-text-color);
+                font-size: 14px;
+                text-decoration: none;
+                transition: transform 0.3s ease-in-out;
+                &:hover {
+                    transform: scale(1.1);
+                    cursor: pointer;
+                }
+            }
+            &__categoriesSelect {
+                color: var(--primary-text-color);
+                font-size: 14px;
+                cursor: pointer;
+                transition: transform 0.3s ease-in-out;
+                &:hover {
+                    transform: scale(1.1);
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+    &__rightMenu {
+        width: 100%;
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        &__menu {
+            width: 100%;
+            display: flex;
+            grid-column: 2/3;
+            gap: 1vh;
+            &__item {
+                width: 100%;
+                height: auto;
+                color: var(--primary-text-color);
+                font-size: 14px;
+                text-align: center;
+                align-self: center;
+                text-decoration: none;
+                transition: transform 0.3s ease-in-out;
+                &:hover {
+                    transform: scale(1.1);
+                    cursor: pointer;
+                }
+            }
+            &__itemLogin {
+                width: 100%;
+                height: auto;
+                color: var(--primary-text-color);
+                font-size: 14px;
+                text-align: center;
+                align-self: center;
+                text-decoration: none;
+            }
+            &__cart {
+                width: 100%;
+                height: auto;
+                display: flex;
+                gap: 1vh;
+                &__logo {
+                    width: 100%;
+                    height: auto;
+                    display: flex;
+                    justify-content: end;
+                    align-items: center;
+                    &__prop {
+                        width: 60%;
+                        transition: transform 0.3s ease-in-out;
+                        &:hover {
+                            transform: scale(1.1);
+                            cursor: pointer;
+                        }
+                    }
+                }
+                &__spinner {
+                    width: 100%;
+                    @include disFC;
+                }
+                &__number {
+                    width: 100%;
+                    height: auto;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    &__prop {
+                        background-color: var(--primary-text-color);
+                        border-radius: 50%;
+                        color: var(--primary-color);
+                        padding: 1vh;
+                        font-weight: bold;
+                        &:hover {
+                            background-color: var(--secondary-color);
+                            color: var(--secondary-text-color);
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+            &__name {
+                width: 100%;
+                height: auto;
+                color: var(--primary-text-color);
+                font-size: 12px;
+                text-align: center;
+                align-self: center;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+            &__spinner {
+                width: 100%;
+                @include disFC;
+            }
+        }
+    }
+} */
+
+.logOutContainer {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    padding: 0.5vh 0vh;
+    &__label {
+        margin-right: 1vh;
+        padding: 0.5vh 2vh;
+        border-radius: 2vh;
+        cursor: pointer;
+        @include btn();
+        border: 0.3vh solid black;
+    }
+}
+
+.headerPurchase {
+    background-color: var(--primary-color);
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    padding: 1vh 0vh;
+    &__logo {
+        width: 100%;
+        &__prop {
+            width: 5%;
+            padding-left: 5vh;
+            transition: transform 0.3s ease-in-out;
+            &:hover {
+                transform: scale(1.1);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.hMenuOptionsContainer {
+    background-color: var(--primary-color);
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 2vh;
+    position: fixed;
+    z-index: 2;
+    margin-top: 1vh;
+    border-top: 0.3vh solid black;
+    border-bottom: 0.3vh solid black;
+    transform: translateX(-100%); // oculto por la izquierda
+    transition: transform 0.3s ease-in-out;
+    &.active {
+        transform: translateX(0); // visible
+    }
+    &__btnCloseMenu {
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        &__btn {
+            font-size: 20px;
+            padding-right: 4vh;
+            cursor: pointer;
+            color: var(--primary-text-color);
+        }
+    }
+    &__option {
+        text-decoration: none;
+        color: var(--primary-text-color);
+        padding-top: 0.5vh;
+    }
+}
+
+ .categoriesContainer {
+    background-color: var(--primary-color);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 2vh;
+    position: fixed;
+    z-index: 2;
+    gap: 0.5vh;
+    border-top: 0.3vh solid black;
+    border-bottom: 0.3vh solid black;
+    transform: translateX(-100%); // oculto por la izquierda
+    transition: transform 0.3s ease-in-out;
+    &.open {
+        transform: translateX(0); // visible
+    }
+    &__btnCloseMenu {
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        &__btn {
+            font-size: 20px;
+            padding-right: 4vh;
+            cursor: pointer;
+            color: var(--primary-text-color);
+        }
+    }
+    &__category {
+        text-decoration: none;
+        color: var(--primary-text-color);
+    }
+    &__addCategoryLink {
+        text-decoration: none;
+        color: var(--primary-text-color);
+        &:hover {
+            color: var(--secondary-color);
+        }
+    }
+}
