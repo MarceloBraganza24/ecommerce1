@@ -238,6 +238,7 @@ const About = () => {
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
                 cartIcon={cartIcon}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
             <div className="aboutContainer" style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.aboutImage || ''})`}}>

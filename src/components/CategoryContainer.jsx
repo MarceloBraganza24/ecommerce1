@@ -370,6 +370,7 @@ const CategoryContainer = () => {
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
                 cartIcon={cartIcon}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
             {

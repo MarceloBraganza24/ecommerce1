@@ -1,12 +1,36 @@
 import {useContext,useState,useEffect} from 'react'
-import { Link } from 'react-router-dom'
+import { Link,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const NavBar = ({cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
+const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
+    const navigate = useNavigate();
     const [quantity, setQuantity] = useState(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [showCategories, setShowCategories] = useState(false);
+
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    const [showNavbar, setShowNavbar] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+    const [forcedShow, setForcedShow] = useState(false);
+
+    useEffect(() => {
+        if (searchTerm.trim().length === 0) {
+            setFilteredProducts([]);
+            setShowDropdown(false);
+            return;
+        }
+
+        const filtered = products.filter(product =>
+            product.title.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        setFilteredProducts(filtered);
+        setShowDropdown(filtered.length > 0);
+    }, [searchTerm, products]);
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -68,109 +92,46 @@ const NavBar = ({cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,i
     return (
 
         <>
-            {/* <div className='header'>
-
-                <div className='header__gridUp'>
-                    
-                    <div className='header__gridUp__inputSearch'>
-                        <input className='header__gridUp__inputSearch__input' placeholder='Buscar productos' type="text" />
-                    </div>
-                    
-                    <Link to={"/"} className='header__gridUp__logoContainer'>
-                        {logo_store ? (
-                            <img
-                            className='header__gridUp__logoContainer__prop'
-                            src={`http://localhost:8081/${logo_store}`}
-                            alt="logo_tienda"
-                            />
-                        ) : null}
-                        <p className='header__gridUp__logoContainer__storeName'>{storeName}</p>
-                    </Link>
-
-                    <div className='header__gridUp__links'>
-                        <Link to={"/logIn"} className='header__gridUp__links__item'>
-                            LOG IN
-                        </Link>
-                        <Link to={"/signIn"} className='header__gridUp__links__item'>
-                            REGISTRARSE
-                        </Link>
-                        <div className="header__gridUp__links__itemCart">
-                            <img onClick={()=>window.location.href = '/cart'} className='header__gridUp__links__itemCart__logo' src={cartIcon} alt="" />
-                            {
-                                isLoadingUser || quantity === null ?
-                                    <Spinner />
-                                :
-                                <div className='header__gridUp__links__itemCart__number'>
-                                    {
-                                        !isLoggedIn || isLoggedIn === undefined ?
-                                            0
-                                        : 
-                                            quantity
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </div>
-
-                </div>
-
-                <div className='header__menu'>
-                    <div className='header__menu__item header__menu__itemBorder'>INICIO</div>
-                    <div
-                        className='header__menu__item header__menu__itemBorder'
-                        onMouseEnter={() => setShowCategories(true)}
-                        onMouseLeave={() => setShowCategories(false)}
-                        >
-                        CATEGORÍAS
-                    </div>
-                    <div className='header__menu__item header__menu__itemBorder'>SOBRE NOSOTROS</div>
-                    <div className='header__menu__item'>CONTACTO</div>
-                </div>
-
-            </div>
-
-            <div
-                className='categoriesContainer'
-                onMouseEnter={() => setShowCategories(true)}
-                onMouseLeave={() => setShowCategories(false)}
-                style={{ display: showCategories ? 'flex' : 'none' }}
-            >
-
-                <div className='categoriesContainer__grid'>
-
-                    {categories && categories.length > 0 ? (
-                        categories.map((category) => (
-                            <Link
-                                key={category._id}
-                                to={`/category/${category.name.toLowerCase()}`}
-                                onClick={() => setShowCategories(false)}
-                                className="categoriesContainer__grid__item"
-                            >
-                                - {category.name.toUpperCase()}
-                            </Link>
-                        ))
-                    ) : (
-                        <>
-                            <p className="categoriesContainer__category">Aún no hay categorías</p>
-                            <Link to={`/cpanel`} className="categoriesContainer__addCategoryLink">
-                                Agregar categoría
-                            </Link>
-                        </>
-                    )}
-
-                </div>
-
-            </div> */}
 
             <div className='header'>
 
                 <div className='header__gridUp'>
+
                     <div className='header__gridUp__inputSearch'>
-                    <input
-                        className='header__gridUp__inputSearch__input'
-                        placeholder='Buscar productos'
-                        type='text'
-                    />
+
+                        <input
+                            className='header__gridUp__inputSearch__input'
+                            placeholder='Buscar productos'
+                            type='text'
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onFocus={() => setShowDropdown(filteredProducts.length > 0)}
+                            onBlur={() => setTimeout(() => setShowDropdown(false), 200)} // da tiempo para hacer click
+                        />
+
+                        {showDropdown && (
+                            <div className='header__gridUp__inputSearch__productsListContainer'>
+                                {filteredProducts.map((product) => (
+                                    <div
+                                        key={product._id}
+                                        className='header__gridUp__inputSearch__productsListContainer__productItem'
+                                        onClick={() => navigate(`/item/${product._id}`)}
+                                    >
+                                        <div className='header__gridUp__inputSearch__productsListContainer__productItem__image'>
+                                            <img
+                                            src={`http://localhost:8081/${product.images?.[0]}` || '/default-image.jpg'}
+                                            alt={product.title}
+                                            className='header__gridUp__inputSearch__productsListContainer__productItem__image__prop'
+                                            />
+                                        </div>
+                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__title'>{product.title}</span>
+                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__price'>${product.price}</span>
+                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__stock'>{product.stock ?? 'N/A'}u.</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                     </div>
 
                     <Link to='/' className='header__gridUp__logoContainer'>
@@ -220,36 +181,36 @@ const NavBar = ({cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,i
                     onMouseEnter={() => setShowCategories(true)}
                     onMouseLeave={() => setShowCategories(false)}
                     >
-                    <div className='header__menu__item header__menu__itemBorder'>
-                        CATEGORÍAS
-                    </div>
-
-                    <div
-                        className='categoriesContainer'
-                        style={{ display: showCategories ? 'flex' : 'none' }}
-                    >
-                        <div className='categoriesContainer__grid'>
-                        {categories && categories.length > 0 ? (
-                            categories.map((category) => (
-                            <Link
-                                key={category._id}
-                                to={`/category/${category.name.toLowerCase()}`}
-                                onClick={() => setShowCategories(false)}
-                                className='categoriesContainer__grid__item'
-                            >
-                                - {category.name.toUpperCase()}
-                            </Link>
-                            ))
-                        ) : (
-                            <>
-                            <p className='categoriesContainer__category'>Aún no hay categorías</p>
-                            <Link to='/cpanel' className='categoriesContainer__addCategoryLink'>
-                                Agregar categoría
-                            </Link>
-                            </>
-                        )}
+                        <div className='header__menu__item header__menu__itemBorder'>
+                            CATEGORÍAS
                         </div>
-                    </div>
+
+                        <div
+                            className='categoriesContainer'
+                            style={{ display: showCategories ? 'flex' : 'none' }}
+                        >
+                            <div className='categoriesContainer__grid'>
+                            {categories && categories.length > 0 ? (
+                                categories.map((category) => (
+                                <Link
+                                    key={category._id}
+                                    to={`/category/${category.name.toLowerCase()}`}
+                                    onClick={() => setShowCategories(false)}
+                                    className='categoriesContainer__grid__item'
+                                >
+                                    - {category.name.toUpperCase()}
+                                </Link>
+                                ))
+                            ) : (
+                                <>
+                                <p className='categoriesContainer__category'>Aún no hay categorías</p>
+                                <Link to='/cpanel' className='categoriesContainer__addCategoryLink'>
+                                    Agregar categoría
+                                </Link>
+                                </>
+                            )}
+                            </div>
+                        </div>
                     </div>
 
                     <Link to='/about' className='header__menu__item header__menu__itemBorder'>
@@ -279,39 +240,6 @@ const NavBar = ({cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,i
                     <Link to={`/myPurchases`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS COMPRAS</Link>
                 )}
             </div> */}
-
-
-            {/* <div className={`categoriesContainer ${showCategories ? 'open' : ''}`}>
-                <div className='categoriesContainer__btnCloseMenu'>
-                    <div
-                        onClick={() => setShowCategories(false)}
-                        className='categoriesContainer__btnCloseMenu__btn'
-                    >
-                        X
-                    </div>
-                </div>
-
-                {categories && categories.length > 0 ? (
-                    categories.map((category) => (
-                        <Link
-                            key={category._id}
-                            to={`/category/${category.name.toLowerCase()}`}
-                            onClick={() => setShowCategories(false)}
-                            className="categoriesContainer__category"
-                        >
-                            - {category.name.toUpperCase()}
-                        </Link>
-                    ))
-                ) : (
-                    <>
-                        <p className="categoriesContainer__category">Aún no hay categorías</p>
-                        <Link to={`/cpanel`} className="categoriesContainer__addCategoryLink">
-                            Agregar categoría
-                        </Link>
-                    </>
-                )}
-            </div> */}
-
 
         </>
 

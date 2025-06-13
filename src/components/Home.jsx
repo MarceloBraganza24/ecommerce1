@@ -25,6 +25,7 @@ const Home = () => {
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [isLoadingProductsByCategory, setIsLoadingProductsByCategory] = useState(true);
     const [products, setProducts] = useState([]);
+    //console.log(products)
     const [productsByCategory, setProductsByCategory] = useState([]);
     const [totalProducts, setTotalProducts] = useState("");
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -413,6 +414,7 @@ const Home = () => {
 
             <div className='navbarContainer'>
                 <NavBar
+                products={products}
                 isLoading={isLoading}
                 isLoggedIn={user.isLoggedIn}
                 role={user.role}

@@ -37,7 +37,8 @@ h2 {
     display: flex;
     flex-direction: column;
     z-index: 999;
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
+    padding: 1vh 0vh;
+    //box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
     &__gridUp {
         width: 75%;
         height: 20vh;
@@ -50,12 +51,57 @@ h2 {
         justify-self: center;
         &__inputSearch {
             @include disFC();
+            flex-direction: column;
+            position: relative;
             &__input {
                 width: 100%;
                 height: 30px;
                 text-align: center;
                 border: 0.3vh solid white;
                 border-radius: 0.5vh;
+            }
+            &__productsListContainer {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background-color: whitesmoke;
+                width: 500px; // ⬅️ más ancho que el input
+                max-height: 300px;
+                overflow-y: auto;
+                z-index: 1000;
+                border-radius: 0 0 0.5vh 0.5vh;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                &__productItem {
+                    display: grid;
+                    grid-template-columns: 1fr 3fr 1fr 1fr;
+                    gap: 10px;
+                    color: black;
+                    padding: 10px;
+                    cursor: pointer;
+                    border-bottom: 1px solid #eee;
+                    &:hover {
+                        background-color: #f5f5f5;
+                    }
+                    &__image {
+                        @include disFC();
+                        object-fit: cover;
+                        overflow: hidden;
+                        &__prop {
+                            width: 50%;
+                            border-radius: 4px;
+                        }
+                    }
+                    &__title {
+                        font-weight: 600;
+                        margin-bottom: 2px;
+                    }
+                    &__price {
+                        font-size: 0.85rem;
+                    }
+                    &__stock {
+                        font-size: 0.75rem;
+                    }
+                }
             }
         }
         &__logoContainer {
@@ -121,58 +167,37 @@ h2 {
         }
     }
 }
-/* .categoriesContainer {
-    background-color: var(--primary-color);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    margin-top: 25vh;
-    position: fixed;
-    padding: 3vh 0vh;
-    border-top: 0.3vh solid white;
-    &__grid {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        align-self: center;
-        gap: 1vh;
-        &__item {
-            color: white;
-            text-decoration: none;
-        }
-    }
-} */
 .menuCategoriesWrapper {
     position: relative;
     display: flex;
     justify-content: center;
-    .categoriesContainer {
-        position: absolute;
-        top: 100%; // justo debajo de CATEGORÍAS
-        left: 130%;
-        transform: translateX(-50%);
-        margin-top: 0;
-        //width: 70vw; // o un valor fijo como 80vw si querés limitarlo
-        width: auto; // o un valor fijo como 80vw si querés limitarlo
-        background-color: var(--primary-color);
-        padding: 3vh 2vh;
-        z-index: 998;
-        //border-top: 0.3vh solid white;
-        @include disFC();
-        flex-direction: column;
-        border-bottom-left-radius: 1vh;
-        border-bottom-right-radius: 1vh;
-        &__grid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            align-self: center;
-            gap: 2vh;
-            &__item {
-                //@include disFC();
-                color: white;
-                text-decoration: none;
-            }
+}
+.categoriesContainer {
+    position: absolute;
+    top: 100%; // justo debajo de CATEGORÍAS
+    left: 130%;
+    transform: translateX(-50%);
+    margin-top: 0;
+    width: 50vw; // o un valor fijo como 80vw si querés limitarlo
+    //width: auto; // o un valor fijo como 80vw si querés limitarlo
+    background-color: var(--primary-color);
+    padding: 3vh 2vh;
+    z-index: 998;
+    //border-top: 0.3vh solid white;
+    @include disFC();
+    flex-direction: column;
+    border-bottom-left-radius: 1vh;
+    border-bottom-right-radius: 1vh;
+    &__grid {
+        width: 60%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        align-self: center;
+        gap: 2vh;
+        &__item {
+            //@include disFC();
+            color: white;
+            text-decoration: none;
         }
     }
 }
@@ -1302,6 +1327,7 @@ h2 {
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding-top: 30vh;
     &__title {
         width: 100%;
         @include disFC();
@@ -3131,6 +3157,7 @@ h2 {
     width: 100%;
     height: 80vh;
     @include disFC();
+    padding: 30vh 0vh 5vh 0vh;
     &__itemDetail {
         background-color: whitesmoke;
         width: 80%;
@@ -3501,6 +3528,7 @@ h2 {
     @include disFC();
     flex-direction: column;
     gap: 2vh;
+    padding: 15vh 0vh 0vh 0vh;
     &__phrase {
         width: 100%;
         @include disFC();

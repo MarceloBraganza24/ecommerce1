@@ -18,6 +18,7 @@ const ItemDetailContainer = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const {id} = useParams()
     const [productById, setProductById] = useState({ images: [] });
+    const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [sellerAddresses, setSellerAddresses] = useState([]);
@@ -192,8 +193,20 @@ const ItemDetailContainer = () => {
             return [];
         } 
     };
+
+    const fetchProducts = async (page = 1, search = "",field = "") => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const productsAll = await response.json();
+            setProducts(productsAll.data.docs)
+        } catch (error) {
+            console.error('Error al obtener datos:', error);
+        } finally {
+            setIsLoadingProducts(false)
+        }
+    };
     
-    const fetchProducts = async () => {
+    const fetchProductById = async () => {
         try {
             const response = await fetch(`http://localhost:8081/api/products/${id}`)
             const productById = await response.json();
@@ -321,6 +334,7 @@ const ItemDetailContainer = () => {
     useEffect(() => {
         fetchCurrentUser();
         fetchCategories();
+        fetchProductById();
         fetchProducts();
         fetchStoreSettings();
         fetchSellerAddresses();
@@ -337,12 +351,17 @@ const ItemDetailContainer = () => {
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 
+    useEffect(() => {
+        fetchProductById();
+    }, [id]);
+
     return (
 
         <>
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
+                products={products}
                 isLoggedIn={user.isLoggedIn}
                 role={user.role}
                 first_name={user.first_name}
@@ -353,6 +372,7 @@ const ItemDetailContainer = () => {
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
                 cartIcon={cartIcon}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
             {
