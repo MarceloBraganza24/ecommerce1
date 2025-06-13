@@ -428,14 +428,15 @@ const Home = () => {
                 />
             </div>
             
-            <div className="homeContainer" style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.homeImage || ''})`}}>
-                
-                {
-                    showLogOutContainer&&
-                    <LogOut/>
-                }
-
+            <div className="homeContainer" /* style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.homeImage || ''})`}} */>
+                <div className="homeContainer__img">
+                    <img className="homeContainer__img__prop" src={`http://localhost:8081/${storeSettings?.siteImages?.homeImage}`} alt="" />
+                </div>
             </div>
+            {
+                showLogOutContainer&&
+                <LogOut/>
+            }
 
             {
                 storeSettings?.sliderLogos?.length != 0 &&

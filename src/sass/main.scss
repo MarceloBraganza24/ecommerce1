@@ -36,13 +36,15 @@ h2 {
     position: fixed;
     display: flex;
     flex-direction: column;
+    z-index: 999;
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
     &__gridUp {
-        //background-color: sandybrown;
         width: 75%;
         height: 20vh;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         color: white;
+        align-self: center;
         align-items: center;
         justify-items: center;
         justify-self: center;
@@ -68,11 +70,109 @@ h2 {
                 font-size: 30px;
             }
         }
+        &__links {
+            width: 70%;
+            @include disFC();
+            //gap: 1vh;
+            font-size: 16px;
+            &__item {
+                width: 100%;
+                @include disFC();
+                font-size: 14px;
+                color: white;
+                text-decoration: none;
+            }
+            &__itemCart {
+                width: 100%;
+                @include disFC();
+                gap: 1vh;
+                padding-left: 1vh;
+                &__logo {
+                    width: 40%;
+                    cursor: pointer;
+                }
+                &__number {
+                    background-color: var(--primary-text-color);
+                    border-radius: 50%;
+                    color: var(--primary-color);
+                    padding: 1vh;
+                    font-weight: bold;
+                    &:hover {
+                        background-color: var(--secondary-color);
+                        color: var(--secondary-text-color);
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
     }
     &__menu {
+        height: 5vh;
         @include disFC();
+        gap: 1vh;
         &__item {
             color: white;
+            text-decoration: none;
+        }
+        &__itemBorder {
+            color: white;
+            border-right: 0.3vh solid white;
+            padding: 0vh 2vh;
+        }
+    }
+}
+/* .categoriesContainer {
+    background-color: var(--primary-color);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 25vh;
+    position: fixed;
+    padding: 3vh 0vh;
+    border-top: 0.3vh solid white;
+    &__grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        align-self: center;
+        gap: 1vh;
+        &__item {
+            color: white;
+            text-decoration: none;
+        }
+    }
+} */
+.menuCategoriesWrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    .categoriesContainer {
+        position: absolute;
+        top: 100%; // justo debajo de CATEGORÍAS
+        left: 130%;
+        transform: translateX(-50%);
+        margin-top: 0;
+        //width: 70vw; // o un valor fijo como 80vw si querés limitarlo
+        width: auto; // o un valor fijo como 80vw si querés limitarlo
+        background-color: var(--primary-color);
+        padding: 3vh 2vh;
+        z-index: 998;
+        //border-top: 0.3vh solid white;
+        @include disFC();
+        flex-direction: column;
+        border-bottom-left-radius: 1vh;
+        border-bottom-right-radius: 1vh;
+        &__grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            align-self: center;
+            gap: 2vh;
+            &__item {
+                //@include disFC();
+                color: white;
+                text-decoration: none;
+            }
         }
     }
 }
@@ -180,7 +280,6 @@ h2 {
 .navbarContainer {
     background-color: var(--primary-color);
     width: 100%;
-    //padding: 1vh 0vh;
 }
 .cPanelContainer {
     background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
@@ -808,10 +907,29 @@ h2 {
     }
 }
 .homeContainer {
+    background-color: black;
     background-size: cover; 
-    width: 100%;
-    height: 100vh;
+    // width: 100%;
+    // height: 100vh;
+    @include disFC();
+    padding: 25vh 0vh 5vh 0vh;
+    &__img {
+        @include disFC();
+        //background-color: saddlebrown;
+        &__prop {
+            width: 80%;
+        }
+    }
 }
+/* .homeContainer {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 100vh; // que al menos ocupe toda la altura de la pantalla
+  padding-top: 50vh; // deja lugar para el header fijo
+  box-sizing: border-box; // asegura que el padding se sume correctamente
+} */
 
 .rc-slider-track {
     background-color: var(--primary-color);
@@ -837,7 +955,7 @@ h2 {
         display: grid;
         grid-template-columns: 1fr 3fr;
         justify-items: center;
-        padding: 5vh 0vh;
+        padding: 30vh 0vh 5vh 0vh;
         &__categoriesListContainer {
             &__categoriesList {
                 background-color: whitesmoke;
@@ -3207,8 +3325,16 @@ h2 {
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 5vh 0vh;
+    padding: 30vh 0vh 5vh 0vh;
     gap: 2vh;
+    &__loadingProducts {
+        background-color: whitesmoke;
+        width: 100%;
+        height: 50vh;
+        grid-column: 1/3;
+        @include disFC();
+        padding-top: 25vh;
+    }
     &__title {
         width: 100%;
         @include disFC();
@@ -3720,6 +3846,7 @@ h2 {
     height: auto;
     display: flex;
     justify-content: center;
+    padding: 25vh 0vh 5vh 0vh;
     &__deliveryForm {
         background-color: whitesmoke;
         width: 60%;
@@ -3880,6 +4007,7 @@ h2 {
     background-size: cover; 
     width: 100%;
     height: 90vh;
+    padding-top: 20vh;
     &__phraseContainer {
         width: 100%;
         height: 90vh;
@@ -3906,6 +4034,7 @@ h2 {
     height: 90vh;
     @include disFC();
     flex-direction: column;
+    padding-top: 25vh;
     &__title {
         background-color: rgb(0, 0, 0, 0.6);
         width: 100%;

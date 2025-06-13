@@ -14,6 +14,7 @@ const Cart = () => {
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [user, setUser] = useState('');
     const [userCart, setUserCart] = useState({});
+    console.log(userCart)
     const [categories, setCategories] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -205,6 +206,8 @@ const Cart = () => {
             });
             setUserCart({ user_id, products: [] }); // 👈 cambio clave
             return [];
+        } finally {
+            setIsLoadingProducts(false)
         }
     };
     
@@ -329,6 +332,7 @@ const Cart = () => {
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
                 cartIcon={cartIcon}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
             {
@@ -342,7 +346,7 @@ const Cart = () => {
                 
                 isLoadingProducts ? 
                 <>
-                    <div className="itemDetailContainer__itemDetail__loadingProducts">
+                    <div className="cartContainer__loadingProducts">
                         Cargando productos&nbsp;&nbsp;<Spinner/>
                     </div>
                 </>
