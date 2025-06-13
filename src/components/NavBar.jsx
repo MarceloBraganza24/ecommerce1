@@ -18,19 +18,59 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
     const [forcedShow, setForcedShow] = useState(false);
 
     useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (forcedShow) return; // Si está forzado, no cambiar por scroll
+
+            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                // Scroll hacia abajo
+                setShowNavbar(false);
+            } else {
+                // Scroll hacia arriba
+                setShowNavbar(true);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY, forcedShow]);
+
+    const handleTabClick = () => {
+        setShowNavbar(true);
+        setForcedShow(true);
+
+        // Opcional: después de 5 segundos, permitir que vuelva a ocultarse con scroll
+        setTimeout(() => {
+            setForcedShow(false);
+        }, 1500);
+    };
+
+    useEffect(() => {
         if (searchTerm.trim().length === 0) {
             setFilteredProducts([]);
             setShowDropdown(false);
             return;
         }
 
-        const filtered = products.filter(product =>
-            product.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        const fetchFilteredProducts = async () => {
+            try {
+                const res = await fetch(`http://localhost:8081/api/products/byPage?page=1&search=${searchTerm}&field=all`)
+                const data = await res.json();
+                console.log(data)
+                setFilteredProducts(data.data.docs); // si usás paginación con mongoose-paginate
+                setShowDropdown(data.data.docs.length > 0);
+            } catch (err) {
+                console.error('Error al buscar productos:', err);
+            }
+        };
 
-        setFilteredProducts(filtered);
-        setShowDropdown(filtered.length > 0);
-    }, [searchTerm, products]);
+        const timeout = setTimeout(fetchFilteredProducts, 300); // debounce
+        return () => clearTimeout(timeout);
+    }, [searchTerm]);
+
 
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -48,9 +88,11 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
         return () => clearTimeout(timeout); // Limpieza por si desmonta
     }, [userCart]);
 
-    const [showHMenuOptions, setShowHMenuOptions] = useState(false);
-
+    //const [showHMenuOptions, setShowHMenuOptions] = useState(false);
     const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+    /* const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
         
@@ -76,9 +118,9 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
             }
             setShowCategories(true)
         }
-    }
+    } */
 
-    useEffect(() => {
+    /* useEffect(() => {
         const handleScrollShowHMenuOptions = () => setShowHMenuOptions(false);
         const handleScrollShowCategories = () => setShowCategories(false);
         window.addEventListener("scroll", handleScrollShowCategories);
@@ -87,13 +129,13 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
             window.removeEventListener("scroll", handleScrollShowCategories);
             window.removeEventListener("scroll", handleScrollShowHMenuOptions);
         } 
-    }, []);
+    }, []); */
 
     return (
 
         <>
 
-            <div className='header'>
+            <div className={`header ${showNavbar ? "header__show" : "header__hide"}`}>
 
                 <div className='header__gridUp'>
 
@@ -124,7 +166,12 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                                             className='header__gridUp__inputSearch__productsListContainer__productItem__image__prop'
                                             />
                                         </div>
-                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__title'>{product.title}</span>
+                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__title'>
+                                            <div>{capitalizeFirstLetter(product.title)}</div>
+                                            <div className='header__gridUp__inputSearch__productsListContainer__productItem__title__descriptionEllipsis'>
+                                                <div className='header__gridUp__inputSearch__productsListContainer__productItem__title__descriptionEllipsis__item'>{capitalizeFirstLetter(product.description)}</div>
+                                            </div>
+                                        </span>
                                         <span className='header__gridUp__inputSearch__productsListContainer__productItem__price'>${product.price}</span>
                                         <span className='header__gridUp__inputSearch__productsListContainer__productItem__stock'>{product.stock ?? 'N/A'}u.</span>
                                     </div>
@@ -220,7 +267,14 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                         CONTACTO
                     </Link>
                 </div>
+
+
             </div>
+                {!showNavbar && (
+                    <div className="navbar-tab" onClick={handleTabClick} role="button" tabIndex={0} aria-label="Mostrar menú">
+                    ☰
+                    </div>
+                )}
 
 
             

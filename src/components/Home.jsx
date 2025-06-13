@@ -412,23 +412,21 @@ const Home = () => {
             scrollToTop={scrollToTop}
             />
 
-            <div className='navbarContainer'>
-                <NavBar
-                products={products}
-                isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
-                categories={categories}
-                userCart={userCart}
-                showLogOutContainer={showLogOutContainer}
-                hexToRgba={hexToRgba}
-                cartIcon={cartIcon}
-                logo_store={storeSettings?.siteImages?.logoStore || ""}
-                primaryColor={storeSettings?.primaryColor || ""}
-                storeName={storeSettings?.storeName || ""}
-                />
-            </div>
+            <NavBar
+            products={products}
+            isLoading={isLoading}
+            isLoggedIn={user.isLoggedIn}
+            role={user.role}
+            first_name={user.first_name}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            storeName={storeSettings?.storeName || ""}
+            />
             
             <div className="homeContainer" /* style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.homeImage || ''})`}} */>
                 <div className="homeContainer__img">
