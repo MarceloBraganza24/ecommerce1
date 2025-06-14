@@ -207,15 +207,16 @@
 
 .hMenuOptionsContainer {
     background-color: var(--primary-color);
-    width: 100%;
-    height: auto;
+    width: 30%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    justify-content: start;
     padding: 2vh;
     position: fixed;
-    z-index: 2;
-    margin-top: 1vh;
+    z-index: 99999;
+    margin-top: 20vh;
     border-top: 0.3vh solid black;
     border-bottom: 0.3vh solid black;
     transform: translateX(-100%); // oculto por la izquierda
@@ -237,7 +238,8 @@
     &__option {
         text-decoration: none;
         color: var(--primary-text-color);
-        padding-top: 0.5vh;
+        padding-top: 1vh;
+        font-size: 16px;
     }
 }
 

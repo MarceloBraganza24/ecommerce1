@@ -88,11 +88,8 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
         return () => clearTimeout(timeout); // Limpieza por si desmonta
     }, [userCart]);
 
-    //const [showHMenuOptions, setShowHMenuOptions] = useState(false);
+    const [showHMenuOptions, setShowHMenuOptions] = useState(false);
     const capitalizeFirstLetter = (text) => {
-        return text.charAt(0).toUpperCase() + text.slice(1);
-    };
-    /* const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
         
@@ -118,9 +115,9 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
             }
             setShowCategories(true)
         }
-    } */
+    }
 
-    /* useEffect(() => {
+    useEffect(() => {
         const handleScrollShowHMenuOptions = () => setShowHMenuOptions(false);
         const handleScrollShowCategories = () => setShowCategories(false);
         window.addEventListener("scroll", handleScrollShowCategories);
@@ -129,13 +126,22 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
             window.removeEventListener("scroll", handleScrollShowCategories);
             window.removeEventListener("scroll", handleScrollShowHMenuOptions);
         } 
-    }, []); */
+    }, []);
 
     return (
 
         <>
 
+
             <div className={`header ${showNavbar ? "header__show" : "header__hide"}`}>
+                
+                <div className='hMenuContainer'>
+                        <div onClick={handleBtnShowHMenuOptions} className='hMenuContainer__hMenu'>
+                            <div className='hMenuContainer__hMenu__line'></div>
+                            <div className='hMenuContainer__hMenu__line'></div>
+                            <div className='hMenuContainer__hMenu__line'></div>
+                        </div>
+                </div>
 
                 <div className='header__gridUp'>
 
@@ -166,12 +172,14 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                                             className='header__gridUp__inputSearch__productsListContainer__productItem__image__prop'
                                             />
                                         </div>
-                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__title'>
-                                            <div>{capitalizeFirstLetter(product.title)}</div>
-                                            <div className='header__gridUp__inputSearch__productsListContainer__productItem__title__descriptionEllipsis'>
-                                                <div className='header__gridUp__inputSearch__productsListContainer__productItem__title__descriptionEllipsis__item'>{capitalizeFirstLetter(product.description)}</div>
+                                        <div className='header__gridUp__inputSearch__productsListContainer__productItem__titleContainer'>
+                                            <div className='header__gridUp__inputSearch__productsListContainer__productItem__titleContainer__descriptionEllipsis'>
+                                                <div className='header__gridUp__inputSearch__productsListContainer__productItem__titleContainer__descriptionEllipsis__item'>{capitalizeFirstLetter(product.title)}</div>
                                             </div>
-                                        </span>
+                                            <div className='header__gridUp__inputSearch__productsListContainer__productItem__titleContainer__descriptionEllipsis'>
+                                                <div className='header__gridUp__inputSearch__productsListContainer__productItem__titleContainer__descriptionEllipsis__item'>{capitalizeFirstLetter(product.description)}</div>
+                                            </div>
+                                        </div>
                                         <span className='header__gridUp__inputSearch__productsListContainer__productItem__price'>${product.price}</span>
                                         <span className='header__gridUp__inputSearch__productsListContainer__productItem__stock'>{product.stock ?? 'N/A'}u.</span>
                                     </div>
@@ -278,7 +286,7 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
 
 
             
-            {/* <div className={`hMenuOptionsContainer ${showHMenuOptions ? 'active' : ''}`}>
+            <div className={`hMenuOptionsContainer ${showHMenuOptions ? 'active' : ''}`}>
                 <div className='hMenuOptionsContainer__btnCloseMenu'>
                     <div onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__btnCloseMenu__btn'>X</div>
                 </div>
@@ -293,7 +301,7 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                 ) : (
                     <Link to={`/myPurchases`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS COMPRAS</Link>
                 )}
-            </div> */}
+            </div>
 
         </>
 

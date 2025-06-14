@@ -464,7 +464,97 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className='catalogContainer__inputSearchProduct'>
+                <div className="catalogContainer__gridCategoriesProducts">
+
+                    <div className="catalogContainer__gridCategoriesProducts__categoriesContainer">
+
+                        <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories">
+
+                            <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__title">Categorías</div>
+                            {
+                                categories.map((category) => (
+                                <Link
+                                    key={category._id}
+                                    to={`/category/${category.name.toLowerCase()}`}
+                                    //onClick={() => setShowCategories(false)}
+                                    className='catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory'
+                                >
+                                    - {category.name.toUpperCase()}
+                                </Link>
+                                ))
+                            }
+                        </div>
+
+                    </div>
+
+                    <div className="catalogContainer__gridCategoriesProducts__productsContainer">
+
+                        <div className="catalogContainer__gridCategoriesProducts__productsContainer__productsList">
+                            {products.map((product) => (
+                                <ItemProduct
+                                user_id={user._id} 
+                                fetchCartByUserId={fetchCartByUserId}
+                                id={product._id}
+                                stock={product.stock}
+                                images={product.images}
+                                title={product.title}
+                                description={product.description}
+                                price={product.price}
+                                userCart={userCart}
+                                />
+                            ))}
+                            {/* <div className="itemProduct">
+
+                                <div className="itemProduct__imgContainer">
+
+                                    <Swiper
+                                        navigation
+                                        pagination={{ clickable: true }}
+                                        modules={[Navigation, Pagination]}
+                                        className="w-full"
+                                    >
+                                        <SwiperSlide>
+                                            <img
+                                            //src={img}
+                                            src="/src/assets/pollera_jean_2.webp"
+                                            className="itemProduct__imgContainer__img"
+                                            />
+                                        </SwiperSlide>
+                                    </Swiper>
+
+                                </div>
+
+                                <div className="itemProduct__titleContainer">
+                                    <div className="itemProduct__titleContainer__prop">Pollera de jean cargo con bolsillos</div>
+                                </div>
+
+                                <div className="itemProduct__descriptionContainer" >
+                                    <div className="itemProduct__descriptionContainer__prop">Estilo y comodidad en una sola prenda</div>
+                                </div>
+
+                                <div className="itemProduct__priceContainer">
+                                    <div className="itemProduct__priceContainer__prop">$ 12500</div>
+                                </div>
+
+                                <div className='itemProduct__btnContainer'>
+
+                                    <button 
+                                        className='itemProduct__btnContainer__btn'
+                                    >
+                                        Agregar al Carrito
+                                    </button>
+
+                                </div>
+
+                            </div> */}
+
+                        </div>
+
+                    </div>
+                
+                </div>
+
+                {/* <div className='catalogContainer__inputSearchProduct'>
                     <div className="catalogContainer__inputSearchProduct__searchProductsLabel">Buscar productos</div>
                     <div className="catalogContainer__inputSearchProduct__inputContainer">
                         <div className="catalogContainer__inputSearchProduct__inputContainer__selectContainer">
@@ -601,7 +691,7 @@ const Home = () => {
                         
                     </div>
 
-                </div>
+                </div> */}
 
             </div>
 
