@@ -1,9 +1,10 @@
 import {useContext,useState,useEffect} from 'react'
-import { Link,useNavigate } from 'react-router-dom'
+import { Link, useLocation,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
+const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
+    const location = useLocation();
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -18,17 +19,33 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
     const [forcedShow, setForcedShow] = useState(false);
 
     useEffect(() => {
+        if (location.pathname === '/') {
+            setShowNavbar(true);
+            setForcedShow(true);
+
+            const timeout = setTimeout(() => {
+                setForcedShow(false);
+            }, 1000); // después de 1s volvés al comportamiento normal
+
+            return () => clearTimeout(timeout);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
 
-            if (forcedShow) return; // Si está forzado, no cambiar por scroll
+            if (forcedShow) return;
 
-            if (currentScrollY > lastScrollY && currentScrollY > 50) {
-                // Scroll hacia abajo
+            if (isScrollForced) {
+                // ⚠️ Si es scroll forzado, oculta el navbar directamente
                 setShowNavbar(false);
             } else {
-                // Scroll hacia arriba
-                setShowNavbar(true);
+                if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                    setShowNavbar(false);
+                } else {
+                    setShowNavbar(true);
+                }
             }
 
             setLastScrollY(currentScrollY);
@@ -36,7 +53,33 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY, forcedShow]);
+    }, [lastScrollY, forcedShow, isScrollForced]);
+
+    /* const handleLogoClick = (e) => {
+        e.preventDefault();
+
+        if (location.pathname === "/") {
+            // Ya estás en Home → hacé scroll al top
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+            // Estás en otra ruta → navegá a Home
+            navigate("/");
+        }
+    }; */
+    const handleLogoClick = () => {
+        if (location.pathname === '/') {
+            // Si ya estás en el home, hacé scroll al top y mostrás el navbar
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setShowNavbar(true);
+            setForcedShow(true);
+            setTimeout(() => {
+                setForcedShow(false);
+            }, 1000);
+        } else {
+            // Navegás al home
+            navigate('/');
+        }
+    };
 
     const handleTabClick = () => {
         setShowNavbar(true);
@@ -106,17 +149,6 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
 
     }
 
-    const handleBtnShowCategories = () => {
-        if(showCategories) {
-            setShowCategories(false)
-        } else {
-            if(showHMenuOptions) {
-                setShowHMenuOptions(false)
-            }
-            setShowCategories(true)
-        }
-    }
-
     useEffect(() => {
         const handleScrollShowHMenuOptions = () => setShowHMenuOptions(false);
         const handleScrollShowCategories = () => setShowCategories(false);
@@ -135,13 +167,16 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
 
             <div className={`header ${showNavbar ? "header__show" : "header__hide"}`}>
                 
-                <div className='hMenuContainer'>
-                        <div onClick={handleBtnShowHMenuOptions} className='hMenuContainer__hMenu'>
-                            <div className='hMenuContainer__hMenu__line'></div>
-                            <div className='hMenuContainer__hMenu__line'></div>
-                            <div className='hMenuContainer__hMenu__line'></div>
-                        </div>
-                </div>
+                {
+                    role &&
+                    <div className='hMenuContainer'>
+                            <div onClick={handleBtnShowHMenuOptions} className='hMenuContainer__hMenu'>
+                                <div className='hMenuContainer__hMenu__line'></div>
+                                <div className='hMenuContainer__hMenu__line'></div>
+                                <div className='hMenuContainer__hMenu__line'></div>
+                            </div>
+                    </div>
+                }
 
                 <div className='header__gridUp'>
 
@@ -189,15 +224,15 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
 
                     </div>
 
-                    <Link to='/' className='header__gridUp__logoContainer'>
-                    {logo_store ? (
-                        <img
-                        className='header__gridUp__logoContainer__prop'
-                        src={`http://localhost:8081/${logo_store}`}
-                        alt='logo_tienda'
-                        />
-                    ) : null}
-                    <p className='header__gridUp__logoContainer__storeName'>{storeName}</p>
+                    <Link onClick={handleLogoClick} className='header__gridUp__logoContainer'>
+                        {logo_store ? (
+                            <img
+                            className='header__gridUp__logoContainer__prop'
+                            src={`http://localhost:8081/${logo_store}`}
+                            alt='logo_tienda'
+                            />
+                        ) : null}
+                        <p className='header__gridUp__logoContainer__storeName'>{storeName}</p>
                     </Link>
 
                     <div className='header__gridUp__links'>
@@ -226,7 +261,7 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                 </div>
 
                 <div className='header__menu'>
-                    <Link to='/' className='header__menu__item header__menu__itemBorder'>
+                    <Link onClick={handleLogoClick} className={`header__menu__item header__menu__itemBorder ${location.pathname === '/' ? 'activeLink' : ''}`}>
                         INICIO
                     </Link>
 
@@ -236,7 +271,7 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                     onMouseEnter={() => setShowCategories(true)}
                     onMouseLeave={() => setShowCategories(false)}
                     >
-                        <div className='header__menu__item header__menu__itemBorder'>
+                        <div className={`header__menu__item header__menu__itemBorder ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}>
                             CATEGORÍAS
                         </div>
 
@@ -268,10 +303,10 @@ const NavBar = ({products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,st
                         </div>
                     </div>
 
-                    <Link to='/about' className='header__menu__item header__menu__itemBorder'>
+                    <Link to='/about' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/about' ? 'activeLink' : ''}`}>
                         SOBRE NOSOTROS
                     </Link>
-                    <Link to='/contact' className='header__menu__item'>
+                    <Link to='/contact' className={`header__menu__item ${location.pathname === '/contact' ? 'activeLink' : ''}`}>
                         CONTACTO
                     </Link>
                 </div>

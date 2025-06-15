@@ -14,6 +14,7 @@ import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 
 const Home = () => {
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const catalogRef = useRef(null);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
@@ -83,7 +84,11 @@ const Home = () => {
 
     useEffect(() => {
         if (catalogRef.current) {
+            setIsScrollForced(true); // Esto activa el flag que se pasará como prop al NavBar
             catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setTimeout(() => {
+                setIsScrollForced(false);
+            }, 800);
         }
     }, [pageInfo.page]);
 
@@ -415,6 +420,7 @@ const Home = () => {
             <NavBar
             products={products}
             isLoading={isLoading}
+            isScrollForced={isScrollForced}
             isLoggedIn={user.isLoggedIn}
             role={user.role}
             first_name={user.first_name}
@@ -476,7 +482,6 @@ const Home = () => {
                                 <Link
                                     key={category._id}
                                     to={`/category/${category.name.toLowerCase()}`}
-                                    //onClick={() => setShowCategories(false)}
                                     className='catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory'
                                 >
                                     - {category.name.toUpperCase()}
@@ -503,195 +508,28 @@ const Home = () => {
                                 userCart={userCart}
                                 />
                             ))}
-                            {/* <div className="itemProduct">
-
-                                <div className="itemProduct__imgContainer">
-
-                                    <Swiper
-                                        navigation
-                                        pagination={{ clickable: true }}
-                                        modules={[Navigation, Pagination]}
-                                        className="w-full"
+                            <div className='cPanelProductsContainer__btnsPagesContainer'>
+                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                    disabled={!pageInfo.hasPrevPage}
+                                    onClick={() => fetchProducts(pageInfo.prevPage, inputFilteredProducts, selectedField)}
                                     >
-                                        <SwiperSlide>
-                                            <img
-                                            //src={img}
-                                            src="/src/assets/pollera_jean_2.webp"
-                                            className="itemProduct__imgContainer__img"
-                                            />
-                                        </SwiperSlide>
-                                    </Swiper>
+                                    Anterior
+                                </button>
+                                
+                                <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
 
-                                </div>
-
-                                <div className="itemProduct__titleContainer">
-                                    <div className="itemProduct__titleContainer__prop">Pollera de jean cargo con bolsillos</div>
-                                </div>
-
-                                <div className="itemProduct__descriptionContainer" >
-                                    <div className="itemProduct__descriptionContainer__prop">Estilo y comodidad en una sola prenda</div>
-                                </div>
-
-                                <div className="itemProduct__priceContainer">
-                                    <div className="itemProduct__priceContainer__prop">$ 12500</div>
-                                </div>
-
-                                <div className='itemProduct__btnContainer'>
-
-                                    <button 
-                                        className='itemProduct__btnContainer__btn'
+                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                    disabled={!pageInfo.hasNextPage}
+                                    onClick={() => fetchProducts(pageInfo.nextPage, inputFilteredProducts, selectedField)}
                                     >
-                                        Agregar al Carrito
-                                    </button>
-
-                                </div>
-
-                            </div> */}
-
+                                    Siguiente
+                                </button>
+                            </div>
                         </div>
 
                     </div>
                 
                 </div>
-
-                {/* <div className='catalogContainer__inputSearchProduct'>
-                    <div className="catalogContainer__inputSearchProduct__searchProductsLabel">Buscar productos</div>
-                    <div className="catalogContainer__inputSearchProduct__inputContainer">
-                        <div className="catalogContainer__inputSearchProduct__inputContainer__selectContainer">
-                            <label>Buscar por:</label>
-                            <select
-                                className='catalogContainer__inputSearchProduct__inputContainer__selectContainer__select'
-                                value={selectedField}
-                                onChange={(e) => setSelectedField(e.target.value)}
-                                >
-                                {Object.entries(fieldLabels).map(([key, label]) => (
-                                    <option key={key} value={key}>{label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <input type="text" onChange={handleInputFilteredProducts} value={inputFilteredProducts} placeholder={`Buscar por ${fieldLabels[selectedField]}`} className='catalogContainer__inputSearchProduct__inputContainer__input' name="" id="" />
-                    </div>
-                </div>
-
-                <div className="catalogContainer__grid">
-                    
-                    <div className="catalogContainer__grid__catalog">
-
-                        {
-                            isLoadingProducts ? 
-                                <>
-                                    <div className="catalogContainer__grid__catalog__isLoadingLabel">
-                                        Cargando productos&nbsp;&nbsp;<Spinner/>
-                                    </div>
-                                </>
-                            :
-
-                            inputFilteredProducts != '' ?
-
-                            <div className="catalogContainer__grid__catalog__filteredProductsList">
-                                {products.map((product) => (
-                                    <ItemProduct
-                                    user_id={user._id} 
-                                    fetchCartByUserId={fetchCartByUserId}
-                                    id={product._id}
-                                    stock={product.stock}
-                                    images={product.images}
-                                    title={product.title}
-                                    description={product.description}
-                                    price={product.price}
-                                    userCart={userCart}
-                                    />
-                                ))}
-                                <div className='cPanelProductsContainer__btnsPagesContainer'>
-                                    <button className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                        disabled={!pageInfo.hasPrevPage}
-                                        onClick={() => fetchProducts(pageInfo.prevPage, inputFilteredProducts, selectedField)}
-                                        >
-                                        Anterior
-                                    </button>
-                                    
-                                    <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
-
-                                    <button className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                        disabled={!pageInfo.hasNextPage}
-                                        onClick={() => fetchProducts(pageInfo.nextPage, inputFilteredProducts, selectedField)}
-                                        >
-                                        Siguiente
-                                    </button>
-                                </div>
-                            </div>
-
-                            :
-
-                            !isLoadingProductsByCategory ?
-                        
-                            Object.entries(productsByCategory).map(([category, items]) => (
-
-                                <div className='catalogContainer__grid__catalog__categorieContainer' key={category}>
-
-                                    <div className='catalogContainer__grid__catalog__categorieContainer__title'>
-                                        <Link className='catalogContainer__grid__catalog__categorieContainer__title__prop' to={`/category/${category}`}>
-                                            {category}
-                                        </Link>
-                                    </div>
-
-                                    <div className='catalogContainer__grid__catalog__categorieContainer__productsContainer'>
-
-                                        <Swiper
-                                            className="catalogContainer__grid__catalog__categorieContainer__productsContainer__swiper"
-                                            modules={[Navigation, Pagination, Autoplay]}
-                                            spaceBetween={100}
-                                            slidesPerView={3}
-                                            navigation
-                                            pagination={{ clickable: true }}
-                                            autoplay={{
-                                            delay: 3000, // Cambia de slide cada 3 segundos
-                                            disableOnInteraction: true, // Sigue moviéndose después de interacción
-                                            }}
-                                        >
-                                            {items.slice(0, 10).map((product) => (
-                                            <SwiperSlide key={product._id}>
-                                                <ItemProduct
-                                                user_id={user._id} 
-                                                fetchCartByUserId={fetchCartByUserId}
-                                                id={product._id}
-                                                stock={product.stock}
-                                                images={product.images}
-                                                title={product.title}
-                                                description={product.description}
-                                                price={product.price}
-                                                userCart={userCart}
-                                                />
-                                            </SwiperSlide>
-                                            ))}
-                                        </Swiper>
-
-                                    </div>
-
-                                    <div className="catalogContainer__grid__catalog__categorieContainer__btnMoreProducts">
-                                        <Link className='catalogContainer__grid__catalog__categorieContainer__btnMoreProducts__prop' to={`/category/${category}`}>
-                                            Ver más
-                                        </Link>
-                                    </div>
-
-                                </div>
-
-                            ))
-                            :
-                            <>
-                                <div className="catalogContainer__grid__catalog__nonProductsLabel"><Spinner/></div>
-                                {
-                                    user.role == 'admin' &&
-                                    <Link className='catalogContainer__grid__catalog__goCpanelLink' to={`/cpanel/products`}>
-                                        Ir a cpanel
-                                    </Link>
-                                }
-                            </>
-                        }
-                        
-                    </div>
-
-                </div> */}
 
             </div>
 
