@@ -12,9 +12,9 @@ const Cart = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [userCart, setUserCart] = useState({});
-    console.log(userCart)
     const [categories, setCategories] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -43,10 +43,12 @@ const Cart = () => {
     };
 
     useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
         }
-    }, [user.isLoggedIn]);
+    }, [user]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -285,6 +287,7 @@ const Cart = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 setIsLoadingProducts(false)
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -322,9 +325,11 @@ const Cart = () => {
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
+                isLoadingAuth={isLoadingAuth}
+                user={user}
+                isLoggedIn={user?.isLoggedIn || false}
+                role={user?.role || null}
+                first_name={user?.first_name || ''}
                 categories={categories}
                 userCart={userCart}
                 showLogOutContainer={showLogOutContainer}

@@ -19,7 +19,8 @@ const Home = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [isVisible, setIsVisible] = useState(false);
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
     const [storeSettings, setStoreSettings] = useState({});
@@ -214,6 +215,7 @@ const Home = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 setIsLoadingProducts(false)
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -331,10 +333,12 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
         }
-    }, [user.isLoggedIn]);
+    }, [user]);
 
     useEffect(() => {
         if (location.hash) {
@@ -421,9 +425,11 @@ const Home = () => {
             products={products}
             isLoading={isLoading}
             isScrollForced={isScrollForced}
-            isLoggedIn={user.isLoggedIn}
-            role={user.role}
-            first_name={user.first_name}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
             categories={categories}
             userCart={userCart}
             showLogOutContainer={showLogOutContainer}
@@ -497,7 +503,7 @@ const Home = () => {
                         <div className="catalogContainer__gridCategoriesProducts__productsContainer__productsList">
                             {products.map((product) => (
                                 <ItemProduct
-                                user_id={user._id} 
+                                user_id={user?._id} 
                                 fetchCartByUserId={fetchCartByUserId}
                                 id={product._id}
                                 stock={product.stock}

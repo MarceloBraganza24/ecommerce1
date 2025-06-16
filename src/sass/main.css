@@ -93,7 +93,7 @@ h2 {
   opacity: 1;
 }
 .header__gridUp {
-  width: 75%;
+  width: 85%;
   height: 20vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -200,7 +200,7 @@ h2 {
   font-size: 30px;
 }
 .header__gridUp__links {
-  width: 70%;
+  width: 80%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -214,14 +214,38 @@ h2 {
   font-size: 14px;
   color: white;
   text-decoration: none;
+  cursor: pointer;
+}
+.header__gridUp__links__itemLogOut {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: white;
+  padding: 0vh 2vh;
+  text-decoration: none;
+  cursor: pointer;
+}
+.header__gridUp__links__itemName {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+  padding: 0vh 2vh;
+  border-right: 0.3vh solid white;
 }
 .header__gridUp__links__itemCart {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0vh 2vh;
   gap: 1vh;
-  padding-left: 1vh;
+  border-right: 0.3vh solid white;
 }
 .header__gridUp__links__itemCart__logo {
   width: 40%;
@@ -239,6 +263,35 @@ h2 {
   color: var(--secondary-text-color);
   cursor: pointer;
 }
+.header__gridUp__links__linksNoLogin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+.header__gridUp__links__linksNoLogin__item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0vh 2vh;
+}
+.header__gridUp__links__linksNoLogin__itemBorder {
+  width: 100%;
+  padding: 0vh 2vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  border-right: 0.3vh solid white;
+}
 .header__menu {
   height: 5vh;
   display: flex;
@@ -249,13 +302,29 @@ h2 {
 .header__menu__item {
   color: white;
   text-decoration: none;
+  padding: 0vh 2vh;
+}
+.header__menu__item:hover {
+  padding: 1vh 2vh;
+  border-top: 2px solid white;
+  border-bottom: 2px solid white;
 }
 .header__menu__itemBorder {
   color: white;
   padding: 0vh 2vh;
+  cursor: pointer;
+}
+.header__menu__itemBorder:hover {
+  padding: 1vh 2vh;
+  border-top: 2px solid white;
+  border-bottom: 2px solid white;
 }
 
 .activeLink {
+  padding: 1vh 2vh;
+}
+
+.hoverLink {
   padding: 1vh 2vh;
   border-top: 2px solid white;
   border-bottom: 2px solid white;

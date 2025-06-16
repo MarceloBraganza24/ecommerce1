@@ -12,7 +12,8 @@ const CPanelProducts = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const navigate = useNavigate();
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [products, setProducts] = useState([]);
     const [totalProducts, setTotalProducts] = useState("");
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -36,11 +37,19 @@ const CPanelProducts = () => {
     const [showCreateProductModal, setShowCreateProductModal] = useState(false);
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if(user.isLoggedIn) {
             setShowLogOutContainer(true)
         }
-    }, [user.isLoggedIn]);
+    }, [user.isLoggedIn]); */
+    
+    useEffect(() => {
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
+        }
+    }, [user]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -236,6 +245,7 @@ const CPanelProducts = () => {
                 setIsLoading(false)
                 setIsLoadingProducts(false)
                 navigate('/')
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -504,9 +514,11 @@ const CPanelProducts = () => {
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
+                isLoadingAuth={isLoadingAuth}
+                user={user}
+                isLoggedIn={user?.isLoggedIn || false}
+                role={user?.role || null}
+                first_name={user?.first_name || ''}
                 categories={categories}
                 userCart={userCart}
                 showLogOutContainer={showLogOutContainer}

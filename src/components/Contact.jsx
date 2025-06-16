@@ -8,7 +8,8 @@ const Contact = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [userCart, setUserCart] = useState({});
@@ -62,12 +63,13 @@ const Contact = () => {
         return `https://www.google.com/maps/embed/v1/place?key=AIzaSyCypLLA0vWKs_lvw5zxCuGJC28iEm9Rqk8&q=${encodedAddress}`;
     };
 
-
     useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
         }
-    }, [user.isLoggedIn]);
+    }, [user]);
 
     const fetchStoreSettings = async () => {
         try {
@@ -190,6 +192,7 @@ const Contact = () => {
             const data = await response.json();
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -307,9 +310,11 @@ const Contact = () => {
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
+                isLoadingAuth={isLoadingAuth}
+                user={user}
+                isLoggedIn={user?.isLoggedIn || false}
+                role={user?.role || null}
+                first_name={user?.first_name || ''}
                 categories={categories}
                 userCart={userCart}
                 showLogOutContainer={showLogOutContainer}

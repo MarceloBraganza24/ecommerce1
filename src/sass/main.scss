@@ -104,7 +104,7 @@ h2 {
         //box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
     }
     &__gridUp {
-        width: 75%;
+        width: 85%;
         height: 20vh;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
@@ -203,9 +203,9 @@ h2 {
             }
         }
         &__links {
-            width: 70%;
+            width: 80%;
             @include disFC();
-            //gap: 1vh;
+            //gap: 2vh;
             font-size: 16px;
             &__item {
                 width: 100%;
@@ -213,12 +213,34 @@ h2 {
                 font-size: 14px;
                 color: white;
                 text-decoration: none;
+                cursor: pointer;
+            }
+            &__itemLogOut {
+                width: 100%;
+                @include disFC();
+                font-size: 14px;
+                color: white;
+                //margin-left: 2vh;
+                padding: 0vh 2vh;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            &__itemName {
+                width: 100%;
+                @include disFC();
+                text-align: center;
+                font-size: 14px;
+                color: white;
+                padding: 0vh 2vh;
+                border-right: 0.3vh solid white;
             }
             &__itemCart {
                 width: 100%;
                 @include disFC();
+                padding: 0vh 2vh;
                 gap: 1vh;
-                padding-left: 1vh;
+                //padding-left: 1vh;
+                border-right: 0.3vh solid white;
                 &__logo {
                     width: 40%;
                     cursor: pointer;
@@ -236,6 +258,31 @@ h2 {
                     }
                 }
             }
+            &__linksNoLogin {
+                //width: 60%;
+                @include disFC();
+                //gap: 2vh;
+                font-size: 16px;
+                &__item {
+                    width: 100%;
+                    @include disFC();
+                    font-size: 14px;
+                    color: white;
+                    text-decoration: none;
+                    cursor: pointer;
+                    padding: 0vh 2vh;
+                }
+                &__itemBorder {
+                    width: 100%;
+                    padding: 0vh 2vh;
+                    @include disFC();
+                    font-size: 14px;
+                    color: white;
+                    text-decoration: none;
+                    cursor: pointer;
+                    border-right: 0.3vh solid white;
+                }
+            }
         }
     }
     &__menu {
@@ -245,18 +292,34 @@ h2 {
         &__item {
             color: white;
             text-decoration: none;
+            padding: 0vh 2vh;
+            &:hover {
+                padding: 1vh 2vh;
+                border-top: 2px solid white; // o cualquier color que combine
+                border-bottom: 2px solid white; // o cualquier color que combine
+            }
         }
         &__itemBorder {
             color: white;
-            //border-right: 0.3vh solid white;
             padding: 0vh 2vh;
+            cursor: pointer;
+            &:hover {
+                padding: 1vh 2vh;
+                border-top: 2px solid white; // o cualquier color que combine
+                border-bottom: 2px solid white; // o cualquier color que combine
+            }
         }
     }
 }
 .activeLink {
     padding: 1vh 2vh;
-    border-top: 2px solid white; // o cualquier color que combine
-    border-bottom: 2px solid white; // o cualquier color que combine
+    //border-top: 2px solid white; // o cualquier color que combine
+    //border-bottom: 2px solid white; // o cualquier color que combine
+}
+.hoverLink {
+    padding: 1vh 2vh;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
 }
 .menuCategoriesWrapper {
     position: relative;

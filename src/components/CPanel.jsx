@@ -13,7 +13,8 @@ const CPanel = () => {
     const [deletingIdAddress, setDeletingIdAddress] = useState(null);
     const [creatingCoupon, setCreatingCoupon] = useState(false);
     const [deletingIdCoupon, setDeletingIdCoupon] = useState(null);
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [isLoading, setIsLoading] = useState(true);
     const [categoryName, setCategoryName] = useState('');
     const [codeCoupon, setCodeCoupon] = useState('');
@@ -33,10 +34,12 @@ const CPanel = () => {
     const SERVER_URL = "http://localhost:8081/";
 
     useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
         }
-    }, [user.isLoggedIn]);
+    }, [user]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -730,6 +733,7 @@ const CPanel = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 navigate('/')
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -1121,9 +1125,11 @@ const CPanel = () => {
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
+                isLoadingAuth={isLoadingAuth}
+                user={user}
+                isLoggedIn={user?.isLoggedIn || false}
+                role={user?.role || null}
+                first_name={user?.first_name || ''}
                 categories={categories}
                 userCart={userCart}
                 showLogOutContainer={showLogOutContainer}

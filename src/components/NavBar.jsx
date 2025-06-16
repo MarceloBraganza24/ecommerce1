@@ -3,7 +3,7 @@ import { Link, useLocation,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
+const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(null);
@@ -55,17 +55,6 @@ const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCar
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY, forcedShow, isScrollForced]);
 
-    /* const handleLogoClick = (e) => {
-        e.preventDefault();
-
-        if (location.pathname === "/") {
-            // Ya estás en Home → hacé scroll al top
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        } else {
-            // Estás en otra ruta → navegá a Home
-            navigate("/");
-        }
-    }; */
     const handleLogoClick = () => {
         if (location.pathname === '/') {
             // Si ya estás en el home, hacé scroll al top y mostrás el navbar
@@ -160,6 +149,36 @@ const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCar
         } 
     }, []);
 
+    const handleBtnLogOut = async () => {
+        const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
+            method: 'POST',         
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // 👈 Esto es clave
+        })
+        const data = await response.json();
+        if(response.ok) {
+            toast('Gracias por visitar nuestra página', {
+                position: "top-right",
+                autoClose: 1500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            //fetchCurrentUser()
+            //setShowLogOutContainer(false)
+            //fetchCartByUserId(user._id)
+            setTimeout(() => {
+                window.location.reload()
+            }, 2000);
+        }
+    }
+
     return (
 
         <>
@@ -224,7 +243,7 @@ const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCar
 
                     </div>
 
-                    <Link onClick={handleLogoClick} className='header__gridUp__logoContainer'>
+                    <Link to={'/'} onClick={handleLogoClick} className='header__gridUp__logoContainer'>
                         {logo_store ? (
                             <img
                             className='header__gridUp__logoContainer__prop'
@@ -236,32 +255,123 @@ const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCar
                     </Link>
 
                     <div className='header__gridUp__links'>
-                    <Link to='/logIn' className='header__gridUp__links__item'>
-                        LOG IN
-                    </Link>
-                    <Link to='/signIn' className='header__gridUp__links__item'>
-                        REGISTRARSE
-                    </Link>
-                    <div className='header__gridUp__links__itemCart'>
-                        <img
-                        onClick={() => (window.location.href = '/cart')}
-                        className='header__gridUp__links__itemCart__logo'
-                        src={cartIcon}
-                        alt=''
-                        />
-                        {isLoadingUser || quantity === null ? (
-                        <Spinner />
-                        ) : (
-                        <div className='header__gridUp__links__itemCart__number'>
-                            {!isLoggedIn || isLoggedIn === undefined ? 0 : quantity}
-                        </div>
-                        )}
+
+                        {
+                            isLoadingAuth ?
+                                null 
+                            :
+                            user ?
+                                <>
+                                    <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{user.first_name}</div>
+                                    <div onClick={() => navigate('/cart')} className='header__gridUp__links__itemCart'>
+                                        <img
+                                        className='header__gridUp__links__itemCart__logo'
+                                        src={cartIcon}
+                                        alt=''
+                                        />
+                                        {isLoadingUser || quantity === null ? (
+                                        <Spinner />
+                                    ) : (
+                                        <div className='header__gridUp__links__itemCart__number'>
+                                            {!isLoggedIn || isLoggedIn === undefined ? 0 : quantity}
+                                        </div>
+                                        )}
+                                    </div>
+                                        <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>LOG OUT</div>
+                                </>
+                            :
+                                <>
+                                    <div className='header__gridUp__links__linksNoLogin'>
+                                        <Link to='/logIn' className='header__gridUp__links__linksNoLogin__itemBorder'>
+                                            LOG IN
+                                        </Link>
+                                        <Link to='/signIn' className='header__gridUp__links__linksNoLogin__item'>
+                                            REGISTRARSE
+                                        </Link>
+                                    </div>
+                                </>
+                        }
+                        
+
                     </div>
-                    </div>
+
+                    {/* {
+                        isLoadingAuth ?
+                                null 
+                        :
+                            <div className='header__gridUp__links'>
+
+                                {
+                                    user &&
+                                        <>
+                                            <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{user.first_name}</div>
+                                            <div onClick={() => navigate('/cart')} className='header__gridUp__links__itemCart'>
+                                                <img
+                                                className='header__gridUp__links__itemCart__logo'
+                                                src={cartIcon}
+                                                alt=''
+                                                />
+                                                {isLoadingUser || quantity === null ? (
+                                                <Spinner />
+                                            ) : (
+                                                <div className='header__gridUp__links__itemCart__number'>
+                                                    {!isLoggedIn || isLoggedIn === undefined ? 0 : quantity}
+                                                </div>
+                                                )}
+                                            </div>
+                                                <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>LOG OUT</div>
+                                        </>
+                                    
+                                }
+
+                            </div>
+                            
+                    } */}
+
+
+                    {/* <div className='header__gridUp__links'>
+
+                        {
+                            isLoadingAuth ?
+                                null 
+                            :
+                            user ?
+                                <>
+                                    <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{user.first_name}</div>
+                                    <div onClick={() => navigate('/cart')} className='header__gridUp__links__itemCart'>
+                                        <img
+                                        className='header__gridUp__links__itemCart__logo'
+                                        src={cartIcon}
+                                        alt=''
+                                        />
+                                        {isLoadingUser || quantity === null ? (
+                                        <Spinner />
+                                    ) : (
+                                        <div className='header__gridUp__links__itemCart__number'>
+                                            {!isLoggedIn || isLoggedIn === undefined ? 0 : quantity}
+                                        </div>
+                                        )}
+                                    </div>
+                                        <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>LOG OUT</div>
+                                </>
+                            :
+                                <>
+                                    <Link to='/logIn' className='header__gridUp__links__item'>
+                                        LOG IN
+                                    </Link>
+                                    <Link to='/signIn' className='header__gridUp__links__item'>
+                                        REGISTRARSE
+                                    </Link>
+                                </>
+                        }
+                        
+
+                    </div> */}
+
                 </div>
 
                 <div className='header__menu'>
-                    <Link onClick={handleLogoClick} className={`header__menu__item header__menu__itemBorder ${location.pathname === '/' ? 'activeLink' : ''}`}>
+                    <Link to={'/'} onClick={handleLogoClick} className={`header__menu__item header__menu__itemBorder ${location.pathname === '/' ? 'activeLink' : ''}`}>
                         INICIO
                     </Link>
 
@@ -271,7 +381,8 @@ const NavBar = ({isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCar
                     onMouseEnter={() => setShowCategories(true)}
                     onMouseLeave={() => setShowCategories(false)}
                     >
-                        <div className={`header__menu__item header__menu__itemBorder ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}>
+                        {/* <div className={`header__menu__item header__menu__itemBorder ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}> */}
+                        <div className={`header__menu__item header__menu__itemBorder ${showCategories ? 'hoverLink' : ''} ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}>
                             CATEGORÍAS
                         </div>
 

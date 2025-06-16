@@ -13,7 +13,8 @@ const Bin = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -108,6 +109,7 @@ const Bin = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 navigate('/')
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -241,10 +243,12 @@ const Bin = () => {
     }, [storeSettings]);
 
     useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
         }
-    }, [user.isLoggedIn]);
+    }, [user]);
 
     useEffect(() => {
         fetchCategories();
@@ -470,9 +474,11 @@ const Bin = () => {
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
+                isLoadingAuth={isLoadingAuth}
+                user={user}
+                isLoggedIn={user?.isLoggedIn || false}
+                role={user?.role || null}
+                first_name={user?.first_name || ''}
                 categories={categories}
                 userCart={userCart}
                 showLogOutContainer={showLogOutContainer}
