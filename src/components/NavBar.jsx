@@ -18,6 +18,8 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
     const [lastScrollY, setLastScrollY] = useState(0);
     const [forcedShow, setForcedShow] = useState(false);
 
+    const [showHMenuOptions, setShowHMenuOptions] = useState(false);
+
     useEffect(() => {
         if (location.pathname === '/') {
             setShowNavbar(true);
@@ -55,7 +57,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY, forcedShow, isScrollForced]);
 
-    const handleLogoClick = () => {
+    /* const handleLogoClick = () => {
         if (location.pathname === '/') {
             // Si ya estás en el home, hacé scroll al top y mostrás el navbar
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -66,6 +68,20 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
             }, 1000);
         } else {
             // Navegás al home
+            navigate('/');
+        }
+    }; */
+    const handleLogoClick = (e) => {
+        e.preventDefault(); // Evita comportamiento default del <Link>
+
+        if (location.pathname === '/') {
+            // Si estás en el home, scrolleás al top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setShowNavbar(true);
+            setForcedShow(true);
+            setTimeout(() => setForcedShow(false), 1000);
+        } else {
+            // Si estás en otra página, navegás al home SIN hash
             navigate('/');
         }
     };
@@ -120,7 +136,6 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
         return () => clearTimeout(timeout); // Limpieza por si desmonta
     }, [userCart]);
 
-    const [showHMenuOptions, setShowHMenuOptions] = useState(false);
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
@@ -170,9 +185,6 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
                 theme: "dark",
                 className: "custom-toast",
             });
-            //fetchCurrentUser()
-            //setShowLogOutContainer(false)
-            //fetchCartByUserId(user._id)
             setTimeout(() => {
                 window.location.reload()
             }, 2000);

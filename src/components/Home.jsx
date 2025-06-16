@@ -16,6 +16,7 @@ import Spinner from "./Spinner";
 const Home = () => {
     const [isScrollForced, setIsScrollForced] = useState(false);
     const catalogRef = useRef(null);
+    const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [isVisible, setIsVisible] = useState(false);
@@ -71,6 +72,39 @@ const Home = () => {
         return () => clearTimeout(delayDebounce);
     }, [inputFilteredProducts, selectedField]);
 
+    /* useEffect(() => {
+        if (location.hash) {
+            const id = location.hash.replace("#", "");
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                setTimeout(() => {
+                    elemento.scrollIntoView({ behavior: "smooth" });
+                }, 100); // delay para asegurarte que se montó
+            }
+        } else {
+            // Sin hash, scroll al top
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [location]); */
+    useEffect(() => {
+        if (location.hash) {
+        setShouldScrollToHash(true);
+        } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [location]);
+
+    useEffect(() => {
+        if (shouldScrollToHash) {
+        const id = location.hash.replace('#', '');
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+            setShouldScrollToHash(false);
+        }
+        }
+    }, [shouldScrollToHash, location.hash]);
+
     function esColorClaro(hex) {
         if (!hex) return true;
 
@@ -84,14 +118,12 @@ const Home = () => {
     }
 
     useEffect(() => {
-        if (catalogRef.current) {
-            setIsScrollForced(true); // Esto activa el flag que se pasará como prop al NavBar
+        if (!location.hash && catalogRef.current) {
+            setIsScrollForced(true);
             catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            setTimeout(() => {
-                setIsScrollForced(false);
-            }, 800);
+            setTimeout(() => setIsScrollForced(false), 800);
         }
-    }, [pageInfo.page]);
+    }, [pageInfo.page, location.hash]);
 
     useEffect(() => {
         if (storeSettings?.primaryColor) {
@@ -317,10 +349,6 @@ const Home = () => {
         fetchProducts();
         fetchStoreSettings();
         fetchSellerAddresses();
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
         const toggleVisibility = () => {
             if (window.scrollY > 300) {
               setIsVisible(true);
@@ -339,16 +367,6 @@ const Home = () => {
             setShowLogOutContainer(false);
         }
     }, [user]);
-
-    useEffect(() => {
-        if (location.hash) {
-            const id = location.hash.replace("#", "");
-            const elemento = document.getElementById(id);
-            if (elemento) {
-                elemento.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    }, [location]);
 
     const scrollToTop = () => {
         window.scrollTo({
