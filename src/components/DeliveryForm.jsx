@@ -462,7 +462,7 @@ const DeliveryForm = () => {
         fetchCategories();
         fetchStoreSettings();
         fetchDeliveryForm();
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }, []);
 
     const handleInputChange = (e) => {

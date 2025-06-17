@@ -213,7 +213,7 @@ const About = () => {
         fetchCategories();
         fetchStoreSettings();
         fetchSellerAddresses();
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

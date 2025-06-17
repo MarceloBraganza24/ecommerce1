@@ -1137,6 +1137,7 @@ const CPanel = () => {
                 primaryColor={configurationSiteformData?.primaryColor || ""}
                 logo_store={configurationSiteformData?.siteImages?.logoStore || ""}
                 cartIcon={cartIcon}
+                storeName={configurationSiteformData?.storeName || ""}
                 />
             </div>
 

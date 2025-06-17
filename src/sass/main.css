@@ -2241,6 +2241,7 @@ h2 {
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding-top: 30vh;
 }
 .myPurchasesContainer__title {
   width: 100%;

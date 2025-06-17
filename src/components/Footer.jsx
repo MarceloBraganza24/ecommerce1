@@ -1,14 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import SmartLink from './SmartLink';
 
 const Footer = ({sellerAddresses,socialNetworks,isLoadingSellerAddresses,logo_store,aboutText,phoneNumbers,contactEmail}) => {
 
-    const scrollToTop = () => {
+    /* const scrollToTop = () => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
         });
-    };
+    }; */
 
     const handleGoToUrl = (url) => {
         window.open(url, "_blank");
@@ -24,7 +25,7 @@ const Footer = ({sellerAddresses,socialNetworks,isLoadingSellerAddresses,logo_st
 
                     <div className='footerContainer__logoPhraseContainer__logoPhrase'>
 
-                        <Link to={'/'} onClick={scrollToTop} className='footerContainer__logoPhraseContainer__logoPhrase__logo'>
+                        <SmartLink to={'/'} className='footerContainer__logoPhraseContainer__logoPhrase__logo'>
                             {logo_store ? (
                                 <img
                                 className='footerContainer__logoPhraseContainer__logoPhrase__logo__prop'
@@ -32,7 +33,7 @@ const Footer = ({sellerAddresses,socialNetworks,isLoadingSellerAddresses,logo_st
                                 alt="logo_tienda"
                                 />
                             ) : null}
-                        </Link>
+                        </SmartLink>
 
                         <div className='footerContainer__logoPhraseContainer__logoPhrase__phrase'>
                             <div className="footerContainer__logoPhraseContainer__logoPhrase__phrase__prop">{aboutText}</div>

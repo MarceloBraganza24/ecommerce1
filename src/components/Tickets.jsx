@@ -91,9 +91,9 @@ const Tickets = () => {
         }
     }, [storeSettings]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pageInfo.page]);
+    }, [pageInfo.page]); */
 
     const goToPreviousDay = () => {
         const prevDate = new Date(selectedDate);
@@ -451,6 +451,7 @@ const Tickets = () => {
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
                 cartIcon={cartIcon}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
 

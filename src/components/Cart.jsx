@@ -307,7 +307,7 @@ const Cart = () => {
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

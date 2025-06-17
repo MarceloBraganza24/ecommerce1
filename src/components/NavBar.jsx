@@ -2,6 +2,7 @@ import {useContext,useState,useEffect} from 'react'
 import { Link, useLocation,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import SmartLink from './SmartLink';
 
 const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
     const location = useLocation();
@@ -20,7 +21,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
     const [showHMenuOptions, setShowHMenuOptions] = useState(false);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (location.pathname === '/') {
             setShowNavbar(true);
             setForcedShow(true);
@@ -31,7 +32,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
             return () => clearTimeout(timeout);
         }
-    }, [location.pathname]);
+    }, [location.pathname]); */
 
     useEffect(() => {
         const handleScroll = () => {
@@ -55,7 +56,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY, forcedShow, isScrollForced]);
+    }, [lastScrollY, forcedShow]);
 
     /* const handleLogoClick = () => {
         if (location.pathname === '/') {
@@ -71,7 +72,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
             navigate('/');
         }
     }; */
-    const handleLogoClick = (e) => {
+    /* const handleLogoClick = (e) => {
         e.preventDefault(); // Evita comportamiento default del <Link>
 
         if (location.pathname === '/') {
@@ -84,7 +85,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
             // Si estás en otra página, navegás al home SIN hash
             navigate('/');
         }
-    };
+    }; */
 
     const handleTabClick = () => {
         setShowNavbar(true);
@@ -107,7 +108,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
             try {
                 const res = await fetch(`http://localhost:8081/api/products/byPage?page=1&search=${searchTerm}&field=all`)
                 const data = await res.json();
-                console.log(data)
+                //console.log(data)
                 setFilteredProducts(data.data.docs); // si usás paginación con mongoose-paginate
                 setShowDropdown(data.data.docs.length > 0);
             } catch (err) {
@@ -255,7 +256,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
                     </div>
 
-                    <Link to={'/'} onClick={handleLogoClick} className='header__gridUp__logoContainer'>
+                    <SmartLink to={'/'} className='header__gridUp__logoContainer'>
                         {logo_store ? (
                             <img
                             className='header__gridUp__logoContainer__prop'
@@ -264,7 +265,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
                             />
                         ) : null}
                         <p className='header__gridUp__logoContainer__storeName'>{storeName}</p>
-                    </Link>
+                    </SmartLink>
 
                     <div className='header__gridUp__links'>
 
@@ -307,85 +308,12 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
                     </div>
 
-                    {/* {
-                        isLoadingAuth ?
-                                null 
-                        :
-                            <div className='header__gridUp__links'>
-
-                                {
-                                    user &&
-                                        <>
-                                            <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{user.first_name}</div>
-                                            <div onClick={() => navigate('/cart')} className='header__gridUp__links__itemCart'>
-                                                <img
-                                                className='header__gridUp__links__itemCart__logo'
-                                                src={cartIcon}
-                                                alt=''
-                                                />
-                                                {isLoadingUser || quantity === null ? (
-                                                <Spinner />
-                                            ) : (
-                                                <div className='header__gridUp__links__itemCart__number'>
-                                                    {!isLoggedIn || isLoggedIn === undefined ? 0 : quantity}
-                                                </div>
-                                                )}
-                                            </div>
-                                                <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>LOG OUT</div>
-                                        </>
-                                    
-                                }
-
-                            </div>
-                            
-                    } */}
-
-
-                    {/* <div className='header__gridUp__links'>
-
-                        {
-                            isLoadingAuth ?
-                                null 
-                            :
-                            user ?
-                                <>
-                                    <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{user.first_name}</div>
-                                    <div onClick={() => navigate('/cart')} className='header__gridUp__links__itemCart'>
-                                        <img
-                                        className='header__gridUp__links__itemCart__logo'
-                                        src={cartIcon}
-                                        alt=''
-                                        />
-                                        {isLoadingUser || quantity === null ? (
-                                        <Spinner />
-                                    ) : (
-                                        <div className='header__gridUp__links__itemCart__number'>
-                                            {!isLoggedIn || isLoggedIn === undefined ? 0 : quantity}
-                                        </div>
-                                        )}
-                                    </div>
-                                        <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>LOG OUT</div>
-                                </>
-                            :
-                                <>
-                                    <Link to='/logIn' className='header__gridUp__links__item'>
-                                        LOG IN
-                                    </Link>
-                                    <Link to='/signIn' className='header__gridUp__links__item'>
-                                        REGISTRARSE
-                                    </Link>
-                                </>
-                        }
-                        
-
-                    </div> */}
-
                 </div>
 
                 <div className='header__menu'>
-                    <Link to={'/'} onClick={handleLogoClick} className={`header__menu__item header__menu__itemBorder ${location.pathname === '/' ? 'activeLink' : ''}`}>
+                    <SmartLink to={'/'} className={`header__menu__item header__menu__itemBorder ${location.pathname === '/' ? 'activeLink' : ''}`}>
                         INICIO
-                    </Link>
+                    </SmartLink>
 
                     {/* WRAPPER agregado */}
                     <div

@@ -204,9 +204,9 @@ const CategoryContainer = () => {
         }
     };
 
-    useEffect(() => {
+    /* useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pageInfo.page]);
+    }, [pageInfo.page]); */
 
     const fetchDeliveryForm = async () => {
         try {
@@ -334,7 +334,7 @@ const CategoryContainer = () => {
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

@@ -4,6 +4,7 @@ import ItemProduct from './ItemProduct';
 import { Link, useLocation,useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import { toast } from 'react-toastify';
+import { useScrollToOnMount } from '../hooks/useScrollToOnMount';
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -14,8 +15,8 @@ import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 
 const Home = () => {
-    const [isScrollForced, setIsScrollForced] = useState(false);
-    const catalogRef = useRef(null);
+    //const [isScrollForced, setIsScrollForced] = useState(false);
+    //const catalogRef = useRef(null);
     const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
@@ -46,55 +47,26 @@ const Home = () => {
     const [userCart, setUserCart] = useState({});
     const SERVER_URL = "http://localhost:8081/";
     const [selectedField, setSelectedField] = useState('title');
-
-    const fieldLabels = {
-        title: 'Título',
-        description: 'Descripción',
-        category: 'Categoría',
-        state: 'Estado',
-        price: 'Precio',
-        all: 'Todos'
-    };
     
     const location = useLocation();
 
-    const handleInputFilteredProducts = (e) => {
-        const value = e.target.value;
-        const soloLetrasYNumeros = value.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '');
-        setInputFilteredProducts(soloLetrasYNumeros);
-    };
-
-    useEffect(() => {
+    /* useEffect(() => {
         const delayDebounce = setTimeout(() => {
             fetchProducts(1, inputFilteredProducts, selectedField);
         }, 500); // Espera 500ms para evitar llamadas excesivas
 
         return () => clearTimeout(delayDebounce);
-    }, [inputFilteredProducts, selectedField]);
+    }, [inputFilteredProducts, selectedField]); */
 
     /* useEffect(() => {
         if (location.hash) {
-            const id = location.hash.replace("#", "");
-            const elemento = document.getElementById(id);
-            if (elemento) {
-                setTimeout(() => {
-                    elemento.scrollIntoView({ behavior: "smooth" });
-                }, 100); // delay para asegurarte que se montó
-            }
+            setShouldScrollToHash(true);
         } else {
-            // Sin hash, scroll al top
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [location]); */
-    useEffect(() => {
-        if (location.hash) {
-        setShouldScrollToHash(true);
-        } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, [location]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (shouldScrollToHash) {
         const id = location.hash.replace('#', '');
         const el = document.getElementById(id);
@@ -103,7 +75,55 @@ const Home = () => {
             setShouldScrollToHash(false);
         }
         }
-    }, [shouldScrollToHash, location.hash]);
+    }, [shouldScrollToHash, location.hash]); */
+    /* useEffect(() => {
+        if (shouldScrollToHash) {
+            const id = location.hash.replace('#', '');
+            let attempts = 0;
+
+            const tryScroll = () => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    setShouldScrollToHash(false);
+                } else if (attempts < 10) {
+                    attempts++;
+                    setTimeout(tryScroll, 100); // Intentar nuevamente
+                }
+            };
+
+            tryScroll();
+        }
+    }, [shouldScrollToHash, location.hash]); */
+
+    useEffect(() => {
+        if (location.hash) {
+            const scrollToElement = () => {
+                const element = document.querySelector(location.hash);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    return true;
+                }
+                return false;
+            };
+
+            // Intentamos hacer scroll cada 100ms, hasta que el elemento exista
+            const interval = setInterval(() => {
+                const success = scrollToElement();
+                if (success) clearInterval(interval);
+            }, 100);
+
+            // Cancelamos por seguridad después de 3 segundos
+            const timeout = setTimeout(() => clearInterval(interval), 3000);
+
+            return () => {
+                clearInterval(interval);
+                clearTimeout(timeout);
+            };
+        }
+    }, [location]);
+
+
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -117,13 +137,13 @@ const Home = () => {
         return brightness > 128; // <-- usar el mismo umbral que en getContrastingTextColor
     }
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (!location.hash && catalogRef.current) {
             setIsScrollForced(true);
             catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
             setTimeout(() => setIsScrollForced(false), 800);
         }
-    }, [pageInfo.page, location.hash]);
+    }, [pageInfo.page, location.hash]); */
 
     useEffect(() => {
         if (storeSettings?.primaryColor) {
@@ -368,6 +388,8 @@ const Home = () => {
         }
     }, [user]);
 
+    useScrollToOnMount();
+    
     const scrollToTop = () => {
         window.scrollTo({
           top: 0,
@@ -442,12 +464,13 @@ const Home = () => {
             <NavBar
             products={products}
             isLoading={isLoading}
-            isScrollForced={isScrollForced}
+            //isScrollForced={isScrollForced}
             isLoadingAuth={isLoadingAuth}
             user={user}
             isLoggedIn={user?.isLoggedIn || false}
             role={user?.role || null}
             first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
             categories={categories}
             userCart={userCart}
             showLogOutContainer={showLogOutContainer}
@@ -455,7 +478,6 @@ const Home = () => {
             cartIcon={cartIcon}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             primaryColor={storeSettings?.primaryColor || ""}
-            storeName={storeSettings?.storeName || ""}
             />
             
             <div className="homeContainer" /* style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.homeImage || ''})`}} */>
@@ -486,7 +508,7 @@ const Home = () => {
                 </div>
             }
 
-            <div className='catalogContainer' id='catalog' ref={catalogRef}>
+            <div className='catalogContainer' id='catalog'>
 
                 <div className="catalogContainer__titleContainer">
                     <div className='catalogContainer__titleContainer__title'>

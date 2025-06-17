@@ -94,9 +94,9 @@ const CPanelProducts = () => {
         return () => clearTimeout(delay);
     }, [inputFilteredProducts, selectedField]);
     
-    useEffect(() => {
+    /* useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pageInfo.page]);
+    }, [pageInfo.page]); */
 
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
@@ -526,6 +526,7 @@ const CPanelProducts = () => {
                 primaryColor={storeSettings?.primaryColor || ""}
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 cartIcon={cartIcon}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
             <div className='cPanelProductsContainer'>

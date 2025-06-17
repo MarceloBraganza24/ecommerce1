@@ -1961,6 +1961,7 @@ h2 {
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding-top: 30vh;
     &__title {
         width: 100%;
         @include disFC();

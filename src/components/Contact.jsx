@@ -238,7 +238,7 @@ const Contact = () => {
         fetchSellerAddresses();
         fetchStoreSettings();
         fetchCategories();
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

@@ -23,6 +23,7 @@ import { ShoppingCartContext } from './context/ShoppingCartContext'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeProviderContext.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 
 
 function App() {
@@ -40,6 +41,8 @@ function App() {
         </a>
         
         <BrowserRouter>
+
+            <ScrollToTop />
 
             <ThemeProvider>
 

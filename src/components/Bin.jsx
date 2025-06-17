@@ -486,6 +486,7 @@ const Bin = () => {
                 cartIcon={cartIcon}
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
+                storeName={storeSettings?.storeName || ""}
                 />
             </div>
 
