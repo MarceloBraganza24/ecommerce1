@@ -5,6 +5,10 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 
+import { useUnsavedChangesPrompt } from '../hooks/useUnsavedChangesPrompt';
+//import { useBlockNavigation } from '../hooks/useBlockNavigation';
+import isEqual from 'lodash.isequal';
+
 const CPanel = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [creatingCategory, setCreatingCategory] = useState(false);
@@ -14,6 +18,9 @@ const CPanel = () => {
     const [creatingCoupon, setCreatingCoupon] = useState(false);
     const [deletingIdCoupon, setDeletingIdCoupon] = useState(null);
     const [user, setUser] = useState(undefined);
+    const [admins, setAdmins] = useState([]);
+    const [adminsEdited, setAdminsEdited] = useState([]);
+    //console.log(admins)
     const isLoadingAuth = user === undefined;
     const [isLoading, setIsLoading] = useState(true);
     const [categoryName, setCategoryName] = useState('');
@@ -29,6 +36,13 @@ const CPanel = () => {
     const [loadingAddresses, setLoadingAddresses] = useState(false);
     const [loadingCoupons, setLoadingCoupons] = useState(false);
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
+    const [userCredentials, setUserCredentials] = useState({
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
+        role: 'user',
+    });
     const navigate = useNavigate();
 
     const SERVER_URL = "http://localhost:8081/";
@@ -40,6 +54,125 @@ const CPanel = () => {
             setShowLogOutContainer(false);
         }
     }, [user]);
+
+    const handleUserCredentialsChange = (event) => {
+        const { name, value } = event.target;
+        
+        if ((name === "first_name" || name === "last_name") && !/^[a-zA-Z\s]*$/.test(value)) {
+          return; // No actualiza el estado si el valor tiene caracteres no permitidos
+        }
+        setUserCredentials({ ...userCredentials, [name]: value });
+    };
+
+    const validateUserRegisterForm = () => {
+        const { first_name,last_name,email,password,role } = userCredentials;
+    
+        if (!first_name.trim() || !last_name.trim() || !email.trim() || !password.trim() || !role.trim()) {
+            toast('Debes completar todos los campos!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });          
+            return false;
+        }
+    
+        return true;
+    };
+
+    const handleUserRegisterSubmit = async (e) => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const currentDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+        const user_datetime = currentDate;
+        e.preventDefault();
+        if (!validateUserRegisterForm()) return;
+        try {
+            const response = await fetch(`http://localhost:8081/api/sessions/signInAdmin`, {
+                method: 'POST',         
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    first_name: userCredentials.first_name,
+                    last_name: userCredentials.last_name,
+                    email: userCredentials.email,
+                    password: userCredentials.password,
+                    role: userCredentials.role,
+                    user_datetime
+                })
+            })
+            const data = await response.json();
+            if(data.error === 'There is already a user with that email') {
+                toast('Ya existe un usuario con ese email!', {
+                    position: "top-right",
+                    autoClose: 2500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            } else if (response.ok) {
+                toast('Has registrado un usuario exitosamente!', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setUserCredentials({
+                    first_name: '',
+                    last_name: '',
+                    email: '',
+                    password: '',
+                    role: 'user',
+                });
+                fetchAdmins()
+            } else {
+                toast('Ha ocurrido un error, intente nuevamente!', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            toast('Error en la conexión!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+        }
+    };
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -386,8 +519,8 @@ const CPanel = () => {
         }
     }; 
 
-    const handleSubmitCategory = async (e) => {
-        e.preventDefault();
+    const handleSubmitCategory = async () => {
+        setCreatingCategory(true);
         const date = new Date();
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -408,11 +541,12 @@ const CPanel = () => {
                 theme: "dark",
                 className: "custom-toast",
             });
+            setCreatingCategory(false);
             return;
         }
 
         try {
-            setCreatingCategory(true);
+            await new Promise(res => setTimeout(res, 500));
             const response = await fetch('http://localhost:8081/api/categories', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -677,31 +811,48 @@ const CPanel = () => {
             const response = await fetch('http://localhost:8081/api/settings');
             const data = await response.json();
             if (response.ok) {
-                setConfigurationSiteformData(prev => ({
-                    ...prev,
+                const transformedConfig = {
                     ...data,
                     socialNetworks: Array.isArray(data.socialNetworks)
                         ? data.socialNetworks.map(item => ({
                             name: item.name || '',
                             url: item.url || '',
                             logo: typeof item.logo === 'string' ? SERVER_URL + item.logo : null,
-                            prevLogoPath: typeof item.logo === 'string' ? item.logo : null, // guardo la ruta relativa para backend
+                            prevLogoPath: typeof item.logo === 'string' ? item.logo : null,
                         }))
                         : [],
-                }));
+                };
+
+                const newFormData = {
+                    ...configurationSiteformData,
+                    ...transformedConfig,
+                };
+                setConfigurationSiteformData(newFormData);
+                
                 setColorSelectFormData((prev) => ({
                     ...prev,
                     primaryColor: data.primaryColor || prev.primaryColor,
                     secondaryColor: data.secondaryColor || prev.secondaryColor,
                     accentColor: data.accentColor || prev.accentColor,
                 }));
-                setSiteImages({
+                const siteImagesData = {
                     favicon: data.siteImages.favicon ? SERVER_URL + data.siteImages.favicon : null,
                     logoStore: data.siteImages.logoStore ? SERVER_URL + data.siteImages.logoStore : null,
                     homeImage: data.siteImages.homeImage ? SERVER_URL + data.siteImages.homeImage : null,
                     aboutImage: data.siteImages.aboutImage ? SERVER_URL + data.siteImages.aboutImage : null,
                     contactImage: data.siteImages.contactImage ? SERVER_URL + data.siteImages.contactImage : null,
+                };
+                setSiteImages(siteImagesData);
+                
+                setInitialConfiguration(newFormData);
+                setInitialColorSelect({
+                    primaryColor: data.primaryColor || '',
+                    secondaryColor: data.secondaryColor || '',
+                    accentColor: data.accentColor || '',
+                    colorInputMode: 'pallete'
                 });
+                setInitialSiteImages(siteImagesData);
+                setInitialConfigLoaded(true);
             } else {
                 toast('Error al cargar configuraciones', {
                     position: "top-right",
@@ -747,8 +898,29 @@ const CPanel = () => {
         }
     };
 
+    const fetchAdmins = async () => {
+        try {
+            const response = await fetch('http://localhost:8081/api/users/getAdmins', {
+                method: 'GET',
+                credentials: 'include', // MUY IMPORTANTE para enviar cookies
+            });
+            const data = await response.json();
+            if(data.error === 'jwt must be provided') { 
+                setIsLoading(false)
+                navigate('/')
+                setUser(null)
+            } else if(response.ok) {
+                setAdmins(data.data)
+                setAdminsEdited(data.data.map(admin => ({ ...admin })));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     useEffect(() => {
         fetchCurrentUser();
+        fetchAdmins();
         fetchCategories();
         fetchStoreSettings();
         fetchSellerAddresses();
@@ -769,25 +941,55 @@ const CPanel = () => {
             setSiteImages((prev) => ({ ...prev, [name]: file }));
         }
     };
-    
+
+    const [initialConfigLoaded, setInitialConfigLoaded] = useState(false);
+    const [initialConfiguration, setInitialConfiguration] = useState(null);
+    const [initialColorSelect, setInitialColorSelect] = useState({
+        primaryColor: '#000000',
+        secondaryColor: '#ffffff',
+        accentColor: '#fccf03',
+        colorInputMode: 'pallete'
+    });
+    const [initialSiteImages, setInitialSiteImages] = useState(null);
     const [configurationSiteformData, setConfigurationSiteformData] = useState({
         storeName: '',
         contactEmail: [
             {
-            email: '',
-            label: 'General',
-            selected: true
+                email: '',
+                label: 'General',
+                selected: true
             }
         ],
         primaryColor: '',
         secondaryColor: '',
         accentColor: '',
-        phoneNumbers: [''],
+        phoneNumbers: [
+            { 
+                number: '',
+                selected: true 
+            }
+        ],
         aboutText: '',
         footerLogoText: '',
         sliderLogos: [],
         socialNetworks: []
     });
+    const [colorSelectFormData, setColorSelectFormData] = useState({
+        primaryColor: '#000000',
+        secondaryColor: '#ffffff',
+        accentColor: '#fccf03',
+        colorInputMode: 'pallete'
+    });
+
+    const shouldBlockNavigation =
+        initialConfigLoaded && (
+            !isEqual(configurationSiteformData, initialConfiguration) ||
+            !isEqual(colorSelectFormData, initialColorSelect) ||
+            !isEqual(siteImages, initialSiteImages)
+    );
+
+    useUnsavedChangesPrompt(shouldBlockNavigation);
+    //useBlockNavigation(shouldBlockNavigation);
 
     useEffect(() => {
         if (configurationSiteformData?.primaryColor) {
@@ -879,12 +1081,7 @@ const CPanel = () => {
 
     const colorOptions = ['#000000', '#ffffff', '#FF5733', '#3498db', '#2ecc71', '#ffe100'];
 
-    const [colorSelectFormData, setColorSelectFormData] = useState({
-        primaryColor: '#000000',
-        secondaryColor: '#ffffff',
-        accentColor: '#fccf03',
-        colorInputMode: 'pallete'
-    });
+    
 
     const handleColorSelect = (field, color) => {
         setColorSelectFormData((prev) => ({
@@ -912,25 +1109,158 @@ const CPanel = () => {
         }
     };
 
-    const handlePhoneNumberChange = (e, index) => {
-        const updatedPhones = [...configurationSiteformData.phoneNumbers];
-        updatedPhones[index] = e.target.value;
+    const handlePhoneNumberChange = (index, field, value) => {
+        const updatedPhones = configurationSiteformData.phoneNumbers.map((phone, i) => {
+            if (i === index) {
+                return {
+                    ...phone,
+                    [field]: value
+                };
+            }
+            return phone;
+        });
         setConfigurationSiteformData(prev => ({
             ...prev,
             phoneNumbers: updatedPhones
         }));
     };
 
-    const addPhoneNumber = () => {
-        setConfigurationSiteformData(prev => ({ ...prev, phoneNumbers: [...prev.phoneNumbers, ''] }));
+
+    const handleSelectPrimaryPhone = (index) => {
+        const updatedPhones = configurationSiteformData.phoneNumbers.map((phone, i) => ({
+            ...phone,
+            selected: i === index // solo el seleccionado tiene `true`
+        }));
+
+        setConfigurationSiteformData(prev => ({
+            ...prev,
+            phoneNumbers: updatedPhones
+        }));
     };
 
-    const removePhoneNumber = (index) => {
+    /* const addPhoneNumber = () => {
+        setConfigurationSiteformData(prev => ({ ...prev, phoneNumbers: [...prev.phoneNumbers, ''] }));
+    }; */
+    const addPhoneNumber = () => {
+        setConfigurationSiteformData(prev => ({
+            ...prev,
+            phoneNumbers: [...prev.phoneNumbers, { number: '', selected: false }]
+        }));
+    };
+
+    /* const removePhoneNumber = (index) => {
         const updatedPhones = configurationSiteformData.phoneNumbers.filter((_, i) => i !== index);
         setConfigurationSiteformData(prev => ({ ...prev, phoneNumbers: updatedPhones }));
+    }; */
+    const removePhoneNumber = (index) => {
+        if (configurationSiteformData.phoneNumbers.length === 1) return;
+
+        let updatedPhones = configurationSiteformData.phoneNumbers.filter((_, i) => i !== index);
+        const hadSelected = configurationSiteformData.phoneNumbers[index].selected;
+        
+        if (hadSelected && updatedPhones.length > 0) {
+            updatedPhones = updatedPhones.map((phone, i) => ({
+                ...phone,
+                selected: i === 0
+            }));
+        }
+
+        setConfigurationSiteformData(prev => ({
+            ...prev,
+            phoneNumbers: updatedPhones
+        }));
     };
 
+    const validatePhoneNumbers = () => {
+        const selectedPhones = configurationSiteformData.phoneNumbers.filter(phone => phone.selected);
+        
+        if (selectedPhones.length !== 1) {
+            toast('Debés seleccionar un número de teléfono como principal para WhatsApp.', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return false;
+        }
+
+        return true;
+    };
+
+
     const handleSubmitConfigSite = async () => {
+        
+        if (!validatePhoneNumbers()) return;
+
+        const hasEmptyPhone = configurationSiteformData.phoneNumbers.some(phoneObj =>
+            phoneObj.number.trim() === ''
+        );
+
+        if (hasEmptyPhone) {
+            toast('Debes completar todos los campos de teléfono antes de guardar', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        const hasEmptyContactEmail = configurationSiteformData.contactEmail.some(emailObj =>
+            emailObj.email.trim() === '' || emailObj.label.trim() === ''
+        );
+
+        if (hasEmptyContactEmail) {
+            toast('Debes completar todos los campos de los emails de contacto', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        const configToCompare = {
+            ...configurationSiteformData,
+            primaryColor: colorSelectFormData.primaryColor,
+            secondaryColor: colorSelectFormData.secondaryColor,
+            accentColor: colorSelectFormData.accentColor,
+            siteImages: siteImages, // También incluímos esto si lo vas a comparar
+        };
+
+        const initialDataToCompare = {
+            ...initialConfiguration,
+            primaryColor: initialColorSelect.primaryColor,
+            secondaryColor: initialColorSelect.secondaryColor,
+            accentColor: initialColorSelect.accentColor,
+            siteImages: initialSiteImages,
+        };
+
+        if (isEqual(configToCompare, initialDataToCompare)) {
+            toast('No tienes cambios para guardar!', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
         const formData = new FormData();
 
         Object.entries(siteImages).forEach(([key, value]) => {
@@ -1002,11 +1332,177 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchStoreSettings()
-                console.log('Resultado:', result);
+                setInitialConfiguration(configData);
+                setConfigurationSiteformData(configData);
+                setInitialColorSelect(colorSelectFormData);
+                setInitialSiteImages(siteImages);
+                //console.log('Resultado:', result);
             }
         } catch (error) {
             console.error('Error al enviar la configuración:', error);
+        }
+    };
+
+    const handleAdminChange = (index, field, value) => {
+        const updatedAdmins = [...adminsEdited];
+        updatedAdmins[index][field] = value;
+        setAdminsEdited(updatedAdmins);
+    };
+
+    // Función para comparar si hubo cambios entre original y editado
+    const isChanged = (index) => {
+        const original = admins[index];
+        const edited = adminsEdited[index];
+        return (
+            original.first_name !== edited.first_name ||
+            original.last_name !== edited.last_name ||
+            original.email !== edited.email ||
+            original.role !== edited.role
+        );
+    };
+
+    const isAnyAdminChanged = () => {
+        return admins.some((admin, i) => {
+            return (
+                admin.first_name !== adminsEdited[i].first_name ||
+                admin.last_name !== adminsEdited[i].last_name ||
+                admin.email !== adminsEdited[i].email ||
+                admin.role !== adminsEdited[i].role
+            );
+        });
+    };
+
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (isAnyAdminChanged()) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [admins, adminsEdited]);
+
+    // Guardar cambios
+    const handleSaveAdmin = async (index) => {
+        const adminToSave = adminsEdited[index];
+        try {
+            const response = await fetch(`http://localhost:8081/api/users/${adminToSave._id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    first_name: adminToSave.first_name,
+                    last_name: adminToSave.last_name,
+                    email: adminToSave.email,
+                    role: adminToSave.role,
+                }),
+            });
+            if (response.ok) {
+                const updatedAdmin = await response.json();
+
+                toast('Has guardado los cambios', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+
+                const updatedAdmins = [...admins];
+                updatedAdmins[index] = { ...adminToSave }; // actualizar admins
+                setAdmins(updatedAdmins);
+
+                const updatedAdminsEdited = [...adminsEdited];
+                updatedAdminsEdited[index] = { ...adminToSave }; // resetear adminsEdited
+                setAdminsEdited(updatedAdminsEdited);
+                fetchAdmins()
+
+            } else {
+                toast('Error al guardar cambios', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            }
+        } catch (error) {
+            toast('Error en la conexión', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+        }
+    };
+
+    // Borrar usuario
+    const handleDeleteAdmin = async (index) => {
+        const adminToDelete = adminsEdited[index];
+        if (!window.confirm(`¿Eliminar al usuario ${adminToDelete.first_name} ${adminToDelete.last_name}?`)) return;
+
+        try {
+            const response = await fetch(`http://localhost:8081/api/users/delete-one/${adminToDelete._id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                toast('Has eliminado el usuario con éxito', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                const updatedAdmins = admins.filter(a => a._id !== adminToDelete._id);
+                const updatedAdminsEdited = adminsEdited.filter(a => a._id !== adminToDelete._id);
+                setAdmins(updatedAdmins);
+                setAdminsEdited(updatedAdminsEdited);
+                fetchAdmins()
+            } else {
+                toast('Error al eliminar usuario', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            }
+        } catch (error) {
+            toast('Error en la conexión', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
         }
     };
 
@@ -1086,8 +1582,15 @@ const CPanel = () => {
     }
 
     const handleContactEmailChange = (index, field, value) => {
-        const updatedEmails = [...configurationSiteformData.contactEmail];
-        updatedEmails[index][field] = value;
+        const updatedEmails = configurationSiteformData.contactEmail.map((email, i) => {
+            if (i === index) {
+                return {
+                    ...email,
+                    [field]: value
+                };
+            }
+            return email;
+        });
         setConfigurationSiteformData(prev => ({
             ...prev,
             contactEmail: updatedEmails
@@ -1241,24 +1744,34 @@ const CPanel = () => {
                                 </div>
 
                                 <div className='cPanelContainer__siteConfiguration__form__gridPhone__inputBtn'>
-                                <input
-                                    className='cPanelContainer__siteConfiguration__form__gridPhone__inputBtn__input'
-                                    type="tel"
-                                    name="phoneNumbers"
-                                    value={phone}
-                                    onChange={(e) => handlePhoneNumberChange(e, index)}
-                                    placeholder="Ej: +5491123456789"
-                                />
+                                    <input
+                                        className='cPanelContainer__siteConfiguration__form__gridPhone__inputBtn__input'
+                                        type="tel"
+                                        name="phoneNumbers"
+                                        value={phone.number}
+                                        onChange={(e) => handlePhoneNumberChange(index, 'number', e.target.value)}
+                                        placeholder="Ej: +5491123456789"
+                                    />
 
-                                {configurationSiteformData.phoneNumbers.length > 1 && (
-                                    <button
-                                    className='cPanelContainer__siteConfiguration__form__gridPhone__inputBtn__btnDeletePhone'
-                                    type="button"
-                                    onClick={() => removePhoneNumber(index)}
-                                    >
-                                    Eliminar
-                                    </button>
-                                )}
+                                    {configurationSiteformData.phoneNumbers.length > 1 && (
+                                        <button
+                                        className='cPanelContainer__siteConfiguration__form__gridPhone__inputBtn__btnDeletePhone'
+                                        type="button"
+                                        onClick={() => removePhoneNumber(index)}
+                                        >
+                                        Eliminar
+                                        </button>
+                                    )}
+
+                                    <label className='cPanelContainer__siteConfiguration__form__gridPhone__checkboxLabel'>
+                                        <input
+                                            type="radio"
+                                            name="selectedPhone"
+                                            checked={phone.selected || false}
+                                            onChange={() => handleSelectPrimaryPhone(index)}
+                                        />
+                                        Usar para WhatsApp
+                                    </label>
                                 </div>
                             </div>
                             ))}
@@ -1491,7 +2004,7 @@ const CPanel = () => {
 
                                 <div className="cPanelContainer__newCategoryForm">
                                     <div className='cPanelContainer__newCategoryForm__title'>Crear nueva categoría</div>
-                                    <form onSubmit={handleSubmitCategory} className='cPanelContainer__newCategoryForm__form'>
+                                    <div className='cPanelContainer__newCategoryForm__form'>
                                         <input
                                         className='cPanelContainer__newCategoryForm__form__input'
                                         type="text"
@@ -1499,16 +2012,15 @@ const CPanel = () => {
                                         placeholder='Nombre categoría'
                                         value={categoryName}
                                         onChange={(e) => setCategoryName(e.target.value)}
-                                        required
                                         />
                                         <button
                                             className='cPanelContainer__newCategoryForm__form__btn'
-                                            type="submit"
                                             disabled={creatingCategory}
+                                            onClick={() => handleSubmitCategory()}
                                             >
                                             {creatingCategory ? <Spinner/> : 'Crear categoría'}
                                         </button>
-                                    </form>
+                                    </div>
                                 </div>
 
                             </div>
@@ -1674,6 +2186,120 @@ const CPanel = () => {
 
                     </>
                 }
+
+                <div className='cPanelContainer__adminsList'>
+                    <div className='cPanelContainer__adminsList__title'>Usuarios administradores</div>
+                    {adminsEdited.map((admin, index) => (
+                        <div
+                        key={admin._id}
+                        className='cPanelContainer__adminsList__item'
+                        >
+                            <div className='cPanelContainer__adminsList__item__input'>
+                                <input
+                                    className='cPanelContainer__adminsList__item__input__prop'
+                                    type="text"
+                                    value={admin.first_name}
+                                    onChange={(e) => handleAdminChange(index, 'first_name', e.target.value)}
+                                    placeholder="Nombre"
+                                />
+                            </div>
+                            <div className='cPanelContainer__adminsList__item__input'>
+                                <input
+                                    className='cPanelContainer__adminsList__item__input__prop'
+                                    type="text"
+                                    value={admin.last_name}
+                                    onChange={(e) => handleAdminChange(index, 'last_name', e.target.value)}
+                                    placeholder="Apellido"
+                                />
+                            </div>
+                            <div className='cPanelContainer__adminsList__item__input'>
+                                <input
+                                    className='cPanelContainer__adminsList__item__input__prop'
+                                    type="email"
+                                    value={admin.email}
+                                    onChange={(e) => handleAdminChange(index, 'email', e.target.value)}
+                                    placeholder="Email"
+                                />
+                            </div>
+                            <div className='cPanelContainer__adminsList__item__input'>
+                                <div className='cPanelContainer__adminsList__item__input'>
+                                    <input
+                                        className='cPanelContainer__adminsList__item__input__prop'
+                                        type="text"
+                                        value={admin.role}
+                                        readOnly
+                                    />
+                                </div>
+                            </div>
+                            <div className='cPanelContainer__adminsList__item__btns'>
+                                <button
+                                    className='cPanelContainer__adminsList__item__btns__btn'
+                                    onClick={() => handleSaveAdmin(index)}
+                                    disabled={!isChanged(index)}
+                                >
+                                    Actualizar
+                                </button>
+                                <button
+                                    className='cPanelContainer__adminsList__item__btns__btn'
+                                    onClick={() => handleDeleteAdmin(index)}
+                                    >
+                                    Borrar
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className='cPanelContainer__userRegisterContainer'>
+
+                    <div className='cPanelContainer__userRegisterContainer__title'>
+                        <div className='cPanelContainer__userRegisterContainer__title__prop'>Registro de usuario</div>
+                    </div>
+
+                    <div className="cPanelContainer__userRegisterContainer__form">
+
+                        <div className='cPanelContainer__userRegisterContainer__form__input'>
+                            <div className='cPanelContainer__userRegisterContainer__form__input__label'>Nombre:</div>
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="text" value={userCredentials.first_name} onChange={handleUserCredentialsChange} placeholder='Nombre' name="first_name" id="" />
+                        </div>
+
+                        <div className='cPanelContainer__userRegisterContainer__form__input'>
+                            <div className='cPanelContainer__userRegisterContainer__form__input__label'>Apellido:</div>
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="text" value={userCredentials.last_name} onChange={handleUserCredentialsChange} placeholder='Apellido' name="last_name" id="" />
+                        </div>
+
+                        <div className='cPanelContainer__userRegisterContainer__form__input'>
+                            <div className='cPanelContainer__userRegisterContainer__form__input__label'>Email:</div>
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="email" value={userCredentials.email} onChange={handleUserCredentialsChange} placeholder='Email' name="email" id="" />
+                        </div>
+
+                        <div className='cPanelContainer__userRegisterContainer__form__input'>
+                            <div className='cPanelContainer__userRegisterContainer__form__input__label'>Contraseña:</div>
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="password" value={userCredentials.password} onChange={handleUserCredentialsChange} placeholder='Contraseña' name="password" id="" />
+                        </div>
+
+                        <div className='cPanelContainer__userRegisterContainer__form__select'>
+                            <div className='cPanelContainer__userRegisterContainer__form__select__label'>Rol:</div>
+                            <div className='cPanelContainer__userRegisterContainer__form__select__selectContainer'>
+                                <select
+                                    className='cPanelContainer__userRegisterContainer__form__select__selectContainer__prop'
+                                    name="role"
+                                    value={userCredentials.role}
+                                    onChange={handleUserCredentialsChange}
+                                    >
+                                    <option value="user">User</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className='cPanelContainer__userRegisterContainer__form__btn'>
+                            <button onClick={handleUserRegisterSubmit} className='cPanelContainer__userRegisterContainer__form__btn__prop'>Registrar usuario</button>
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 

@@ -496,6 +496,7 @@ const Cart = () => {
             }
 
             <Footer
+            isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
             phoneNumbers={storeSettings.phoneNumbers}

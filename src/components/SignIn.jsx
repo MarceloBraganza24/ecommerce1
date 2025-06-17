@@ -85,7 +85,7 @@ const SignIn = () => {
         e.preventDefault();
         if (!validateForm()) return;
         try {
-            const response = await fetch(`http://localhost:8081/api/sessions/singIn`, {
+            const response = await fetch(`http://localhost:8081/api/sessions/signIn`, {
                 method: 'POST',         
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ const SignIn = () => {
 
     useEffect(() => {
         fetchStoreSettings()
-        window.scrollTo(0, 0);
+        //window.scrollTo(0, 0);
     }, []);
 
     if (isLoadingStoreSettings) {

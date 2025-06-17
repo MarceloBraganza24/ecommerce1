@@ -27,9 +27,47 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 
 
 function App() {
+    const [storeSettings, setStoreSettings] = useState({});
+    const [whatsappPhone, setWhatsappPhone] = useState('');
+    
+    useEffect(() => {
+        if(storeSettings) {
+            const whapPhone = storeSettings?.phoneNumbers?.find(phone => phone.selected == true)
+            setWhatsappPhone(whapPhone)
+        }
+    },[storeSettings])
+
+    const fetchStoreSettings = async () => {
+        try {
+            const response = await fetch('http://localhost:8081/api/settings');
+            const data = await response.json();
+            if (response.ok) {
+                setStoreSettings(data); 
+            } else {
+                toast('Error al cargar configuraciones', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchStoreSettings()
+    },[])
 
     const handleBtnWhatsAppIcon = () => {
-        window.open("https://wa.me/5492926459172", "_blank");
+        window.open(`https://wa.me/${whatsappPhone.number}`, "_blank");
     }
 
     return (

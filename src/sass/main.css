@@ -263,13 +263,14 @@ h2 {
   color: var(--secondary-text-color);
   cursor: pointer;
 }
-.header__gridUp__links__linksNoLogin {
+.header__gridUp__linksNoLogin {
+  width: 90%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 16px;
 }
-.header__gridUp__links__linksNoLogin__item {
+.header__gridUp__linksNoLogin__item {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -278,11 +279,11 @@ h2 {
   color: white;
   text-decoration: none;
   cursor: pointer;
-  padding: 0vh 2vh;
+  padding: 0vh 1vh;
 }
-.header__gridUp__links__linksNoLogin__itemBorder {
+.header__gridUp__linksNoLogin__itemBorder {
   width: 100%;
-  padding: 0vh 2vh;
+  padding: 0vh 1vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -488,14 +489,14 @@ h2 {
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 25vh;
+  padding-top: 27vh;
 }
 .cPanelContainer__title {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 4vh 0vh 3vh 0vh;
+  padding: 4vh 0vh 5vh 0vh;
 }
 .cPanelContainer__title__prop {
   font-size: 40px;
@@ -675,6 +676,10 @@ h2 {
   align-items: center;
   flex-wrap: wrap;
   gap: 2vh;
+}
+.cPanelContainer__siteConfiguration__form__gridPhone__checkboxLabel {
+  display: flex;
+  gap: 1vh;
 }
 .cPanelContainer__siteConfiguration__form__gridPhone__label {
   width: 500px;
@@ -882,6 +887,7 @@ h2 {
   font-size: 30px;
   text-align: center;
   padding-left: 2vh;
+  font-weight: bold;
 }
 .cPanelContainer__existingCategories__loadingProps {
   font-size: 20px;
@@ -893,7 +899,7 @@ h2 {
   font-size: 16px;
 }
 .cPanelContainer__existingCategories__itemCategory {
-  width: 100%;
+  width: 80%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1vh;
@@ -932,33 +938,33 @@ h2 {
   padding-top: 2vh;
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  gap: 2vh;
 }
 .cPanelContainer__newCategoryForm__title {
-  font-size: 20px;
+  font-size: 30px;
+  font-weight: bold;
   padding-left: 2vh;
 }
 .cPanelContainer__newCategoryForm__form {
   width: 30%;
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  gap: 2vh;
   padding-left: 2vh;
 }
 .cPanelContainer__newCategoryForm__form__input {
   width: 80%;
-  height: 20px;
-  border-radius: 1vh;
-  font-size: 20px;
-  padding: 1vh;
+  height: 25px;
+  border-radius: 0.5vh;
+  font-size: 16px;
   color: black;
   border: 0.3vh solid black;
 }
 .cPanelContainer__newCategoryForm__form__input::-moz-placeholder {
-  font-size: 18px;
+  font-size: 16px;
 }
 .cPanelContainer__newCategoryForm__form__input::placeholder {
-  font-size: 18px;
+  font-size: 16px;
 }
 .cPanelContainer__newCategoryForm__form__btn {
   width: 40%;
@@ -991,6 +997,7 @@ h2 {
   text-align: center;
   padding-left: 2vh;
   font-size: 30px;
+  font-weight: bold;
 }
 .cPanelContainer__existingSellerAddresses__withOutSellerAddressesLabel {
   padding-left: 2vh;
@@ -1005,10 +1012,12 @@ h2 {
   flex-direction: column;
 }
 .cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress {
+  width: 80%;
   background-color: #b0b7c2;
   display: grid;
   grid-template-columns: 5fr 1fr;
   padding: 1vh;
+  align-self: center;
   border-radius: 1vh;
 }
 .cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress__address {
@@ -1017,6 +1026,7 @@ h2 {
   align-self: center;
 }
 .cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress__btn {
+  width: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1038,24 +1048,25 @@ h2 {
   padding: 2vh 0vh 0vh 2vh;
 }
 .cPanelContainer__createNewSellerAddress__title {
-  font-size: 20px;
+  font-size: 30px;
+  padding-bottom: 1vh;
+  font-weight: bold;
 }
 .cPanelContainer__createNewSellerAddress__input {
   width: 35%;
-  height: 20px;
-  border-radius: 1vh;
-  font-size: 20px;
-  padding: 1vh;
+  height: 25px;
+  font-size: 16px;
+  border-radius: 0.5vh;
   color: black;
   border: 0.3vh solid black;
   text-align: center;
 }
 .cPanelContainer__createNewSellerAddress__input::-moz-placeholder {
-  font-size: 18px;
+  font-size: 16px;
   text-align: center;
 }
 .cPanelContainer__createNewSellerAddress__input::placeholder {
-  font-size: 18px;
+  font-size: 16px;
   text-align: center;
 }
 .cPanelContainer__createNewSellerAddress__label {
@@ -1092,6 +1103,7 @@ h2 {
 .cPanelContainer__existingCoupons__title {
   font-size: 30px;
   text-align: center;
+  font-weight: bold;
   padding-left: 2vh;
 }
 .cPanelContainer__existingCoupons__withOutCouponsLabel {
@@ -1099,7 +1111,7 @@ h2 {
   font-size: 18px;
 }
 .cPanelContainer__existingCoupons__itemCoupons {
-  width: 100%;
+  width: 80%;
   display: flex;
   align-self: center;
   flex-direction: column;
@@ -1168,24 +1180,25 @@ h2 {
   padding: 2vh 0vh 0vh 2vh;
 }
 .cPanelContainer__createNewCoupons__title {
-  font-size: 20px;
+  font-size: 30px;
+  padding-bottom: 1vh;
+  font-weight: bold;
 }
 .cPanelContainer__createNewCoupons__input {
   width: 20%;
-  height: 20px;
-  border-radius: 1vh;
-  font-size: 20px;
-  padding: 1vh;
+  height: 25px;
+  border-radius: 0.5vh;
+  font-size: 16px;
   color: black;
   border: 0.3vh solid black;
   text-align: center;
 }
 .cPanelContainer__createNewCoupons__input::-moz-placeholder {
-  font-size: 18px;
+  font-size: 16px;
   text-align: center;
 }
 .cPanelContainer__createNewCoupons__input::placeholder {
-  font-size: 18px;
+  font-size: 16px;
   text-align: center;
 }
 .cPanelContainer__createNewCoupons__label {
@@ -1200,10 +1213,161 @@ h2 {
   border-radius: 0.5vh;
   font-size: 14px;
   cursor: pointer;
+  margin-top: 1vh;
   background-color: var(--primary-color);
   color: var(--primary-text-color);
 }
 .cPanelContainer__createNewCoupons__btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--secondary-text-color);
+}
+.cPanelContainer__adminsList {
+  background-color: white;
+  width: 95%;
+  padding: 4vh 2vh;
+  border-radius: 1vh;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  gap: 1vh;
+  margin-bottom: 1vh;
+  margin-top: 1vh;
+}
+.cPanelContainer__adminsList__title {
+  text-align: center;
+  font-size: 30px;
+  padding: 2vh 0vh;
+  font-weight: bold;
+}
+.cPanelContainer__adminsList__item {
+  background-color: rgba(183, 183, 183, 0.85);
+  width: 80%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  align-self: center;
+  padding: 1vh 2vh;
+  border-radius: 1vh;
+}
+.cPanelContainer__adminsList__item__input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cPanelContainer__adminsList__item__input__prop {
+  width: 90%;
+  height: 30px;
+  text-align: center;
+}
+.cPanelContainer__adminsList__item__btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1vh;
+}
+.cPanelContainer__adminsList__item__btns__btn {
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  padding: 0.5vh 2vh;
+  border-radius: 0.5vh;
+  cursor: pointer;
+}
+.cPanelContainer__adminsList__item__btns__btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--secondary-text-color);
+}
+.cPanelContainer__userRegisterContainer {
+  background-color: white;
+  width: 95%;
+  padding: 4vh 2vh;
+  border-radius: 1vh;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  gap: 1vh;
+  margin-bottom: 6vh;
+  margin-top: 1vh;
+}
+.cPanelContainer__userRegisterContainer__title {
+  display: flex;
+  padding: 2vh;
+}
+.cPanelContainer__userRegisterContainer__title__prop {
+  font-size: 30px;
+  font-weight: bold;
+}
+.cPanelContainer__userRegisterContainer__form {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  padding-left: 2vh;
+}
+.cPanelContainer__userRegisterContainer__form__input {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+}
+.cPanelContainer__userRegisterContainer__form__input__prop {
+  background-color: white;
+  width: 100%;
+  height: 25px;
+  text-align: center;
+  border-radius: 0.5vh;
+  font-size: 16px;
+  color: black;
+  border: 0.3vh solid black;
+}
+.cPanelContainer__userRegisterContainer__form__input__label {
+  font-size: 18px;
+}
+.cPanelContainer__userRegisterContainer__form__select {
+  width: 100%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+.cPanelContainer__userRegisterContainer__form__select__selectContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cPanelContainer__userRegisterContainer__form__select__selectContainer__prop {
+  background-color: white;
+  width: 50%;
+  height: 25px;
+  text-align: center;
+  border-radius: 0.5vh;
+  font-size: 16px;
+  color: black;
+  border: 0.3vh solid black;
+}
+.cPanelContainer__userRegisterContainer__form__select__label {
+  font-size: 18px;
+}
+.cPanelContainer__userRegisterContainer__form__btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2vh;
+  flex-direction: column;
+  gap: 1vh;
+}
+.cPanelContainer__userRegisterContainer__form__btn__prop {
+  width: 60%;
+  padding: 1vh 0vh;
+  font-size: 16px;
+  border-radius: 0.5vh;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  border: 0.3vh solid black;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+}
+.cPanelContainer__userRegisterContainer__form__btn__prop:hover {
   background-color: var(--secondary-color);
   color: var(--secondary-text-color);
 }
@@ -3210,6 +3374,7 @@ h2 {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 999999;
 }
 .createProductModalContainer__createProductModal {
   background-color: whitesmoke;

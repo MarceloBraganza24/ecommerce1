@@ -433,6 +433,7 @@ const Contact = () => {
             </div>
 
             <Footer
+            isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
             phoneNumbers={storeSettings.phoneNumbers}

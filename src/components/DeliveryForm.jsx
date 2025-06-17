@@ -8,7 +8,8 @@ import Spinner from './Spinner';
 
 const DeliveryForm = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const [user, setUser] = useState('');
+    const [user, setUser] = useState(undefined);
+    const isLoadingAuth = user === undefined;
     const [loadingDeleteId, setLoadingDeleteId] = useState(null);
     const [loadingSaveDeliveryForm, setLoadingSaveDeliveryForm] = useState(false);
     const [deliveryForms, setDeliveryForms] = useState([]);
@@ -69,17 +70,19 @@ const DeliveryForm = () => {
                 locality: user.selected_addresses.locality
             })
         } else {
-            setSelectedAddress(user.selected_addresses); // Usa la dirección guardada
+            setSelectedAddress(user?.selected_addresses); // Usa la dirección guardada
         }
 
 
     }, [user, deliveryForms]);
 
     useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
+        if (user?.isLoggedIn) {
+            setShowLogOutContainer(true);
+        } else {
+            setShowLogOutContainer(false);
         }
-    }, [user.isLoggedIn]);
+    }, [user]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -416,6 +419,7 @@ const DeliveryForm = () => {
             const data = await response.json();
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
+                setUser(null)
             } else {
                 const user = data.data
                 if(user) {
@@ -571,15 +575,18 @@ const DeliveryForm = () => {
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
-                isLoggedIn={user.isLoggedIn}
-                role={user.role}
-                first_name={user.first_name}
+                isLoadingAuth={isLoadingAuth}
+                user={user}
+                isLoggedIn={user?.isLoggedIn || false}
+                role={user?.role || null}
+                first_name={user?.first_name || ''}
                 categories={categories}
                 userCart={userCart}
                 showLogOutContainer={showLogOutContainer}
                 hexToRgba={hexToRgba}
                 logo_store={storeSettings?.siteImages?.logoStore || ""}
                 primaryColor={storeSettings?.primaryColor || ""}
+                storeName={storeSettings?.storeName || ""}
                 cartIcon={cartIcon}
                 />
             </div>

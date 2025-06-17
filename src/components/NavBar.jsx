@@ -21,19 +21,6 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
     const [showHMenuOptions, setShowHMenuOptions] = useState(false);
 
-    /* useEffect(() => {
-        if (location.pathname === '/') {
-            setShowNavbar(true);
-            setForcedShow(true);
-
-            const timeout = setTimeout(() => {
-                setForcedShow(false);
-            }, 1000); // después de 1s volvés al comportamiento normal
-
-            return () => clearTimeout(timeout);
-        }
-    }, [location.pathname]); */
-
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
@@ -57,35 +44,6 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY, forcedShow]);
-
-    /* const handleLogoClick = () => {
-        if (location.pathname === '/') {
-            // Si ya estás en el home, hacé scroll al top y mostrás el navbar
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setShowNavbar(true);
-            setForcedShow(true);
-            setTimeout(() => {
-                setForcedShow(false);
-            }, 1000);
-        } else {
-            // Navegás al home
-            navigate('/');
-        }
-    }; */
-    /* const handleLogoClick = (e) => {
-        e.preventDefault(); // Evita comportamiento default del <Link>
-
-        if (location.pathname === '/') {
-            // Si estás en el home, scrolleás al top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setShowNavbar(true);
-            setForcedShow(true);
-            setTimeout(() => setForcedShow(false), 1000);
-        } else {
-            // Si estás en otra página, navegás al home SIN hash
-            navigate('/');
-        }
-    }; */
 
     const handleTabClick = () => {
         setShowNavbar(true);
@@ -294,11 +252,11 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
                                 </>
                             :
                                 <>
-                                    <div className='header__gridUp__links__linksNoLogin'>
-                                        <Link to='/logIn' className='header__gridUp__links__linksNoLogin__itemBorder'>
-                                            LOG IN
+                                    <div className='header__gridUp__linksNoLogin'>
+                                        <Link to='/logIn' className='header__gridUp__linksNoLogin__itemBorder'>
+                                            INICIAR SESIÓN
                                         </Link>
-                                        <Link to='/signIn' className='header__gridUp__links__linksNoLogin__item'>
+                                        <Link to='/signIn' className='header__gridUp__linksNoLogin__item'>
                                             REGISTRARSE
                                         </Link>
                                     </div>
