@@ -7,12 +7,14 @@ import Footer from './Footer';
 import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import SmartLink from './SmartLink';
 
 const Cart = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [user, setUser] = useState(undefined);
+    const navigate = useNavigate();
     const isLoadingAuth = user === undefined;
     const [userCart, setUserCart] = useState({});
     const [categories, setCategories] = useState([]);
@@ -287,6 +289,7 @@ const Cart = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 setIsLoadingProducts(false)
+                navigate('/')
                 setUser(null)
             } else {
                 const user = data.data
@@ -485,9 +488,9 @@ const Cart = () => {
                             <div className='noProductsContainer__phrase__prop'>No hay productos en el carrito</div>
                         </div>
                         <div className='noProductsContainer__link'>
-                            <Link to={"/#catalog"} className='noProductsContainer__link__prop'>
+                            <SmartLink to={"/"} className='noProductsContainer__link__prop'>
                                 ¡Ir al Catálogo!  
-                            </Link>
+                            </SmartLink>
                         </div>
 
                     </div>

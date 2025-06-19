@@ -85,7 +85,6 @@ h2 {
     flex-direction: column;
     z-index: 999;
     padding: 1vh 0vh;
-    //box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
     top: 0;
     left: 0;
     right: 0;
@@ -101,7 +100,6 @@ h2 {
     &__show {
         transform: translateY(0);
         opacity: 1;
-        //box-shadow: 0 8px 24px rgba(255, 255, 255, 0.4);
     }
     &__gridUp {
         width: 85%;
@@ -332,7 +330,7 @@ h2 {
     left: 130%;
     transform: translateX(-50%);
     margin-top: 0;
-    width: 50vw; // o un valor fijo como 80vw si querés limitarlo
+    width: 55vw; // o un valor fijo como 80vw si querés limitarlo
     //width: auto; // o un valor fijo como 80vw si querés limitarlo
     background-color: var(--primary-color);
     padding: 3vh 2vh;
@@ -343,7 +341,7 @@ h2 {
     border-bottom-left-radius: 1vh;
     border-bottom-right-radius: 1vh;
     &__grid {
-        width: 60%;
+        width: 100%;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         align-self: center;
@@ -1194,13 +1192,13 @@ h2 {
                 width: 100%;
                 align-items: center;
                 display: grid;
-                grid-template-columns: 1fr 3fr;
+                grid-template-columns: 1fr 2fr;
                 &__selectContainer {
                     width: 100%;
                     @include disFC();
                     &__prop {
                         background-color: white;
-                        width: 50%;
+                        width: 70%;
                         height: 25px;
                         text-align: center;
                         border-radius: 0.5vh;
@@ -1237,28 +1235,15 @@ h2 {
 .homeContainer {
     background-color: black;
     background-size: cover; 
-    // width: 100%;
-    // height: 100vh;
     @include disFC();
     padding: 25vh 0vh 5vh 0vh;
     &__img {
         @include disFC();
-        //background-color: saddlebrown;
         &__prop {
             width: 80%;
         }
     }
 }
-/* .homeContainer {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 100%;
-  min-height: 100vh; // que al menos ocupe toda la altura de la pantalla
-  padding-top: 50vh; // deja lugar para el header fijo
-  box-sizing: border-box; // asegura que el padding se sume correctamente
-} */
-
 .rc-slider-track {
     background-color: var(--primary-color);
     height: 6px;
@@ -1287,8 +1272,8 @@ h2 {
         &__categoriesListContainer {
             &__categoriesList {
                 background-color: whitesmoke;
-                padding: 2vh 20vh 2vh 2vh;
-                margin: 10vh 0vh 0vh 20vh;
+                padding: 2vh 5vh 2vh 2vh;
+                margin: 10vh 0vh 0vh 15vh;
                 display: flex;
                 flex-direction: column;
                 border-radius: 1vh;
@@ -1329,7 +1314,7 @@ h2 {
         }
         &__catalog {
             background-color: whitesmoke;
-            width: 80%;
+            width: 75%;
             padding: 4vh 4vh;
             border-radius: 1vh;
             &__categorieContainer {
@@ -2123,7 +2108,7 @@ h2 {
         @include disFC();
         padding-bottom: 2vh;
         &__input {
-            width: 50%;
+            width: 35%;
             height: 35px;
             border-radius: 0.5vh;
             text-align: center;
@@ -3266,7 +3251,7 @@ h2 {
             padding: 5vh 0vh;
             position: relative;
             &__categories {
-                width: 80%;
+                width: 95%;
                 background-color: #c8c7c7;
                 display: flex;
                 flex-direction: column;

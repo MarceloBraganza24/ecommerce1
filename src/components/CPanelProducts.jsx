@@ -261,7 +261,7 @@ const CPanelProducts = () => {
 
     useEffect(() => {
         fetchCurrentUser();
-        fetchProducts();
+        fetchProducts(1, inputFilteredProducts, selectedField);
         fetchStoreSettings();
         fetchCategories();
     }, []);
@@ -347,7 +347,7 @@ const CPanelProducts = () => {
             });
             setPercentage('');
             setSelectedCategories([]);
-            fetchProducts()
+            fetchProducts(1, inputFilteredProducts, selectedField)
         } else {
             toast('Ha ocurrido un error al aplicar los cambios, intente nuevamente!', {
                 position: "top-right",
@@ -406,7 +406,7 @@ const CPanelProducts = () => {
                 });
                 setPercentage('');
                 setSelectedCategories([]);
-                fetchProducts()
+                fetchProducts(1, inputFilteredProducts, selectedField)
             } else {
                 toast('Error al restaurar los precios.', {
                     position: "top-right",

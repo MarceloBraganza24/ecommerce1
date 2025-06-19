@@ -369,7 +369,7 @@ const Tickets = () => {
             const data = await res.json();
             if (res.ok) {
                 setSelectedTickets([]);
-                fetchTickets(1,"", "")
+                fetchTickets(1,inputFilteredTickets, selectedField)
                 toast('Tickets eliminados correctamente', {
                     position: "top-right",
                     autoClose: 2000,
@@ -593,7 +593,7 @@ const Tickets = () => {
                                 <div className='cPanelSalesContainer__btnsPagesContainer'>
                                     <button className='cPanelSalesContainer__btnsPagesContainer__btn'
                                         disabled={!pageInfo.hasPrevPage}
-                                        onClick={() => fetchTickets(pageInfo.prevPage, "", user.email)}
+                                        onClick={() => fetchTickets(pageInfo.prevPage, inputFilteredTickets, selectedField)}
                                         >
                                         Anterior
                                     </button>
@@ -602,7 +602,7 @@ const Tickets = () => {
 
                                     <button className='cPanelSalesContainer__btnsPagesContainer__btn'
                                         disabled={!pageInfo.hasNextPage}
-                                        onClick={() => fetchTickets(pageInfo.nextPage, "", user.email)}
+                                        onClick={() => fetchTickets(pageInfo.nextPage, inputFilteredTickets, selectedField)}
                                         >
                                         Siguiente
                                     </button>

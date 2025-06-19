@@ -363,6 +363,21 @@ const Home = () => {
     };
 
     useEffect(() => {
+        const scrollToCatalog = sessionStorage.getItem('scrollToCatalog');
+        if (scrollToCatalog === 'true') {
+            sessionStorage.removeItem('scrollToCatalog');
+            
+            const interval = setInterval(() => {
+                const el = document.querySelector('.catalogContainer');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    clearInterval(interval);
+                }
+            }, 50);
+
+            setTimeout(() => clearInterval(interval), 1000); // Dejá de intentar después de 1s
+        }
+
         fetchCategories();
         fetchProductsByCategory();
         fetchCurrentUser();
@@ -508,7 +523,7 @@ const Home = () => {
                 </div>
             }
 
-            <div className='catalogContainer' id='catalog'>
+            <div className='catalogContainer' id="catalogContainer">
 
                 <div className="catalogContainer__titleContainer">
                     <div className='catalogContainer__titleContainer__title'>

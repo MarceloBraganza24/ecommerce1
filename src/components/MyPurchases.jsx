@@ -56,7 +56,7 @@ const MyPurchases = () => {
         }
     }, [storeSettings]);
 
-    function filtrarPorTitle(valorIngresado) {
+    /* function filtrarPorTitle(valorIngresado) {
         const valorMinusculas = valorIngresado.toLowerCase();
 
         const objetosFiltrados = tickets.filter(ticket => {
@@ -69,9 +69,17 @@ const MyPurchases = () => {
         return objetosFiltrados;
     }
 
-    const objetosFiltrados = filtrarPorTitle(inputFilteredPurchases);
+    const objetosFiltrados = filtrarPorTitle(inputFilteredPurchases); */
 
-    const ticketsOrdenados = [...objetosFiltrados].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
+    useEffect(() => {
+        const delay = setTimeout(() => {
+            fetchTickets(1, inputFilteredPurchases, user.email);
+        }, 300); // debounce
+
+        return () => clearTimeout(delay);
+    }, [inputFilteredPurchases]);
+
+    const ticketsOrdenados = [...tickets].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
 
     const ticketsByVisibilityTrue = ticketsOrdenados.filter(ticket => ticket.visibility.user == true)
 
@@ -189,7 +197,7 @@ const MyPurchases = () => {
 
     useEffect(() => {
         if (user?.email) {
-            fetchTickets(1, "", user.email);
+            fetchTickets(1, inputFilteredPurchases, user.email);
         }
     }, [user]);
 
@@ -313,7 +321,7 @@ const MyPurchases = () => {
                 </div>
 
                 <div className='myPurchasesContainer__inputSearchPurchase'>
-                    <input type="text" onChange={handleInputFilteredPurchases} value={inputFilteredPurchases} placeholder='Buscar por título' className='myPurchasesContainer__inputSearchPurchase__input' name="" id="" />
+                    <input type="text" onChange={handleInputFilteredPurchases} value={inputFilteredPurchases} placeholder='Buscar por producto' className='myPurchasesContainer__inputSearchPurchase__input' name="" id="" />
                 </div>
 
                 {
@@ -400,7 +408,7 @@ const MyPurchases = () => {
                                 <div className='myPurchasesContainer__btnsPagesContainer'>
                                     <button className='myPurchasesContainer__btnsPagesContainer__btn'
                                         disabled={!pageInfo.hasPrevPage}
-                                        onClick={() => fetchTickets(pageInfo.prevPage, "", user.email)}
+                                        onClick={() => fetchTickets(pageInfo.prevPage, inputFilteredPurchases, user.email)}
                                         >
                                         Anterior
                                     </button>
@@ -409,7 +417,7 @@ const MyPurchases = () => {
 
                                     <button className='myPurchasesContainer__btnsPagesContainer__btn'
                                         disabled={!pageInfo.hasNextPage}
-                                        onClick={() => fetchTickets(pageInfo.nextPage, "", user.email)}
+                                        onClick={() => fetchTickets(pageInfo.nextPage, inputFilteredPurchases, user.email)}
                                         >
                                         Siguiente
                                     </button>

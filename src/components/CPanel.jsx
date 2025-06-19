@@ -989,7 +989,6 @@ const CPanel = () => {
     );
 
     useUnsavedChangesPrompt(shouldBlockNavigation);
-    //useBlockNavigation(shouldBlockNavigation);
 
     useEffect(() => {
         if (configurationSiteformData?.primaryColor) {
@@ -1914,7 +1913,7 @@ const CPanel = () => {
                                     <div className="cPanelContainer__siteConfiguration__form__socialNetworks__grid__inputContainer">
                                         <input
                                         type="text"
-                                        placeholder="(nombre usuario, n° telefono)"
+                                        placeholder="(ej: nombre usuario)"
                                         value={network.name}
                                         onChange={(e) => handleSocialChange(index, 'name', e.target.value)}
                                         className="cPanelContainer__siteConfiguration__form__socialNetworks__grid__inputContainer__input"
@@ -1933,13 +1932,16 @@ const CPanel = () => {
                                     
                                     <div className='cPanelContainer__siteConfiguration__form__socialNetworks__grid__imgContainer'>
                                         {/* Vista previa de la imagen si ya se subió */}
-                                        {network.logo && (
-                                        <img
-                                            src={typeof network.logo === 'string' ? network.logo : URL.createObjectURL(network.logo)}
-                                            alt="Logo de red social"
-                                            className='cPanelContainer__siteConfiguration__form__socialNetworks__grid__imgContainer__img'
-                                        />
-                                        )}
+                                        {network.logo ? (
+                                            <img
+                                                src={typeof network.logo === 'string' ? network.logo : URL.createObjectURL(network.logo)}
+                                                alt="Logo de red social"
+                                                className='cPanelContainer__siteConfiguration__form__socialNetworks__grid__imgContainer__img'
+                                            />
+                                        )
+                                        :
+                                            <div>Logo</div>
+                                        }
                                         <div className="cPanelContainer__siteConfiguration__form__socialNetworks__grid__imgContainer__inputContainer">
                                             <input
                                             type="file"

@@ -1,17 +1,27 @@
 import React from 'react'
-import { Link,useNavigate } from 'react-router-dom'
+import { Link,useLocation, useNavigate } from 'react-router-dom'
 import SmartLink from './SmartLink';
 
-const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,isLoadingSellerAddresses,logo_store,aboutText,phoneNumbers,contactEmail}) => {
+const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,phoneNumbers,contactEmail}) => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleGoToUrl = (url) => {
         window.open(url, "_blank");
     }
 
-    /* const handleLinkGoCatalog = () => {
-        navigate("/");
-    } */
+    const handleGoToCatalog = (e) => {
+        e.preventDefault();
+        if (location.pathname === '/') {
+            const el = document.getElementById('catalogContainer');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else {
+            sessionStorage.setItem('scrollToId', 'catalogContainer');
+            navigate('/');
+        }
+    };
 
     return (
 
@@ -46,9 +56,17 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,isLoadingSellerAddres
                     <div className='footerContainer__faqContainer__faq'>
 
                         <div className='footerContainer__faqContainer__faq__title'>Enlaces</div>
-                        <SmartLink to={'/'} className='footerContainer__faqContainer__faq__links'>
+                        {/* <SmartLink to={'/'} className='footerContainer__faqContainer__faq__links'>
+                            - Catálogo
+                        </SmartLink> */}
+                        <SmartLink
+                            to="#"
+                            onClick={handleGoToCatalog}
+                            className='footerContainer__faqContainer__faq__links'
+                            >   
                             - Catálogo
                         </SmartLink>
+
                         <Link to={"/about"} className='footerContainer__faqContainer__faq__links'>
                             - Sobre nosotros
                         </Link>
@@ -61,9 +79,12 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,isLoadingSellerAddres
                                 - Carrito de compras
                             </Link>
                         }
-                        <Link to={"/logIn"} className='footerContainer__faqContainer__faq__links'>
-                            - Iniciar Sesión
-                        </Link>
+                        {
+                            !isLoggedIn &&
+                            <Link to={"/logIn"} className='footerContainer__faqContainer__faq__links'>
+                                - Iniciar Sesión
+                            </Link>
+                        }
 
                     </div>
 
@@ -74,7 +95,7 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,isLoadingSellerAddres
                     <div className='footerContainer__contactContainer__contact'>
 
                         <div className='footerContainer__contactContainer__contact__title'>
-                            <div className='footerContainer__contactContainer__contact__title__prop'>Encuentranos</div>
+                            <div className='footerContainer__contactContainer__contact__title__prop'>Encuéntranos</div>
                         </div>
 
                         <div className='footerContainer__contactContainer__contact__contactProps'>

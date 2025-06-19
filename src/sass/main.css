@@ -343,7 +343,7 @@ h2 {
   left: 130%;
   transform: translateX(-50%);
   margin-top: 0;
-  width: 50vw;
+  width: 55vw;
   background-color: var(--primary-color);
   padding: 3vh 2vh;
   z-index: 998;
@@ -355,7 +355,7 @@ h2 {
   border-bottom-right-radius: 1vh;
 }
 .categoriesContainer__grid {
-  width: 60%;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   align-self: center;
@@ -1325,7 +1325,7 @@ h2 {
   width: 100%;
   align-items: center;
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 2fr;
 }
 .cPanelContainer__userRegisterContainer__form__select__selectContainer {
   width: 100%;
@@ -1335,7 +1335,7 @@ h2 {
 }
 .cPanelContainer__userRegisterContainer__form__select__selectContainer__prop {
   background-color: white;
-  width: 50%;
+  width: 70%;
   height: 25px;
   text-align: center;
   border-radius: 0.5vh;
@@ -1389,15 +1389,6 @@ h2 {
   width: 80%;
 }
 
-/* .homeContainer {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 100%;
-  min-height: 100vh; // que al menos ocupe toda la altura de la pantalla
-  padding-top: 50vh; // deja lugar para el header fijo
-  box-sizing: border-box; // asegura que el padding se sume correctamente
-} */
 .rc-slider-track {
   background-color: var(--primary-color);
   height: 6px;
@@ -1430,8 +1421,8 @@ h2 {
 }
 .categoryContainer__grid__categoriesListContainer__categoriesList {
   background-color: whitesmoke;
-  padding: 2vh 20vh 2vh 2vh;
-  margin: 10vh 0vh 0vh 20vh;
+  padding: 2vh 5vh 2vh 2vh;
+  margin: 10vh 0vh 0vh 15vh;
   display: flex;
   flex-direction: column;
   border-radius: 1vh;
@@ -1473,7 +1464,7 @@ h2 {
 }
 .categoryContainer__grid__catalog {
   background-color: whitesmoke;
-  width: 80%;
+  width: 75%;
   padding: 4vh 4vh;
   border-radius: 1vh;
 }
@@ -2425,7 +2416,7 @@ h2 {
   padding-bottom: 2vh;
 }
 .myPurchasesContainer__inputSearchPurchase__input {
-  width: 50%;
+  width: 35%;
   height: 35px;
   border-radius: 0.5vh;
   text-align: center;
@@ -3730,7 +3721,7 @@ h2 {
   position: relative;
 }
 .catalogContainer__gridCategoriesProducts__categoriesContainer__categories {
-  width: 80%;
+  width: 95%;
   background-color: #c8c7c7;
   display: flex;
   flex-direction: column;
