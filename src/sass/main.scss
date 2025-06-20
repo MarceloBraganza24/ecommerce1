@@ -3583,7 +3583,7 @@ h2 {
     width: 100%;
     height: 80vh;
     @include disFC();
-    padding: 30vh 0vh 5vh 0vh;
+    padding: 0vh 0vh 5vh 0vh;
     &__itemDetail {
         background-color: whitesmoke;
         width: 80%;
@@ -3778,7 +3778,7 @@ h2 {
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 30vh 0vh 5vh 0vh;
+    padding: 2vh 0vh 5vh 0vh;
     gap: 2vh;
     &__loadingProducts {
         background-color: whitesmoke;
@@ -4262,6 +4262,7 @@ h2 {
     padding: 1vh 0vh;
     display: flex;
     gap: 1vh;
+    padding-top: 28vh;
     &__label {
         @include disFC();
         padding-left: 2vh;
@@ -4300,7 +4301,7 @@ h2 {
     height: auto;
     display: flex;
     justify-content: center;
-    padding: 25vh 0vh 5vh 0vh;
+    padding: 5vh 0vh 5vh 0vh;
     &__deliveryForm {
         background-color: whitesmoke;
         width: 60%;
@@ -4336,34 +4337,47 @@ h2 {
                 padding-left: 2vh;
                 font-size: 18px;
             }
-            &__itemAddress {
-                width: 80%;
-                display: flex;
-                gap: 1vh;
-                flex-direction: column;
-                &__addressContainer {
-                    background-color: #b0b7c2;
-                    display: grid;
-                    grid-template-columns: 3fr 1fr;
-                    padding: 1vh 4vh;
-                    border-radius: 1vh;
-                    cursor: pointer;
-                    &__label {
+            &__itemAddressContainer {
+                @include disFC();
+                flex-wrap: wrap;
+                gap: 2vh;
+                &__itemAddress {
+                    width: 30%;
+                    display: flex;
+                    gap: 1vh;
+                    flex-direction: column;
+                    &__addressContainer {
+                        background-color: #b0b7c2;
+                        padding: 1vh 0vh 1vh 0vh;
                         display: flex;
+                        flex-direction: column;
+                        border-radius: 1vh;
+                        gap: 1vh;
                         cursor: pointer;
-                    }
-                    &__address {
-                        font-size: 18px;
-                        align-self: center;
-                        padding-left: 2vh;
-                    }
-                    &__btn {
-                        padding: 1vh;
-                        @include disFC();
-                        border-radius: 0.5vh;
-                        font-size: 14px;
-                        cursor: pointer;
-                        @include btn();
+                        &__radio {
+                            @include disFC();
+                            cursor: pointer;
+                        }
+                        &__label {
+                            display: flex;
+                            cursor: pointer;
+                        }
+                        &__address {
+                            font-size: 18px;
+                            align-self: center;
+                            padding-left: 2vh;
+                        }
+                        &__btn {
+                            //padding: 1vh;
+                            @include disFC();
+                            &__prop {
+                                padding: 0.5vh 1vh;
+                                @include btn();
+                                border-radius: 0.5vh;
+                                cursor: pointer;
+                                font-size: 14px;
+                            }
+                        }
                     }
                 }
             }

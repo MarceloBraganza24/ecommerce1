@@ -30,6 +30,10 @@ const MyPurchases = () => {
     });   
 
     useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [pageInfo.page]);
+
+    useEffect(() => {
         if (user?.isLoggedIn) {
             setShowLogOutContainer(true);
         } else {
@@ -55,21 +59,6 @@ const MyPurchases = () => {
             setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
         }
     }, [storeSettings]);
-
-    /* function filtrarPorTitle(valorIngresado) {
-        const valorMinusculas = valorIngresado.toLowerCase();
-
-        const objetosFiltrados = tickets.filter(ticket => {
-            return ticket.items.some(item => {
-                const tituloProducto = item.product?.title || item.snapshot?.title || '';
-                return tituloProducto.toLowerCase().includes(valorMinusculas);
-            });
-        });
-
-        return objetosFiltrados;
-    }
-
-    const objetosFiltrados = filtrarPorTitle(inputFilteredPurchases); */
 
     useEffect(() => {
         const delay = setTimeout(() => {

@@ -1,12 +1,14 @@
 import React, { useState,useEffect,useRef,useContext  } from 'react';
 import {GoogleMap, useJsApiLoader, StandaloneSearchBox} from '@react-google-maps/api'
 import NavBar from './NavBar'
+import { useNavigate } from 'react-router-dom'
 import DeliveryAddress from './DeliveryAddress'
 import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 
 const DeliveryForm = () => {
+    const navigate = useNavigate();
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [user, setUser] = useState(undefined);
     const isLoadingAuth = user === undefined;
@@ -14,6 +16,7 @@ const DeliveryForm = () => {
     const [loadingSaveDeliveryForm, setLoadingSaveDeliveryForm] = useState(false);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [deliveryFormsById, setDeliveryFormsById] = useState('');
+    //console.log(deliveryFormsById)
     const [isLoading, setIsLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const [isLoadingDeliveryForm, setIsLoadingDeliveryForm] = useState(true);
@@ -307,7 +310,7 @@ const DeliveryForm = () => {
                 body: JSON.stringify(formattedData),
             });
             const data = await response.json();
-            console.log(data)
+            //console.log(data)
             if (response.ok) {
                 toast('Formulario cargado con éxito', {
                     position: "top-right",
@@ -420,6 +423,7 @@ const DeliveryForm = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 setUser(null)
+                navigate('/')
             } else {
                 const user = data.data
                 if(user) {
@@ -621,39 +625,97 @@ const DeliveryForm = () => {
                             ) 
                         :
                             (
-                            <ul className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddress">
+                            <div className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer'>
+
                                 {deliveryFormsById.map((item) => (
-                                    <li 
-                                        key={item._id} 
-                                        className={`deliveryFormContainer__deliveryForm__existingAddresses__itemAddress__addressContainer 
-                                            ${selectedAddress && selectedAddress._id === item._id ? "selected" : ""}`}
-                                    >
-                                        <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddress__addressContainer__label">
-                                            <input
-                                                type="radio"
-                                                name="selectedAddress"
-                                                value={item._id}
-                                                checked={selectedAddress && selectedAddress._id === item._id} // Comparación correcta
-                                                onChange={() => handleSelectAddress(item)} // Ejecuta petición en cada selección
-                                                className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddress__addressContainer__radio"
-                                            />
-                                            <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddress__addressContainer__address">
-                                                {corregirCapitalizacion(item.street)} {corregirCapitalizacion(item.street_number)}, {corregirCapitalizacion(item.locality)}
-                                            </span>
-                                        </label>
-                                        <button
-                                            className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddress__addressContainer__btn"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDeleteAddress(item._id);
-                                            }}
-                                            disabled={loadingDeleteId === item._id}
-                                        >
-                                            {loadingDeleteId === item._id ? <Spinner/> : "Eliminar"}
-                                        </button>
-                                    </li>
+                                    <ul className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress">
+                                            <>
+                                                <li 
+                                                    key={item._id} 
+                                                    className={`deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer 
+                                                        ${selectedAddress && selectedAddress._id === item._id ? "selected" : ""}`}
+                                                >
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__radio">
+                                                        <input
+                                                            type="radio"
+                                                            name="selectedAddress"
+                                                            value={item._id}
+                                                            checked={selectedAddress && selectedAddress._id === item._id} // Comparación correcta
+                                                            onChange={() => handleSelectAddress(item)} // Ejecuta petición en cada selección
+                                                        />
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {corregirCapitalizacion(item.street)} {corregirCapitalizacion(item.street_number)}
+                                                        </span>
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {corregirCapitalizacion(item.locality)}
+                                                        </span>
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {corregirCapitalizacion(item.postal_code)}
+                                                        </span>
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {corregirCapitalizacion(item.province)}
+                                                        </span>
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {corregirCapitalizacion(item.country)}
+                                                        </span>
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {corregirCapitalizacion(item.name)}
+                                                        </span>
+                                                    </label>
+                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                            - {item.phone}
+                                                        </span>
+                                                    </label>
+                                                    {
+                                                        item.indications && 
+                                                        <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                            <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                                - {corregirCapitalizacion(item.indications)}
+                                                            </span>
+                                                        </label>
+
+                                                    }
+                                                    {
+                                                        item.dpto && 
+                                                        <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
+                                                            <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
+                                                                - {corregirCapitalizacion(item.dpto)}
+                                                            </span>
+                                                        </label>
+
+                                                    }
+                                                    <div className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__btn'>
+                                                        <button
+                                                            className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__btn__prop"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteAddress(item._id);
+                                                            }}
+                                                            disabled={loadingDeleteId === item._id}
+                                                            >
+                                                            {loadingDeleteId === item._id ? <Spinner/> : "Eliminar"}
+                                                        </button>   
+                                                    </div>
+                                                </li>
+                                            </>
+                                            
+                                    </ul>
                                 ))}
-                            </ul>
+
+                            </div>
 
 
                         )}
@@ -728,7 +790,7 @@ const DeliveryForm = () => {
                         <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput'>
                             <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__label'>Nombre completo:</div>
                             <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__inputContainer'>
-                                <input value={formData.name} onChange={handleInputChange} className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__inputContainer__input' name='name' type="text" placeholder='Nombre' />
+                                <input value={formData.name} onChange={handleInputChange} className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__inputContainer__input' name='name' type="text" placeholder='Nombre completo' />
                             </div>
                         </div>
                         <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput'>

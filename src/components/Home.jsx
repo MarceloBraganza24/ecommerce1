@@ -4,7 +4,6 @@ import ItemProduct from './ItemProduct';
 import { Link, useLocation,useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import { toast } from 'react-toastify';
-import { useScrollToOnMount } from '../hooks/useScrollToOnMount';
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -15,8 +14,8 @@ import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 
 const Home = () => {
-    //const [isScrollForced, setIsScrollForced] = useState(false);
-    //const catalogRef = useRef(null);
+    const firstRender = useRef(true);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
@@ -29,7 +28,6 @@ const Home = () => {
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [isLoadingProductsByCategory, setIsLoadingProductsByCategory] = useState(true);
     const [products, setProducts] = useState([]);
-    //console.log(products)
     const [productsByCategory, setProductsByCategory] = useState([]);
     const [totalProducts, setTotalProducts] = useState("");
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -51,52 +49,6 @@ const Home = () => {
     const location = useLocation();
 
     /* useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            fetchProducts(1, inputFilteredProducts, selectedField);
-        }, 500); // Espera 500ms para evitar llamadas excesivas
-
-        return () => clearTimeout(delayDebounce);
-    }, [inputFilteredProducts, selectedField]); */
-
-    /* useEffect(() => {
-        if (location.hash) {
-            setShouldScrollToHash(true);
-        } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, [location]); */
-
-    /* useEffect(() => {
-        if (shouldScrollToHash) {
-        const id = location.hash.replace('#', '');
-        const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
-            setShouldScrollToHash(false);
-        }
-        }
-    }, [shouldScrollToHash, location.hash]); */
-    /* useEffect(() => {
-        if (shouldScrollToHash) {
-            const id = location.hash.replace('#', '');
-            let attempts = 0;
-
-            const tryScroll = () => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                    setShouldScrollToHash(false);
-                } else if (attempts < 10) {
-                    attempts++;
-                    setTimeout(tryScroll, 100); // Intentar nuevamente
-                }
-            };
-
-            tryScroll();
-        }
-    }, [shouldScrollToHash, location.hash]); */
-
-    useEffect(() => {
         if (location.hash) {
             const scrollToElement = () => {
                 const element = document.querySelector(location.hash);
@@ -121,9 +73,29 @@ const Home = () => {
                 clearTimeout(timeout);
             };
         }
-    }, [location]);
+    }, [location]); */
 
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
 
+        // Ocultar el navbar durante scroll forzado
+        setIsScrollForced(true);
+
+        const el = document.getElementById('catalogContainer');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Volver al comportamiento normal luego de 500ms
+        const timeout = setTimeout(() => {
+            setIsScrollForced(false);
+        }, 1500);
+
+        return () => clearTimeout(timeout);
+    }, [pageInfo.page]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -136,14 +108,6 @@ const Home = () => {
 
         return brightness > 128; // <-- usar el mismo umbral que en getContrastingTextColor
     }
-
-    /* useEffect(() => {
-        if (!location.hash && catalogRef.current) {
-            setIsScrollForced(true);
-            catalogRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            setTimeout(() => setIsScrollForced(false), 800);
-        }
-    }, [pageInfo.page, location.hash]); */
 
     useEffect(() => {
         if (storeSettings?.primaryColor) {
@@ -363,7 +327,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-        const scrollToCatalog = sessionStorage.getItem('scrollToCatalog');
+        /* const scrollToCatalog = sessionStorage.getItem('scrollToCatalog');
         if (scrollToCatalog === 'true') {
             sessionStorage.removeItem('scrollToCatalog');
             
@@ -376,7 +340,7 @@ const Home = () => {
             }, 50);
 
             setTimeout(() => clearInterval(interval), 1000); // Dejá de intentar después de 1s
-        }
+        } */
 
         fetchCategories();
         fetchProductsByCategory();
@@ -403,8 +367,6 @@ const Home = () => {
         }
     }, [user]);
 
-    useScrollToOnMount();
-    
     const scrollToTop = () => {
         window.scrollTo({
           top: 0,
@@ -464,9 +426,6 @@ const Home = () => {
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 
-    
-    
-
     return (
 
         <>
@@ -478,8 +437,8 @@ const Home = () => {
 
             <NavBar
             products={products}
+            isScrollForced={isScrollForced}
             isLoading={isLoading}
-            //isScrollForced={isScrollForced}
             isLoadingAuth={isLoadingAuth}
             user={user}
             isLoggedIn={user?.isLoggedIn || false}

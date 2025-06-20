@@ -25,17 +25,18 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
 
+            if (isScrollForced) {
+                // 👇 Nunca mostrar navbar si está forzado oculto
+                if (showNavbar) setShowNavbar(false);
+                return;
+            }
+
             if (forcedShow) return;
 
-            if (isScrollForced) {
-                // ⚠️ Si es scroll forzado, oculta el navbar directamente
-                setShowNavbar(false);
+            if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                setShowNavbar(false); // scroll hacia abajo
             } else {
-                if (currentScrollY > lastScrollY && currentScrollY > 50) {
-                    setShowNavbar(false);
-                } else {
-                    setShowNavbar(true);
-                }
+                setShowNavbar(true); // scroll hacia arriba
             }
 
             setLastScrollY(currentScrollY);
@@ -43,7 +44,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY, forcedShow]);
+    }, [lastScrollY, forcedShow,isScrollForced]);
 
     const handleTabClick = () => {
         setShowNavbar(true);

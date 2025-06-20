@@ -1,4 +1,4 @@
-import {useEffect,useState,useContext} from 'react'
+import {useEffect,useState,useContext,useRef} from 'react'
 import ItemProduct from './ItemProduct'
 import { useParams,useNavigate, Link } from 'react-router-dom'
 import NavBar from './NavBar';
@@ -11,6 +11,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 const CategoryContainer = () => {
+    const firstRender = useRef(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -204,9 +205,9 @@ const CategoryContainer = () => {
         }
     };
 
-    /* useEffect(() => {
+    useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pageInfo.page]); */
+    }, [pageInfo.page]);
 
     const fetchDeliveryForm = async () => {
         try {
@@ -476,7 +477,7 @@ const CategoryContainer = () => {
                                 <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__label'>
                                     No se encontraron productos que coincidan con los filtros
                                 </div>
-                                {user.role === 'admin' && (
+                                {user?.role === 'admin' && (
                                     <Link
                                     to={`/cpanel/products`}
                                     className="categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__link"

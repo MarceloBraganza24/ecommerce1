@@ -3,14 +3,14 @@ import { Link,useLocation, useNavigate } from 'react-router-dom'
 import SmartLink from './SmartLink';
 
 const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,phoneNumbers,contactEmail}) => {
-    const navigate = useNavigate();
-    const location = useLocation();
+    // const navigate = useNavigate();
+    // const location = useLocation();
 
     const handleGoToUrl = (url) => {
         window.open(url, "_blank");
     }
 
-    const handleGoToCatalog = (e) => {
+    /* const handleGoToCatalog = (e) => {
         e.preventDefault();
         if (location.pathname === '/') {
             const el = document.getElementById('catalogContainer');
@@ -21,7 +21,7 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,
             sessionStorage.setItem('scrollToId', 'catalogContainer');
             navigate('/');
         }
-    };
+    }; */
 
     return (
 
@@ -56,17 +56,12 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,
                     <div className='footerContainer__faqContainer__faq'>
 
                         <div className='footerContainer__faqContainer__faq__title'>Enlaces</div>
-                        {/* <SmartLink to={'/'} className='footerContainer__faqContainer__faq__links'>
-                            - Catálogo
-                        </SmartLink> */}
                         <SmartLink
-                            to="#"
-                            onClick={handleGoToCatalog}
+                            to="/"
                             className='footerContainer__faqContainer__faq__links'
                             >   
-                            - Catálogo
+                            - Inicio
                         </SmartLink>
-
                         <Link to={"/about"} className='footerContainer__faqContainer__faq__links'>
                             - Sobre nosotros
                         </Link>
