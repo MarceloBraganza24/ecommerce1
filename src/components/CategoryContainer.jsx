@@ -380,120 +380,122 @@ const CategoryContainer = () => {
                 storeName={storeSettings?.storeName || ""}
                 />
             </div>
-            {
-                user && (user.role != 'admin') &&
-                <DeliveryAddress
-                deliveryAddressFormData={deliveryAddressFormData}
-                isLoadingDeliveryForm={isLoadingDeliveryForm}
-                />
-            }
-            <div className="categoryContainer__grid">
+            <div className='categoryContainer'>
+                {
+                    user && (user.role != 'admin') &&
+                    <DeliveryAddress
+                    deliveryAddressFormData={deliveryAddressFormData}
+                    isLoadingDeliveryForm={isLoadingDeliveryForm}
+                    />
+                }
+                <div className="categoryContainer__grid">
 
-                <div className='categoryContainer__grid__categoriesListContainer'>
-                    
-                    <div className='categoryContainer__grid__categoriesListContainer__categoriesList'>
-                        <div className='categoryContainer__grid__categoriesListContainer__categoriesList__label'>Categorías</div>
-                        {
-                            categories.map(category => (
-                                <Link className='categoryContainer__grid__categoriesListContainer__categoriesList__category' to={`/category/${category.name}`}>
-                                    - {capitalizeFirstLetter(category.name)}
-                                </Link>
-                            ))
-                        }
-                    </div>
+                    <div className='categoryContainer__grid__categoriesListContainer'>
+                        
+                        <div className='categoryContainer__grid__categoriesListContainer__categoriesList'>
+                            <div className='categoryContainer__grid__categoriesListContainer__categoriesList__label'>Categorías</div>
+                            {
+                                categories.map(category => (
+                                    <Link className='categoryContainer__grid__categoriesListContainer__categoriesList__category' to={`/category/${category.name}`}>
+                                        - {capitalizeFirstLetter(category.name)}
+                                    </Link>
+                                ))
+                            }
+                        </div>
 
-                    <div className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer'>
-                        <label>Filtrar por precio</label>
-                        <Slider
-                            range
-                            min={0}
-                            max={100000}
-                            value={[priceRange.min, priceRange.max]}
-                            onChange={([min, max]) => setPriceRange({ min, max })}
-                        />
-                        <p>Desde ${priceRange.min} hasta ${priceRange.max}</p>
-                    </div>
+                        <div className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer'>
+                            <label>Filtrar por precio</label>
+                            <Slider
+                                range
+                                min={0}
+                                max={100000}
+                                value={[priceRange.min, priceRange.max]}
+                                onChange={([min, max]) => setPriceRange({ min, max })}
+                            />
+                            <p>Desde ${priceRange.min} hasta ${priceRange.max}</p>
+                        </div>
 
-                    <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
-                        <select className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-                            <option value="asc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: menor a mayor</option>
-                            <option value="desc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: mayor a menor</option>
-                        </select>
+                        <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
+                            <select className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                                <option value="asc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: menor a mayor</option>
+                                <option value="desc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: mayor a menor</option>
+                            </select>
+                        </div>
+
                     </div>
+                                
+                    {
+                        <div className="categoryContainer__grid__catalog">
+
+                            <div className='categoryContainer__grid__catalog__categorieContainer__title'>
+                                <h2 className='categoryContainer__grid__catalog__categorieContainer__title__prop'>{category}</h2>
+                            </div>
+
+                            <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer'>
+
+                                {isLoadingProducts ? (
+                                    <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                                        Cargando productos&nbsp;&nbsp;<Spinner />
+                                    </div>
+                                ) : products.length !== 0 ? (
+                                    <>
+                                    {products.map((product) => (
+                                        <ItemProduct
+                                        key={product._id}
+                                        user_id={user?._id}
+                                        fetchCartByUserId={fetchCartByUserId}
+                                        id={product._id}
+                                        stock={product.stock}
+                                        images={product.images}
+                                        title={product.title}
+                                        description={product.description}
+                                        price={product.price}
+                                        userCart={userCart}
+                                        />
+                                    ))}
+                                    <div className='cPanelProductsContainer__btnsPagesContainer'>
+                                        <button
+                                        className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                        disabled={!pageInfo.hasPrevPage}
+                                        onClick={() => fetchProducts(pageInfo.prevPage)}
+                                        >
+                                        Anterior
+                                        </button>
+
+                                        <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
+
+                                        <button
+                                        className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                        disabled={!pageInfo.hasNextPage}
+                                        onClick={() => fetchProducts(pageInfo.nextPage)}
+                                        >
+                                        Siguiente
+                                        </button>
+                                    </div>
+                                    </>
+                                ) : (
+                                    <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet'>
+                                    <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__label'>
+                                        No se encontraron productos que coincidan con los filtros
+                                    </div>
+                                    {user?.role === 'admin' && (
+                                        <Link
+                                        to={`/cpanel/products`}
+                                        className="categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__link"
+                                        >
+                                        Agregar productos
+                                        </Link>
+                                    )}
+                                    </div>
+                                )}
+
+                            </div>
+                            
+                        </div>
+                    }
+
 
                 </div>
-                             
-                {
-                    <div className="categoryContainer__grid__catalog">
-
-                        <div className='categoryContainer__grid__catalog__categorieContainer__title'>
-                            <h2 className='categoryContainer__grid__catalog__categorieContainer__title__prop'>{category}</h2>
-                        </div>
-
-                        <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer'>
-
-                            {isLoadingProducts ? (
-                                <div className="catalogContainer__grid__catalog__isLoadingLabel">
-                                    Cargando productos&nbsp;&nbsp;<Spinner />
-                                </div>
-                            ) : products.length !== 0 ? (
-                                <>
-                                {products.map((product) => (
-                                    <ItemProduct
-                                    key={product._id}
-                                    user_id={user?._id}
-                                    fetchCartByUserId={fetchCartByUserId}
-                                    id={product._id}
-                                    stock={product.stock}
-                                    images={product.images}
-                                    title={product.title}
-                                    description={product.description}
-                                    price={product.price}
-                                    userCart={userCart}
-                                    />
-                                ))}
-                                <div className='cPanelProductsContainer__btnsPagesContainer'>
-                                    <button
-                                    className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                    disabled={!pageInfo.hasPrevPage}
-                                    onClick={() => fetchProducts(pageInfo.prevPage)}
-                                    >
-                                    Anterior
-                                    </button>
-
-                                    <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
-
-                                    <button
-                                    className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                    disabled={!pageInfo.hasNextPage}
-                                    onClick={() => fetchProducts(pageInfo.nextPage)}
-                                    >
-                                    Siguiente
-                                    </button>
-                                </div>
-                                </>
-                            ) : (
-                                <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet'>
-                                <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__label'>
-                                    No se encontraron productos que coincidan con los filtros
-                                </div>
-                                {user?.role === 'admin' && (
-                                    <Link
-                                    to={`/cpanel/products`}
-                                    className="categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__link"
-                                    >
-                                    Agregar productos
-                                    </Link>
-                                )}
-                                </div>
-                            )}
-
-                        </div>
-                        
-                    </div>
-                }
-
-
             </div>
 
             <Footer

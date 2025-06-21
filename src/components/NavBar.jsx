@@ -4,7 +4,7 @@ import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 import SmartLink from './SmartLink';
 
-const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
+const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(null);
@@ -145,7 +145,10 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
                 theme: "dark",
                 className: "custom-toast",
             });
+            setUser&&setUser(null)
+            setSelectedAddress&&setSelectedAddress(null)
             setTimeout(() => {
+                navigate('/')
                 window.location.reload()
             }, 2000);
         }
@@ -249,7 +252,7 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
                                         </div>
                                         )}
                                     </div>
-                                        <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>LOG OUT</div>
+                                        <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>SALIR</div>
                                 </>
                             :
                                 <>
@@ -323,13 +326,12 @@ const NavBar = ({user,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,p
 
 
             </div>
-                {!showNavbar && (
-                    <div className="navbar-tab" onClick={handleTabClick} role="button" tabIndex={0} aria-label="Mostrar menú">
-                    ☰
-                    </div>
-                )}
 
-
+            {!showNavbar && (
+                <div className="navbar-tab" onClick={handleTabClick} role="button" tabIndex={0} aria-label="Mostrar menú">
+                ☰
+                </div>
+            )}
             
             <div className={`hMenuOptionsContainer ${showHMenuOptions ? 'active' : ''}`}>
                 <div className='hMenuOptionsContainer__btnCloseMenu'>

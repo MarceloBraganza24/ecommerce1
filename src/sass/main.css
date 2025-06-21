@@ -221,7 +221,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
   color: white;
   padding: 0vh 2vh;
   text-decoration: none;
@@ -1409,15 +1409,16 @@ h2 {
 }
 
 .categoryContainer {
+  background-color: rgba(183, 183, 183, 0.85);
   width: 100%;
+  padding: 28vh 0vh 5vh 0vh;
 }
 .categoryContainer__grid {
-  background-color: rgba(183, 183, 183, 0.85);
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 3fr;
   justify-items: center;
-  padding: 30vh 0vh 5vh 0vh;
+  padding-top: 2vh;
 }
 .categoryContainer__grid__categoriesListContainer__categoriesList {
   background-color: whitesmoke;
@@ -4079,7 +4080,8 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0vh 0vh 5vh 0vh;
+  flex-direction: column;
+  padding: 28vh 0vh 5vh 0vh;
 }
 .itemDetailContainer__itemDetail {
   background-color: whitesmoke;
@@ -4089,6 +4091,7 @@ h2 {
   grid-template-columns: 1fr 1fr;
   padding: 5vh;
   border-radius: 1vh;
+  margin-top: 2vh;
 }
 .itemDetailContainer__itemDetail__loadingProducts {
   background-color: whitesmoke;
@@ -4305,8 +4308,7 @@ h2 {
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 2vh 0vh 5vh 0vh;
-  gap: 2vh;
+  padding: 28vh 0vh 5vh 0vh;
 }
 .cartContainer__loadingProducts {
   background-color: whitesmoke;
@@ -4323,6 +4325,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 2vh;
 }
 .cartContainer__title__prop {
   font-size: 40px;
@@ -4386,6 +4389,7 @@ h2 {
   width: 90%;
   display: flex;
   justify-content: end;
+  margin-top: 2vh;
 }
 .cartContainer__accountSummaryContainer__accountSummary {
   background-color: whitesmoke;
@@ -4880,12 +4884,10 @@ h2 {
 }
 
 .deliveryAddressContainer {
-  background-color: rgba(183, 183, 183, 0.85);
   width: 100%;
   padding: 1vh 0vh;
   display: flex;
   gap: 1vh;
-  padding-top: 28vh;
 }
 .deliveryAddressContainer__label {
   display: flex;
@@ -4938,7 +4940,7 @@ h2 {
   height: auto;
   display: flex;
   justify-content: center;
-  padding: 5vh 0vh 5vh 0vh;
+  padding: 25vh 0vh 5vh 0vh;
 }
 .deliveryFormContainer__deliveryForm {
   background-color: whitesmoke;
@@ -4982,11 +4984,11 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 2vh;
 }
 .deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress {
-  width: 30%;
+  width: 100%;
   display: flex;
   gap: 1vh;
   flex-direction: column;
@@ -4998,17 +5000,17 @@ h2 {
   flex-direction: column;
   border-radius: 1vh;
   gap: 1vh;
-  cursor: pointer;
 }
 .deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__radio {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__radio__btn {
   cursor: pointer;
 }
 .deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label {
   display: flex;
-  cursor: pointer;
 }
 .deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address {
   font-size: 18px;

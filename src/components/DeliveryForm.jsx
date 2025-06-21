@@ -54,15 +54,16 @@ const DeliveryForm = () => {
     })
 
     useEffect(() => {
+        if (!user || !deliveryForms) return;
         if(user && deliveryForms) {
             const deliveryFormsById = deliveryForms.filter(deliveryForm => deliveryForm.owner == user.email)
             setDeliveryFormsById(deliveryFormsById)
             
         }
         const matchedAddress = deliveryForms?.find(item => 
-            item.street === user.selected_addresses?.street &&
-            item.street_number === user.selected_addresses?.street_number &&
-            item.locality === user.selected_addresses?.locality
+            item.street === user?.selected_addresses?.street &&
+            item.street_number === user?.selected_addresses?.street_number &&
+            item.locality === user?.selected_addresses?.locality
         );
 
         if (matchedAddress) {
@@ -160,7 +161,8 @@ const DeliveryForm = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchUser(cookieValue)
+                fetchCurrentUser()
+                //fetchUser(cookieValue)
             } else {
                 toast('Error al actualizar el domicilio', {
                     position: "top-right",
@@ -581,6 +583,8 @@ const DeliveryForm = () => {
                 isLoading={isLoading}
                 isLoadingAuth={isLoadingAuth}
                 user={user}
+                setUser={setUser}
+                setSelectedAddress={setSelectedAddress}
                 isLoggedIn={user?.isLoggedIn || false}
                 role={user?.role || null}
                 first_name={user?.first_name || ''}
@@ -638,6 +642,7 @@ const DeliveryForm = () => {
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__radio">
                                                         <input
                                                             type="radio"
+                                                            className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__radio__btn'
                                                             name="selectedAddress"
                                                             value={item._id}
                                                             checked={selectedAddress && selectedAddress._id === item._id} // Comparación correcta
@@ -646,44 +651,29 @@ const DeliveryForm = () => {
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {corregirCapitalizacion(item.street)} {corregirCapitalizacion(item.street_number)}
+                                                            Dirección: {corregirCapitalizacion(item.street)} {corregirCapitalizacion(item.street_number)}, {corregirCapitalizacion(item.locality)}, {corregirCapitalizacion(item.province)}, {corregirCapitalizacion(item.country)}
                                                         </span>
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {corregirCapitalizacion(item.locality)}
+                                                            Código postal: {corregirCapitalizacion(item.postal_code)}
                                                         </span>
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {corregirCapitalizacion(item.postal_code)}
+                                                            Nombre: {corregirCapitalizacion(item.name)}
                                                         </span>
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {corregirCapitalizacion(item.province)}
-                                                        </span>
-                                                    </label>
-                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
-                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {corregirCapitalizacion(item.country)}
-                                                        </span>
-                                                    </label>
-                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
-                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {corregirCapitalizacion(item.name)}
-                                                        </span>
-                                                    </label>
-                                                    <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
-                                                        <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            - {item.phone}
+                                                            Teléfono: {item.phone}
                                                         </span>
                                                     </label>
                                                     {
                                                         item.indications && 
                                                         <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                             <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                                - {corregirCapitalizacion(item.indications)}
+                                                                Indicaciones: {corregirCapitalizacion(item.indications)}
                                                             </span>
                                                         </label>
 
@@ -692,7 +682,7 @@ const DeliveryForm = () => {
                                                         item.dpto && 
                                                         <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                             <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                                - {corregirCapitalizacion(item.dpto)}
+                                                                Departamento: {corregirCapitalizacion(item.dpto)}
                                                             </span>
                                                         </label>
 

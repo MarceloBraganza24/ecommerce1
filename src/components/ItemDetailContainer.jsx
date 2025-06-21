@@ -381,16 +381,14 @@ const ItemDetailContainer = () => {
                 storeName={storeSettings?.storeName || ""}
                 />
             </div>
-            {
-                user && (user.role != 'admin') &&
-                <DeliveryAddress
-                deliveryAddressFormData={deliveryAddressFormData}
-                isLoadingDeliveryForm={isLoadingDeliveryForm}
-                />
-            }
             <div className='itemDetailContainer'>
-
-                
+                    {
+                        user && (user.role != 'admin') &&
+                        <DeliveryAddress
+                        deliveryAddressFormData={deliveryAddressFormData}
+                        isLoadingDeliveryForm={isLoadingDeliveryForm}
+                        />
+                    }
                 
                     <div className='itemDetailContainer__itemDetail'>
 

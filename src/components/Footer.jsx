@@ -77,7 +77,7 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,
                         {
                             !isLoggedIn &&
                             <Link to={"/logIn"} className='footerContainer__faqContainer__faq__links'>
-                                - Iniciar Sesión
+                                - Iniciar sesión
                             </Link>
                         }
 

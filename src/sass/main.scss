@@ -216,7 +216,7 @@ h2 {
             &__itemLogOut {
                 width: 100%;
                 @include disFC();
-                font-size: 14px;
+                font-size: 16px;
                 color: white;
                 //margin-left: 2vh;
                 padding: 0vh 2vh;
@@ -1261,14 +1261,15 @@ h2 {
     box-shadow: none;
 }
 .categoryContainer {
+    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
     width: 100%;
+    padding: 28vh 0vh 5vh 0vh;
     &__grid {
-        background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
         width: 100%;
         display: grid;
         grid-template-columns: 1fr 3fr;
         justify-items: center;
-        padding: 30vh 0vh 5vh 0vh;
+        padding-top: 2vh;
         &__categoriesListContainer {
             &__categoriesList {
                 background-color: whitesmoke;
@@ -3583,7 +3584,8 @@ h2 {
     width: 100%;
     height: 80vh;
     @include disFC();
-    padding: 0vh 0vh 5vh 0vh;
+    flex-direction: column;
+    padding: 28vh 0vh 5vh 0vh;
     &__itemDetail {
         background-color: whitesmoke;
         width: 80%;
@@ -3592,6 +3594,7 @@ h2 {
         grid-template-columns: 1fr 1fr;
         padding: 5vh;
         border-radius: 1vh;
+        margin-top: 2vh;
         &__loadingProducts {
             background-color: whitesmoke;
             width: 100%;
@@ -3778,8 +3781,8 @@ h2 {
     display: flex;
     align-items: center;
     flex-direction: column;
-    padding: 2vh 0vh 5vh 0vh;
-    gap: 2vh;
+    padding: 28vh 0vh 5vh 0vh;
+    //gap: 2vh;
     &__loadingProducts {
         background-color: whitesmoke;
         width: 100%;
@@ -3791,6 +3794,7 @@ h2 {
     &__title {
         width: 100%;
         @include disFC();
+        padding-bottom: 2vh;
         &__prop {
             font-size: 40px;
             font-family: "Montserrat", sans-serif;
@@ -3845,6 +3849,7 @@ h2 {
         width: 90%;
         display: flex;
         justify-content: end;
+        margin-top: 2vh;
         &__accountSummary {
             background-color: whitesmoke;
             width: 30%;
@@ -4257,12 +4262,12 @@ h2 {
     }
 }
 .deliveryAddressContainer {
-    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    //background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
     width: 100%;
     padding: 1vh 0vh;
     display: flex;
     gap: 1vh;
-    padding-top: 28vh;
+    //padding-top: 28vh;
     &__label {
         @include disFC();
         padding-left: 2vh;
@@ -4301,7 +4306,7 @@ h2 {
     height: auto;
     display: flex;
     justify-content: center;
-    padding: 5vh 0vh 5vh 0vh;
+    padding: 25vh 0vh 5vh 0vh;
     &__deliveryForm {
         background-color: whitesmoke;
         width: 60%;
@@ -4339,10 +4344,11 @@ h2 {
             }
             &__itemAddressContainer {
                 @include disFC();
-                flex-wrap: wrap;
+                //flex-wrap: wrap;
+                flex-direction: column;
                 gap: 2vh;
                 &__itemAddress {
-                    width: 30%;
+                    width: 100%;
                     display: flex;
                     gap: 1vh;
                     flex-direction: column;
@@ -4353,14 +4359,17 @@ h2 {
                         flex-direction: column;
                         border-radius: 1vh;
                         gap: 1vh;
-                        cursor: pointer;
+                        //cursor: pointer;
                         &__radio {
                             @include disFC();
-                            cursor: pointer;
+                            &__btn {
+                                cursor: pointer;
+                            }
+                            //cursor: pointer;
                         }
                         &__label {
                             display: flex;
-                            cursor: pointer;
+                            //cursor: pointer;
                         }
                         &__address {
                             font-size: 18px;

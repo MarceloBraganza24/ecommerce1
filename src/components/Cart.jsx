@@ -344,13 +344,6 @@ const Cart = () => {
                 />
             </div>
             {
-                user && (user.role != 'admin') &&
-                <DeliveryAddress
-                deliveryAddressFormData={deliveryAddressFormData}
-                isLoadingDeliveryForm={isLoadingDeliveryForm}
-                />
-            }
-            {
                 
                 isLoadingProducts ? 
                 <>
@@ -364,6 +357,13 @@ const Cart = () => {
                 <>
                 
                 <div className='cartContainer'>
+                    {
+                        user && (user.role != 'admin') &&
+                        <DeliveryAddress
+                        deliveryAddressFormData={deliveryAddressFormData}
+                        isLoadingDeliveryForm={isLoadingDeliveryForm}
+                        />
+                    }
 
                     <div className='cartContainer__title'>
                         <div className='cartContainer__title__prop'>Carrito de compras</div>
