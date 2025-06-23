@@ -899,7 +899,7 @@ h2 {
   font-size: 16px;
 }
 .cPanelContainer__existingCategories__itemCategory {
-  width: 80%;
+  width: 85%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1vh;
