@@ -3,18 +3,20 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { Link } from 'react-router-dom';
 
-const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories}) => {
+const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories,inputFilteredProducts,selectedField}) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
+        images: [],
         title: '',
         description: '',
-        price: 0,
-        stock: 0,
+        price: '',
+        stock: '',
         state: '',
         category: '',
-        images: [],
-        camposDinamicos: {}
+        camposDinamicos: []
     });
+    const [variantes, setVariantes] = useState([]); 
+    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, stock: 0 });
 
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
 
@@ -37,11 +39,16 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                 images: imagenesDelBackend
             }));
             
-            const camposExtras = product.camposExtras || {};
+            /* const camposExtras = product.camposExtras || {};
             const camposDinamicosNormalizados = Object.entries(camposExtras).reduce((acc, [key, value]) => {
                 acc[key.toLowerCase()] = value;
                 return acc;
-            }, {});
+            }, {}); */
+            const camposExtras = product.camposExtras || {};
+            const camposDinamicosArray = Object.entries(camposExtras).map(([key, value]) => ({
+                key,
+                value
+            }));
         
             setFormData({
                 title: product.title || '',
@@ -51,8 +58,10 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                 state: product.state || '',
                 category: product.category || '',
                 images: imagenesDelBackend || [],
-                camposDinamicos: camposDinamicosNormalizados
+                camposDinamicos: camposDinamicosArray
             });
+
+            setVariantes(product.variantes || []);
         }
 
 
@@ -103,7 +112,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         });
     };
 
-    const handleAddCampo = () => {
+    /* const handleAddCampo = () => {
         const keyTrimmed = nuevoCampo.key.trim();
         const valueTrimmed = nuevoCampo.value.trim();
     
@@ -151,13 +160,71 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         }));
     
         setNuevoCampo({ key: '', value: '' });
+    }; */
+    const handleAddCampo = () => {
+        const keyTrimmed = nuevoCampo.key.trim();
+        const valueTrimmed = nuevoCampo.value.trim();
+
+        const regex = /^[A-Za-z0-9 ,]+$/;
+        if (!regex.test(keyTrimmed) || !regex.test(valueTrimmed)) {
+            toast('Los campos solo deben contener letras, números y espacios.', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        if (!keyTrimmed || !valueTrimmed) {
+            toast('Los dos campos son requeridos', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        const yaExiste = formData.camposDinamicos.some(
+            campo => campo.key.toLowerCase() === keyTrimmed.toLowerCase()
+        );
+
+        if (yaExiste) {
+            toast(`El campo "${keyTrimmed}" ya existe`, {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        const nuevoCampoObj = { key: keyTrimmed, value: valueTrimmed };
+
+        setFormData(prev => ({
+            ...prev,
+            camposDinamicos: [...prev.camposDinamicos, nuevoCampoObj]
+        }));
+
+        setNuevoCampo({ key: '', value: '' });
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        if (!formData.title.trim() || !formData.description.trim() || !formData.price || !formData.stock || !formData.state.trim() || !formData.category.trim()) {
+        if (!formData.title.trim() || !formData.description.trim() || !formData.price || !formData.state.trim() || !formData.category.trim()) {
             toast('Debes completar todos los campos', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+        if(nuevoCampo.key != '' || nuevoCampo.value != '') {
+            toast('Debes confirmar si quieres agregar un nuevo campo apretando en el boton +', {
                 position: "top-right",
                 autoClose: 2000,
                 theme: "dark",
@@ -177,17 +244,23 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         }
     
         const formToSend  = new FormData();
-        formToSend .append('title', formData.title);
-        formToSend .append('description', formData.description);
-        formToSend .append('price', formData.price);
-        formToSend .append('stock', formData.stock);
-        formToSend .append('state', formData.state);
-        formToSend .append('category', formData.category);
+        formToSend.append('title', formData.title);
+        formToSend.append('description', formData.description);
+        formToSend.append('price', formData.price);
+        if (variantes.length > 0) {
+            formToSend.append('variantes', JSON.stringify(variantes));
+        } else {
+            formToSend.append('stock', product.stock);
+        }
+        formToSend.append('state', formData.state);
+        formToSend.append('category', formData.category);
 
-        // En el frontend, convierte el objeto a JSON
-        const propiedades = JSON.stringify(formData.camposDinamicos);  // Esto convierte el objeto a JSON
+        const propiedadesObj = {};
+        formData.camposDinamicos.forEach(campo => {
+            propiedadesObj[campo.key] = campo.value;
+        });
 
-        // Asegúrate de agregarlo al FormData
+        const propiedades = JSON.stringify(propiedadesObj);
         formToSend.append('propiedades', propiedades);
 
         // Imágenes nuevas (solo los File)
@@ -220,7 +293,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchProducts();
+                fetchProducts(1,inputFilteredProducts,selectedField);
                 setShowUpdateModal(false)
             } else {
                 toast('No se ha podido modificar el producto, intente nuevamente', {
@@ -251,12 +324,10 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         fileInputRef.current.click();
     };
 
-    const handleEliminarCampo = (key) => {
-        const nuevosCampos = { ...formData.camposDinamicos }; // Copiar el objeto
-    
-        // Eliminar la propiedad del objeto
-        delete nuevosCampos[key.toLowerCase()];
-    
+    const handleEliminarCampo = (index) => {
+        const nuevosCampos = [...formData.camposDinamicos];
+        nuevosCampos.splice(index, 1);
+
         setFormData(prev => ({
             ...prev,
             camposDinamicos: nuevosCampos
@@ -293,6 +364,59 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             [name]: value
         }));
     };
+
+    const handleBtnAddVariant = () => {
+        const campos = nuevaVariante.campos;
+
+        // Validación: asegurarse de que todos los campos estén completos
+        const camposIncompletos = formData.camposDinamicos.some((campo, idx) => {
+            const key = campo.key;
+            if (formData.camposDinamicos.findIndex(c => c.key === key) !== idx) return false; // ignorar duplicados
+            return !campos[key];
+        });
+
+        if (camposIncompletos || nuevaVariante.stock <= 0) {
+            toast('Completá todos los campos de la variante y asigná un stock válido.', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        // Validación: evitar duplicados
+        const varianteYaExiste = variantes.some(v => {
+            const keys1 = Object.keys(v.campos);
+            const keys2 = Object.keys(campos);
+            if (keys1.length !== keys2.length) return false;
+            return keys1.every(k => v.campos[k] === campos[k]);
+        });
+
+        if (varianteYaExiste) {
+            toast('Esa combinación de variante ya fue agregada.', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        // Si pasa las validaciones, agregar
+        setVariantes([...variantes, nuevaVariante]);
+        setNuevaVariante({ campos: {}, stock: 0 });
+    }
 
     return (
 
@@ -406,22 +530,26 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                         </div>
 
-                        <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
+                        {
+                            variantes.length == 0 &&
 
-                            <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Stock</div>
-                            <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                <input
-                                    name='stock'
-                                    placeholder='Stock'
-                                    type="number"
-                                    value={formData.stock}
-                                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
-                                    required
-                                />
+                            <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
+
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Stock</div>
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
+                                    <input
+                                        name='stock'
+                                        placeholder='Stock'
+                                        type="number"
+                                        value={formData.stock}
+                                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
+                                        required
+                                    />
+                                </div>
+
                             </div>
-
-                        </div>
+                        }
 
                         <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
 
@@ -468,37 +596,91 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                         </div>
 
-                        {Object.entries(formData.camposDinamicos).map(([key, value]) => (
-                            <div key={key} className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
-
-                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>{capitalizeFirstLetter(key)}</div>
-                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                    <input
-                                        placeholder={key}
-                                        type="text"
-                                        value={value}
-                                        onChange={(e) => {
-                                            const updatedCamposDinamicos = {
-                                                ...formData.camposDinamicos,
-                                                [key]: e.target.value // Actualiza el valor del campo correspondiente
-                                            };
-                                            setFormData({ ...formData, camposDinamicos: updatedCamposDinamicos });
-                                        }}
-                                        className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__prop"
-                                        required
-                                    />
-                                    <button
-                                    type="button"
-                                    onClick={() => handleEliminarCampo(key)} // Función para eliminar este campo
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
-                                    style={{marginLeft:'2vh'}}
-                                    >
-                                    X
-                                    </button>
+                        {formData.camposDinamicos.map((campo, index) => (
+                            <div key={index} className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>
+                                {capitalizeFirstLetter(campo.key)}
                                 </div>
-
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
+                                <input
+                                    placeholder={campo.key}
+                                    type="text"
+                                    value={campo.value}
+                                    onChange={(e) => {
+                                    const updatedCampos = [...formData.camposDinamicos];
+                                    updatedCampos[index].value = e.target.value;
+                                    setFormData({ ...formData, camposDinamicos: updatedCampos });
+                                    }}
+                                    className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__prop"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleEliminarCampo(index)}
+                                    className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
+                                    style={{ marginLeft: '2vh' }}
+                                >
+                                    X
+                                </button>
+                                </div>
                             </div>
                         ))}
+
+
+                        {/* <ul>
+                            {variantes.map((v, i) => (
+                                <li key={i} style={{ marginBottom: '8px' }}>
+                                {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')} → stock: {v.stock}
+                                <button
+                                    onClick={() => {
+                                    const nuevasVariantes = [...variantes];
+                                    nuevasVariantes.splice(i, 1);
+                                    setVariantes(nuevasVariantes);
+                                    }}
+                                    style={{ marginLeft: '10px', color: 'white', background: 'red', border: 'none', padding: '4px 8px', cursor: 'pointer' }}
+                                >
+                                    Eliminar
+                                </button>
+                                </li>
+                            ))}
+                        </ul> */}
+                        <ul>
+                            {variantes.map((v, i) => (
+                                <li key={i} style={{ marginBottom: '8px' }}>
+                                {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')} | → Stock:&nbsp; 
+                                
+                                <input
+                                    type="number"
+                                    value={v.stock}
+                                    onChange={(e) => {
+                                    const nuevasVariantes = [...variantes];
+                                    nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
+                                    setVariantes(nuevasVariantes);
+                                    }}
+                                    style={{ width: '60px', textAlign:'center' }}
+                                />
+
+                                <button
+                                    onClick={() => {
+                                    const nuevasVariantes = [...variantes];
+                                    nuevasVariantes.splice(i, 1);
+                                    setVariantes(nuevasVariantes);
+                                    }}
+                                    style={{
+                                    marginLeft: '10px',
+                                    color: 'white',
+                                    background: 'red',
+                                    border: 'none',
+                                    padding: '4px 8px',
+                                    cursor: 'pointer',
+                                    }}
+                                >
+                                    Eliminar
+                                </button>
+                                </li>
+                            ))}
+                        </ul>
+
 
                         <div className='updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer'>
 
@@ -515,7 +697,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                 <input
                                     type="text"
                                     name="value"
-                                    placeholder="Valor (ej: rojo)"
+                                    placeholder="Valor (ej: rojo,negro)"
                                     value={nuevoCampo.value}
                                     onChange={handleChangeNuevoCampo}
                                     className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__input"
@@ -530,6 +712,72 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                             </div>
 
                         </div>
+
+                        {
+                            formData.camposDinamicos.length > 0 &&
+
+                            <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer'>
+
+                                <div className="createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__title">Agregar variante</div>
+
+                                
+                                {
+                                    formData.camposDinamicos.map((campo, index) => {
+                                        const atributo = campo.key;
+
+                                        // Evitar repetir selects para atributos duplicados
+                                        if (formData.camposDinamicos.findIndex(c => c.key === atributo) !== index) return null;
+
+                                        const opciones = campo.value.split(',').map(op => op.trim());
+
+                                        return (
+                                        <div key={atributo} className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants'>
+                                            <div>{atributo}</div>
+                                            <select
+                                                className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants__input'
+                                                value={nuevaVariante.campos[atributo] || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setNuevaVariante(prev => ({
+                                                    ...prev,
+                                                    campos: { ...prev.campos, [atributo]: value }
+                                                    }));
+                                                }}
+                                                >
+                                                <option value="" disabled>{`Seleccionar ${atributo}`}</option>
+                                                {
+                                                    opciones.map((opcion, i) => (
+                                                    <option key={i} value={opcion}>{opcion}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        </div>
+                                        );
+                                    })
+                                }
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
+                                    <input
+                                    className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
+                                    type="number"
+                                    placeholder="Stock"
+                                    value={nuevaVariante.stock}
+                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || 0 })}
+                                    />
+                                </div>
+
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__btn'>
+                                    <button 
+                                        className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__btn__prop' 
+                                        onClick={handleBtnAddVariant}
+                                    >
+                                    Agregar Variante
+                                    </button>
+                                </div>
+
+
+                            </div>
+                        }
 
                         <div className='updateProductModalContainer__updateProductModal__propsContainer__btnContainer'>
                             <button disabled={loading} onClick={handleSubmit} className='updateProductModalContainer__updateProductModal__propsContainer__btnContainer__btn'>

@@ -3,7 +3,7 @@ import UpdateProductModal from './UpdateProductModal'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const ItemCPanelProduct = ({product,fetchProducts,categories,selectedProducts,setSelectedProducts,toggleSelectProduct}) => {
+const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selectedField,categories,selectedProducts,setSelectedProducts,toggleSelectProduct}) => {
     const [loading, setLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
@@ -73,7 +73,14 @@ const ItemCPanelProduct = ({product,fetchProducts,categories,selectedProducts,se
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">{product.stock}</div>
+                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
+                        {
+                            product.stock ?
+                                product.stock 
+                            :
+                            <div onClick={() => setShowUpdateModal(true)} style={{cursor:'pointer'}}>Ver stock</div>
+                        }
+                    </div>
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
@@ -108,6 +115,8 @@ const ItemCPanelProduct = ({product,fetchProducts,categories,selectedProducts,se
                 <UpdateProductModal
                 product={product}
                 fetchProducts={fetchProducts}
+                inputFilteredProducts={inputFilteredProducts}
+                selectedField={selectedField}
                 setShowUpdateModal={setShowUpdateModal}
                 categories={categories}
                 />

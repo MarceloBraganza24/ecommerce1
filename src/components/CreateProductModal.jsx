@@ -16,6 +16,8 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         camposDinamicos: []
     });
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
+    const [variantes, setVariantes] = useState([]);
+    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, stock: 0 });
 
     const fileInputRef = useRef(null);
 
@@ -167,6 +169,15 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
             return;
         }
+        if(nuevoCampo.key != '' || nuevoCampo.value != '') {
+            toast('Debes confirmar si quieres agregar un nuevo campo apretando en el boton +', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         if(!product.category) {
             toast('Debes seleccionar una categoría', {
                 position: "top-right",
@@ -191,7 +202,11 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         formData.append('title', product.title);
         formData.append('description', product.description);
         formData.append('price', product.price);
-        formData.append('stock', product.stock);
+        if (variantes.length > 0) {
+            formData.append('variantes', JSON.stringify(variantes));
+        } else {
+            formData.append('stock', product.stock);
+        }
         formData.append('state', product.state);
         formData.append('category', product.category);
     
@@ -328,6 +343,59 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         }));
     };
 
+    const handleBtnAddVariant = () => {
+        const campos = nuevaVariante.campos;
+
+        // Validación: asegurarse de que todos los campos estén completos
+        const camposIncompletos = product.camposDinamicos.some((campo, idx) => {
+            const key = campo.key;
+            if (product.camposDinamicos.findIndex(c => c.key === key) !== idx) return false; // ignorar duplicados
+            return !campos[key];
+        });
+
+        if (camposIncompletos || nuevaVariante.stock <= 0) {
+            toast('Completá todos los campos de la variante y asigná un stock válido.', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        // Validación: evitar duplicados
+        const varianteYaExiste = variantes.some(v => {
+            const keys1 = Object.keys(v.campos);
+            const keys2 = Object.keys(campos);
+            if (keys1.length !== keys2.length) return false;
+            return keys1.every(k => v.campos[k] === campos[k]);
+        });
+
+        if (varianteYaExiste) {
+            toast('Esa combinación de variante ya fue agregada.', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
+        // Si pasa las validaciones, agregar
+        setVariantes([...variantes, nuevaVariante]);
+        setNuevaVariante({ campos: {}, stock: 0 });
+    }
+
     return (
 
         <>
@@ -439,23 +507,27 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                             </div>
 
                         </div>
+                        
+                        {
+                            variantes.length == 0 &&
 
-                        <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
+                            <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
 
-                            <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Stock</div>
-                            <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
-                                <input
-                                    name='stock'
-                                    placeholder='Stock'
-                                    type="number"
-                                    value={product.stock}
-                                    onChange={(e) => setProduct({ ...product, stock: e.target.value })}
-                                    className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
-                                    required
-                                />
+                                <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Stock</div>
+                                <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
+                                    <input
+                                        name='stock'
+                                        placeholder='Stock'
+                                        type="number"
+                                        value={product.stock}
+                                        onChange={(e) => setProduct({ ...product, stock: e.target.value })}
+                                        className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
+                                        required
+                                        />
+                                </div>
+
                             </div>
-
-                        </div>
+                        }
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
 
@@ -528,6 +600,43 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                             </div>
                         ))}
+                        
+                        <ul>
+                            {variantes.map((v, i) => (
+                                <li key={i} style={{ marginBottom: '8px' }}>
+                                {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}  | → Stock:&nbsp;
+
+                                <input
+                                    type="number"
+                                    value={v.stock}
+                                    onChange={(e) => {
+                                    const nuevasVariantes = [...variantes];
+                                    nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
+                                    setVariantes(nuevasVariantes);
+                                    }}
+                                    style={{ width: '60px', textAlign:'center' }}
+                                />
+
+                                <button
+                                    onClick={() => {
+                                    const nuevasVariantes = [...variantes];
+                                    nuevasVariantes.splice(i, 1);
+                                    setVariantes(nuevasVariantes);
+                                    }}
+                                    style={{
+                                    marginLeft: '10px',
+                                    color: 'white',
+                                    background: 'red',
+                                    border: 'none',
+                                    padding: '4px 8px',
+                                    cursor: 'pointer',
+                                    }}
+                                >
+                                    Eliminar
+                                </button>
+                                </li>
+                            ))}
+                        </ul>
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer'>
 
@@ -544,7 +653,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                 <input
                                     type="text"
                                     name="value"
-                                    placeholder="Valor (ej: rojo)"
+                                    placeholder="Valor/es (ej: rojo,negro)"
                                     value={nuevoCampo.value}
                                     onChange={handleChangeNuevoCampo}
                                     className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__input"
@@ -559,9 +668,74 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                             </div>
 
                         </div>
+                        {
+                            product.camposDinamicos.length > 0 &&
+
+                            <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer'>
+
+                                <div className="createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__title">Agregar variante</div>
+
+                                
+                                {
+                                    product.camposDinamicos.map((campo, index) => {
+                                        const atributo = campo.key;
+
+                                        // Evitar repetir selects para atributos duplicados
+                                        if (product.camposDinamicos.findIndex(c => c.key === atributo) !== index) return null;
+
+                                        const opciones = campo.value.split(',').map(op => op.trim());
+
+                                        return (
+                                        <div key={atributo} className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants'>
+                                            <div>{atributo}</div>
+                                            <select
+                                                className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants__input'
+                                                value={nuevaVariante.campos[atributo] || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setNuevaVariante(prev => ({
+                                                    ...prev,
+                                                    campos: { ...prev.campos, [atributo]: value }
+                                                    }));
+                                                }}
+                                                >
+                                                <option value="" disabled>{`Seleccionar ${atributo}`}</option>
+                                                {
+                                                    opciones.map((opcion, i) => (
+                                                    <option key={i} value={opcion}>{opcion}</option>
+                                                    ))
+                                                }
+                                            </select>
+                                        </div>
+                                        );
+                                    })
+                                }
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
+                                    <input
+                                    className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
+                                    type="number"
+                                    placeholder="Stock"
+                                    value={nuevaVariante.stock}
+                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || 0 })}
+                                    />
+                                </div>
+
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__btn'>
+                                    <button 
+                                        className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__btn__prop' 
+                                        onClick={handleBtnAddVariant}
+                                    >
+                                    Agregar Variante
+                                    </button>
+                                </div>
+
+
+                            </div>
+                        }
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__btnContainer'>
-                            <button disabled={loading} onClick={handleSubmit} className='createProductModalContainer__createProductModal__propsContainer__btnContainer__btn'>
+                            <button /* disabled={loading} */ onClick={handleSubmit} className='createProductModalContainer__createProductModal__propsContainer__btnContainer__btn'>
                                 {loading ? (
                                     <>
                                         Guardando <Spinner />

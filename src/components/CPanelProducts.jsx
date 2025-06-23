@@ -671,6 +671,8 @@ const CPanelProducts = () => {
                                 <ItemCPanelProduct
                                 product={product}
                                 fetchProducts={fetchProducts}
+                                inputFilteredProducts={inputFilteredProducts}
+                                selectedField={selectedField}
                                 categories={categories}
                                 selectedProducts={selectedProducts}
                                 setSelectedProducts={setSelectedProducts}

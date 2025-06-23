@@ -2292,6 +2292,7 @@ h2 {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 999999;
     &__updateProductModal {
         background-color: whitesmoke;
         width: 50%;
@@ -2573,7 +2574,7 @@ h2 {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 3;
+    z-index: 99999999;
     &__createSaleModal {
         background-color: whitesmoke;
         width: 65%;
@@ -3158,7 +3159,7 @@ h2 {
                         color: black;
                         padding-top: 0.5vh;
                         &:hover {
-                            color: var(--secondary-color);
+                            color: var(--secondary-text-color);
                         }
                     }
                 }
@@ -3167,6 +3168,8 @@ h2 {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
+                border-bottom: 0.3vh solid whitesmoke;
+                padding-bottom: 2vh;
                 &__label {
                     font-size: 20px;
                     padding: 1vh 0vh;
@@ -3194,6 +3197,53 @@ h2 {
                         &:hover {
                             color: var(--secondary-color);
                         }
+                    }
+                }
+            }
+            &__addVariantsContainer {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                border-bottom: 0.3vh solid whitesmoke;
+                &__title {
+                    font-size: 20px;
+                    padding: 1vh 0vh;
+                    text-align: center;
+                }
+                &__formVariants {
+                    display: grid;
+                    grid-template-columns: 1fr 2fr;
+                    padding-bottom: 1vh;
+                    align-items: center;
+                    &__input {
+                        width: 80%;
+                        height: 40px;
+                        grid-column: 2/3;
+                        text-align: center;
+                        &::placeholder {
+                            text-align: start;
+                            padding-left: 1vh;
+                        }
+                    }
+                }
+                &__labelInput {
+                    display: grid;
+                    grid-template-columns: 1fr 2fr;
+                    align-items: center;
+                    &__input {
+                        text-align: center;
+                        width: 80%;
+                        height: 40px;
+                    }
+                }
+                &__btn {
+                    @include disFC();
+                    padding: 1vh 0vh 2vh 0vh;
+                    &__prop {
+                        width: 30%;
+                        @include btn();
+                        padding: 0.5vh 1vh;
+                        border-radius: 0.5vh;
                     }
                 }
             }
@@ -4850,6 +4900,9 @@ h2 {
 
 .custom-toast .Toastify__progress-bar {
     background-color: var(--secondary-color) !important; 
+}
+.Toastify__toast-container {
+  z-index: 1000001 !important;
 }
 
 @import "header";
