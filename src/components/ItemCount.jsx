@@ -3,10 +3,54 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import Spinner from './Spinner';
 
-const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
-    const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
+const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
+
+    //const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
+    /* const productoEnCarrito = userCart?.products?.find(p => {
+        return (
+            p.product._id === id &&
+            JSON.stringify(p.selectedVariant) === JSON.stringify(selectedVariant)
+        );
+    }); */
+    const normalizeCampos = (campos) => {
+        if (!campos) return {};
+        return Object.fromEntries(
+            Object.entries(campos).map(([k, v]) => [k.toLowerCase(), v])
+        );
+    };
+
+    const selectedCamposNorm = normalizeCampos(selectedVariant?.campos);
+
+    const productoEnCarrito = userCart?.products?.find(p => {
+        const carritoCamposNorm = normalizeCampos(p.selectedVariant?.campos);
+        return p.product._id === id &&
+            JSON.stringify(carritoCamposNorm) === JSON.stringify(selectedCamposNorm);
+    });
+    // const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
+    // const cantidadDisponible = stock - cantidadEnCarrito;
+    // Encontrar la combinación de variantes seleccionada
+    const varianteSeleccionada = variantes?.find(item => {
+        if (!selectedVariant?.campos) return false;
+
+        const campos1 = normalizeCampos(item.campos);
+        const campos2 = normalizeCampos(selectedVariant.campos);
+
+        return Object.entries(campos2).every(([key, value]) => campos1[key] === value);
+    });
+
+
+    // console.log("selectedVariant:", selectedVariant);
+    // console.log("variantes:", variantes);
+    // console.log("varianteSeleccionada:", varianteSeleccionada);
+
+    const stockVariante = varianteSeleccionada?.stock || 0;
+
+    // Buscar en el carrito si ya hay esta combinación
     const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
-    const cantidadDisponible = stock - cantidadEnCarrito;
+
+    // Cantidad disponible según variante
+    const cantidadDisponible = stockVariante - cantidadEnCarrito;
+
 
     const navigate = useNavigate();
     const [loading, setLoading] = useState(null);
@@ -15,7 +59,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
     const tiempoEspera = 2000;
 
     const increment = () => {
-        if (count < stock) {
+        if (count < cantidadDisponible) {
             setCount(count + 1);
         } else {
             const ahora = Date.now();
@@ -55,7 +99,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
             });
             return false;
         }
-        if(stock == 0) {
+        if(stockVariante == 0) {
             toast("No hay stock disponible en este producto!", {
                 position: "top-right",
                 autoClose: 2000,
@@ -69,7 +113,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
             });
             return;
         }
-        if (count > stock) {
+        if (count > stockVariante) {
             toast(`La cantidad debe ser menor o igual al stock!`, {
                 position: "top-right",
                 autoClose: 2000,
@@ -101,7 +145,8 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
         const newItem = {
             product: id,
             quantity: count,
-            title
+            title,
+            selectedVariant
         };
     
         try {
@@ -166,7 +211,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
             });
             return;
         }
-        if(stock == 0) {
+        if(stockVariante == 0) {
             toast("No hay stock disponible en este producto!", {
                 position: "top-right",
                 autoClose: 2000,
@@ -180,7 +225,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
             });
             return;
         }
-        if (count > stock) {
+        if (count > stockVariante) {
             toast(`La cantidad debe ser menor o igual al stock!`, {
                 position: "top-right",
                 autoClose: 2000,
@@ -240,7 +285,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
                 <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={decrement}>-</button> : <button disabled className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={decrement}>-</button>
             }
 
-            { stock > 0 ?
+            { stockVariante > 0 ?
                 <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>{count}</div>
                 :
                 <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>0</div>
@@ -248,7 +293,7 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
 
             <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={increment}>+</button>
 
-            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stock} Disponibles)</div>
+            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div>
 
         </div> 
 

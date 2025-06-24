@@ -20,7 +20,8 @@ const ItemDetailContainer = () => {
     const {id} = useParams()
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
-    //console.log(productById)
+    const [selectedVariant, setSelectedVariant] = useState({});
+    console.log(selectedVariant)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -61,6 +62,7 @@ const ItemDetailContainer = () => {
             });
 
             if (varianteSeleccionada) {
+                setSelectedVariant(varianteSeleccionada);
                 setStockDisponible(varianteSeleccionada.stock);
             } else {
                 setStockDisponible(0); // combinación no válida
@@ -519,6 +521,7 @@ const ItemDetailContainer = () => {
                                         description={productById?.description}
                                         price={productById?.price}
                                         stock={stockDisponible}
+                                        selectedVariant={selectedVariant}
                                         variantes={productById?.variantes}
                                         fetchCartByUserId={fetchCartByUserId}
                                         userCart={userCart}

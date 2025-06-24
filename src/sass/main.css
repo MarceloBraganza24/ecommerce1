@@ -4142,7 +4142,7 @@ h2 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 28vh 0vh 5vh 0vh;
+  padding: 30vh 0vh 5vh 0vh;
 }
 .itemDetailContainer__itemDetail {
   background-color: whitesmoke;
@@ -4369,7 +4369,7 @@ h2 {
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 30vh 0vh 5vh 0vh;
+  padding: 28vh 0vh 5vh 0vh;
 }
 .cartContainer__loadingProducts {
   background-color: whitesmoke;
@@ -4386,7 +4386,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 2vh;
+  padding: 2vh 0vh;
 }
 .cartContainer__title__prop {
   font-size: 40px;
