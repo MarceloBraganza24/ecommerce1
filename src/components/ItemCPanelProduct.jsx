@@ -74,12 +74,6 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
                     <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
-                        {/* {
-                            product.stock ?
-                                product.stock 
-                            :
-                            <div onClick={() => setShowUpdateModal(true)} style={{cursor:'pointer'}}>Ver stock</div>
-                        } */}
                         {
                             product.variantes.length != 0 ?
                             <div onClick={() => setShowUpdateModal(true)} style={{cursor:'pointer'}}>Ver stock</div>

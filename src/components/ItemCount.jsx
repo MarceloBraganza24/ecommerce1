@@ -69,8 +69,22 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
             });
             return;
         }
+        if (count > stock) {
+            toast(`La cantidad debe ser menor o igual al stock!`, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         if (count > cantidadDisponible) {
-            toast(`No quedan más unidades disponibles para agregar!`, {
+            toast(`No quedan más unidades disponibles para agregar! Tu carrito ya posee las unidades disponibles`, {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
@@ -166,8 +180,22 @@ const ItemCount = ({user_id,roleUser,id,images,title,description,price,stock,fet
             });
             return;
         }
+        if (count > stock) {
+            toast(`La cantidad debe ser menor o igual al stock!`, {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         if (count > cantidadDisponible) {
-            toast(`No quedan más unidades disponibles para agregar!`, {
+            toast(`No quedan más unidades disponibles para agregar! Tu carrito ya posee las unidades disponibles`, {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,

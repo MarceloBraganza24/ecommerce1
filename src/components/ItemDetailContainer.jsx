@@ -19,6 +19,8 @@ const ItemDetailContainer = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const {id} = useParams()
     const [productById, setProductById] = useState({ images: [] });
+    const [stockDisponible, setStockDisponible] = useState(0);
+    //console.log(productById)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -51,6 +53,20 @@ const ItemDetailContainer = () => {
             setShowLogOutContainer(false);
         }
     }, [user]);
+
+    useEffect(() => {
+        if (productById?.variantes?.length && selectedOptions) {
+            const varianteSeleccionada = productById.variantes.find(vari => {
+                return Object.entries(selectedOptions).every(([key, val]) => vari.campos[key] === val);
+            });
+
+            if (varianteSeleccionada) {
+                setStockDisponible(varianteSeleccionada.stock);
+            } else {
+                setStockDisponible(0); // combinación no válida
+            }
+        }
+    }, [selectedOptions, productById]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -452,7 +468,7 @@ const ItemDetailContainer = () => {
 
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
                                             {
-                                                productById?.stock >= 1 ?
+                                                stockDisponible >= 1 ?
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>Stock disponible</div>
                                                 :
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>Sin stock</div>
@@ -502,7 +518,8 @@ const ItemDetailContainer = () => {
                                         title={productById?.title}
                                         description={productById?.description}
                                         price={productById?.price}
-                                        stock={productById?.stock}
+                                        stock={stockDisponible}
+                                        variantes={productById?.variantes}
                                         fetchCartByUserId={fetchCartByUserId}
                                         userCart={userCart}
                                         />

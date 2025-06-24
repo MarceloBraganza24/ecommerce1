@@ -49,7 +49,8 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
             return;
         }
         if (1 > cantidadDisponible) {
-            toast(`No quedan más unidades disponibles para agregar!`, {
+            toast(`La cantidad debe ser igual o menor al stock!`, {
+            //toast(`No quedan más unidades disponibles para agregar!`, {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
