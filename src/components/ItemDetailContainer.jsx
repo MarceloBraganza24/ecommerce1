@@ -21,7 +21,6 @@ const ItemDetailContainer = () => {
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState({});
-    //console.log(selectedVariant)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -468,17 +467,39 @@ const ItemDetailContainer = () => {
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__description__prop'>{capitalizeFirstLetter(`${productById?.description}`)}</div>
                                         </div>
 
-                                        <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
+                                        {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
                                             {
                                                 stockDisponible >= 1 ?
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>Stock disponible</div>
                                                 :
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>Sin stock</div>
                                             }
+                                        </div> */}
+                                        <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
+                                            {
+                                                (productById?.variantes?.length > 0
+                                                    ? stockDisponible
+                                                    : productById.stock) >= 1
+                                                ? (
+                                                    <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                        Stock disponible
+                                                    </div>
+                                                ) : (
+                                                    <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                        Sin stock
+                                                    </div>
+                                                )
+                                            }
                                         </div>
 
-                                        <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
+
+                                        {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>$ {productById?.price}</div>
+                                        </div> */}
+                                        <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
+                                            <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>
+                                                $ {selectedVariant?.price ?? productById?.price}
+                                            </div>
                                         </div>
 
                                         {
@@ -520,7 +541,7 @@ const ItemDetailContainer = () => {
                                         title={productById?.title}
                                         description={productById?.description}
                                         price={productById?.price}
-                                        stock={stockDisponible}
+                                        stock={productById?.stock}
                                         selectedVariant={selectedVariant}
                                         variantes={productById?.variantes}
                                         fetchCartByUserId={fetchCartByUserId}

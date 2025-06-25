@@ -250,7 +250,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         if (variantes.length > 0) {
             formToSend.append('variantes', JSON.stringify(variantes));
         } else {
-            formToSend.append('stock', product.stock);
+            formToSend.append('stock', formData.stock);
         }
         formToSend.append('state', formData.state);
         formToSend.append('category', formData.category);
@@ -626,24 +626,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                             </div>
                         ))}
 
-
-                        {/* <ul>
-                            {variantes.map((v, i) => (
-                                <li key={i} style={{ marginBottom: '8px' }}>
-                                {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')} → stock: {v.stock}
-                                <button
-                                    onClick={() => {
-                                    const nuevasVariantes = [...variantes];
-                                    nuevasVariantes.splice(i, 1);
-                                    setVariantes(nuevasVariantes);
-                                    }}
-                                    style={{ marginLeft: '10px', color: 'white', background: 'red', border: 'none', padding: '4px 8px', cursor: 'pointer' }}
-                                >
-                                    Eliminar
-                                </button>
-                                </li>
-                            ))}
-                        </ul> */}
                         <ul>
                             {variantes.map((v, i) => (
                                 <li key={i} style={{ marginBottom: '8px' }}>

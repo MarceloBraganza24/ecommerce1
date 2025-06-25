@@ -1,10 +1,11 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import Spinner from './Spinner';
 
 const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
-//console.log(selectedVariant)
+    //console.log(stock)
+
     const normalizeCampos = (campos) => {
         if (!campos) return {};
         return Object.fromEntries(
@@ -42,6 +43,10 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
     const [count, setCount] = useState(1);
     const [ultimoToast, setUltimoToast] = useState(0);
     const tiempoEspera = 2000;
+
+    useEffect(() => {
+        setCount(1);
+    },[selectedVariant])
 
     const increment = () => {
         if (count < stockVariante) {
@@ -278,7 +283,13 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
 
             <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={increment}>+</button>
 
-            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div>
+            {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div> */}
+            {
+                variantes?.length == 0 ?
+                <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stock} Disponibles)</div>
+                :
+                <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div>
+            }
 
         </div> 
 

@@ -3702,6 +3702,7 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 2fr;
   align-items: center;
+  padding-bottom: 1vh;
 }
 .createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input {
   text-align: center;
@@ -4142,7 +4143,7 @@ h2 {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  padding: 30vh 0vh 5vh 0vh;
+  padding: 28vh 0vh 5vh 0vh;
 }
 .itemDetailContainer__itemDetail {
   background-color: whitesmoke;
@@ -4616,14 +4617,6 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   padding: 1vh 0vh;
-  /* &__variantes {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      &__prop {
-          font-size: 14px;
-      }
-  } */
 }
 .itemCart__imgContainer {
   width: 100%;

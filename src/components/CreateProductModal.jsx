@@ -17,7 +17,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
     });
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
     const [variantes, setVariantes] = useState([]);
-    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, stock: 0 });
+    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, price: '', stock: '' });
 
     const fileInputRef = useRef(null);
 
@@ -201,10 +201,10 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         const formData = new FormData();
         formData.append('title', product.title);
         formData.append('description', product.description);
-        formData.append('price', product.price);
         if (variantes.length > 0) {
             formData.append('variantes', JSON.stringify(variantes));
         } else {
+            formData.append('price', product.price);
             formData.append('stock', product.stock);
         }
         formData.append('state', product.state);
@@ -353,7 +353,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             return !campos[key];
         });
 
-        if (camposIncompletos || nuevaVariante.stock <= 0) {
+        if (camposIncompletos || nuevaVariante.stock <= 0 || nuevaVariante.price <= 0) {
             toast('Completá todos los campos de la variante y asigná un stock válido.', {
                 position: "top-right",
                 autoClose: 2000,
@@ -393,7 +393,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
         // Si pasa las validaciones, agregar
         setVariantes([...variantes, nuevaVariante]);
-        setNuevaVariante({ campos: {}, stock: 0 });
+        setNuevaVariante({ campos: {}, price: '', stock: '' });
     }
 
     return (
@@ -602,29 +602,56 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                         ))}
                         
                         <ul>
+                            {
+                                variantes.length > 0 &&
+                                <strong>Variantes:</strong>  
+                            }
                             {variantes.map((v, i) => (
-                                <li key={i} style={{ marginBottom: '8px' }}>
-                                {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}  | → Stock:&nbsp;
+                                <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
+                                <div style={{ marginBottom: '4px' }}>
+                                    {/* <strong>Variante:</strong>  */}{Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
+                                </div>
 
-                                <input
-                                    type="number"
-                                    value={v.stock}
-                                    onChange={(e) => {
-                                    const nuevasVariantes = [...variantes];
-                                    nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
-                                    setVariantes(nuevasVariantes);
-                                    }}
-                                    style={{ width: '60px', textAlign:'center' }}
-                                />
+                                <div style={{ marginBottom: '4px' }}>
+                                    <label>
+                                    Precio:&nbsp;
+                                    <input
+                                        type="number"
+                                        value={v.price}
+                                        onChange={(e) => {
+                                            const nuevasVariantes = [...variantes];
+                                            nuevasVariantes[i].price = parseInt(e.target.value) || 0;
+                                            setVariantes(nuevasVariantes);
+                                        }}
+                                        style={{ width: '80px', textAlign: 'center' }}
+                                    />
+                                    </label>
+                                </div>
+
+                                <div style={{ marginBottom: '4px' }}>
+                                    <label>
+                                    Stock:&nbsp;
+                                    <input
+                                        type="number"
+                                        value={v.stock}
+                                        onChange={(e) => {
+                                            const nuevasVariantes = [...variantes];
+                                            nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
+                                            setVariantes(nuevasVariantes);
+                                        }}
+                                        style={{ width: '80px', textAlign: 'center' }}
+                                    />
+                                    </label>
+                                </div>
 
                                 <button
                                     onClick={() => {
-                                    const nuevasVariantes = [...variantes];
-                                    nuevasVariantes.splice(i, 1);
-                                    setVariantes(nuevasVariantes);
+                                        const nuevasVariantes = [...variantes];
+                                        nuevasVariantes.splice(i, 1);
+                                        setVariantes(nuevasVariantes);
                                     }}
                                     style={{
-                                    marginLeft: '10px',
+                                    marginTop: '4px',
                                     color: 'white',
                                     background: 'red',
                                     border: 'none',
@@ -637,6 +664,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                 </li>
                             ))}
                         </ul>
+
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer'>
 
@@ -711,13 +739,23 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     })
                                 }
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>precio</div>
+                                    <input
+                                    className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
+                                    type="number"
+                                    placeholder="Precio"
+                                    value={nuevaVariante.price}
+                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, price: parseInt(e.target.value) || '' })}
+                                    />
+                                </div>
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
                                     <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"
                                     placeholder="Stock"
                                     value={nuevaVariante.stock}
-                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || 0 })}
+                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
                                     />
                                 </div>
 

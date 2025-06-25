@@ -17,6 +17,8 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
             const res = await fetch(`http://localhost:8081/api/products/${product._id}`, {
                 method: 'DELETE'
             });
+            const result = await res.json();
+            console.log(result)
             if (res.ok) {
                 toast('Has eliminado el producto con éxito', {
                     position: "top-right",
