@@ -386,6 +386,10 @@ const Cart = () => {
                             </div>
 
                             <div className='cartContainer__cart__header__labelProp'>
+                                <div className='cartContainer__cart__header__labelProp__prop'>Variantes</div>
+                            </div>
+
+                            <div className='cartContainer__cart__header__labelProp'>
                                 <div className='cartContainer__cart__header__labelProp__prop'>Cantidad</div>
                             </div>
 
@@ -415,7 +419,7 @@ const Cart = () => {
                                         description={itemCart.product.description}
                                         price={itemCart.product.price}
                                         quantity={itemCart.quantity}
-                                        stock={itemCart.product.stock}
+                                        variantes={itemCart.selectedVariant}
                                         fetchCartByUserId={fetchCartByUserId}
                                         />
                                         

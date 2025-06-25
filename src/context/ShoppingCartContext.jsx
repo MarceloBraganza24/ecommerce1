@@ -7,12 +7,13 @@ export const ShoppingCartContext = ({children}) => {
 
     const [cart, setCart] = useState([])
 
-    const updateQuantity = async (user_id, id, newQuantity, fetchCartByUserId) => {
+    const updateQuantity = async (user_id, id, newQuantity, selectedVariant, fetchCartByUserId) => {
         try {
             const response = await fetch(`http://localhost:8081/api/carts/update-quantity/${user_id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ product: id, quantity: newQuantity }),
+                //body: JSON.stringify({ product: id, quantity: newQuantity }),
+                body: JSON.stringify({ product: id, quantity: newQuantity, selectedVariant }),
             });
             if (!response.ok) {
                 console.error("Error al actualizar la cantidad en MongoDB");
@@ -24,10 +25,14 @@ export const ShoppingCartContext = ({children}) => {
         }
     };
     
-    const deleteItemCart = async (user_id, id, fetchCartByUserId) => {
+    const deleteItemCart = async (user_id, id, selectedVariant, fetchCartByUserId) => {
         try {
             const response = await fetch(`http://localhost:8081/api/carts/remove-product/${user_id}/${id}`, {
-                method: "DELETE",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ selectedVariant })
             });
             const data = await response.json();
             if (response.ok) {

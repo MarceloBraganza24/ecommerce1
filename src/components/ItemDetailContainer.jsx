@@ -21,7 +21,7 @@ const ItemDetailContainer = () => {
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState({});
-    console.log(selectedVariant)
+    //console.log(selectedVariant)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);

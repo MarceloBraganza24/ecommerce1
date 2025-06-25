@@ -3860,13 +3860,14 @@ h2 {
             background-color: var(--primary-color);
             width: 100%;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
             padding: 1vh 0vh;
             border-top-left-radius: 1vh;
             border-top-right-radius: 1vh;
             &__labelProp {
                 width: 100%;
                 @include disFC();
+                border-right: 0.3vh solid var(--primary-text-color);
                 &__prop {
                     font-size: 20px;
                     color: var(--primary-text-color);
@@ -4031,7 +4032,7 @@ h2 {
 .itemCart {
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     padding: 1vh 0vh;
     &__imgContainer {
         width: 100%;
@@ -4055,6 +4056,25 @@ h2 {
         &__prop {
             font-size: 14px;
             text-align: center;
+        }
+    }
+    /* &__variantes {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        &__prop {
+            font-size: 14px;
+        }
+    } */
+    &__variantesContainer {
+        width: 100%;
+        @include disFC();
+        flex-direction: column;
+        &__variantes {
+            width: 80%;
+            &__prop {
+                font-size: 14px;
+            }
         }
     }
     &__quantity {

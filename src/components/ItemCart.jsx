@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const ItemCart = ({user_id,id,title,description,stock,quantity,img,price,fetchCartByUserId}) => {
+const ItemCart = ({user_id,id,title,description,quantity,img,price,variantes,fetchCartByUserId}) => {
+    //console.log(variantes)
 
     const {deleteItemCart,updateQuantity} = useContext(CartContext);
     const [loadingQuantity, setLoadingQuantity] = useState(false);
@@ -12,12 +13,14 @@ const ItemCart = ({user_id,id,title,description,stock,quantity,img,price,fetchCa
 
     const handleUpdateQuantity = async (newQuantity) => {
         setLoadingQuantity(true);
-        await updateQuantity(user_id, id, newQuantity, fetchCartByUserId);
+        //await updateQuantity(user_id, id, newQuantity, fetchCartByUserId);
+        await updateQuantity(user_id, id, newQuantity, variantes, fetchCartByUserId);
         setLoadingQuantity(false);
     };
 
     const handleIncrement = () => {
-        if (quantity < stock) {
+        const variantStock = variantes?.stock ?? 0;
+        if (quantity < variantStock) {
             handleUpdateQuantity(quantity + 1);
         } else {
             toast('No quedan más unidades disponibles para agregar!', {
@@ -34,10 +37,9 @@ const ItemCart = ({user_id,id,title,description,stock,quantity,img,price,fetchCa
         }
     };
 
-
     const handleDelete = async () => {
         setLoadingDelete(true);
-        await deleteItemCart(user_id, id, fetchCartByUserId);
+        await deleteItemCart(user_id, id,variantes, fetchCartByUserId);
         setLoadingDelete(false);
     };
 
@@ -60,6 +62,30 @@ const ItemCart = ({user_id,id,title,description,stock,quantity,img,price,fetchCa
                 <div className='itemCart__description'>
                     <div className='itemCart__description__prop'>{description}</div>
                 </div>
+
+                {/* <div className='itemCart__variantes'>
+                    {Object.entries(variantes.campos).map(([key, value]) => (
+                        <div key={key} className='itemCart__variantes__prop'>
+                            {key}: {value}
+                        </div>
+                    ))}
+                </div> */}
+                {
+                    variantes ?
+                    <div className='itemCart__variantesContainer'>
+                        <div className='itemCart__variantesContainer__variantes'>
+                            {Object.entries(variantes.campos).map(([key, value]) => (
+                                <div key={key} className='itemCart__variantesContainer__variantes__prop'>
+                                    {key}: {value}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    :
+                    <div className='itemCart__variantesContainer'>
+                        Sin variantes
+                    </div>
+                }
 
                 <div className='itemCart__quantity'>
 

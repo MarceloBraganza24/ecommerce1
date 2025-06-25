@@ -4,14 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Spinner from './Spinner';
 
 const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
-
-    //const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
-    /* const productoEnCarrito = userCart?.products?.find(p => {
-        return (
-            p.product._id === id &&
-            JSON.stringify(p.selectedVariant) === JSON.stringify(selectedVariant)
-        );
-    }); */
+//console.log(selectedVariant)
     const normalizeCampos = (campos) => {
         if (!campos) return {};
         return Object.fromEntries(
@@ -26,9 +19,7 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
         return p.product._id === id &&
             JSON.stringify(carritoCamposNorm) === JSON.stringify(selectedCamposNorm);
     });
-    // const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
-    // const cantidadDisponible = stock - cantidadEnCarrito;
-    // Encontrar la combinación de variantes seleccionada
+    
     const varianteSeleccionada = variantes?.find(item => {
         if (!selectedVariant?.campos) return false;
 
@@ -38,11 +29,6 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
         return Object.entries(campos2).every(([key, value]) => campos1[key] === value);
     });
 
-
-    // console.log("selectedVariant:", selectedVariant);
-    // console.log("variantes:", variantes);
-    // console.log("varianteSeleccionada:", varianteSeleccionada);
-
     const stockVariante = varianteSeleccionada?.stock || 0;
 
     // Buscar en el carrito si ya hay esta combinación
@@ -51,7 +37,6 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
     // Cantidad disponible según variante
     const cantidadDisponible = stockVariante - cantidadEnCarrito;
 
-
     const navigate = useNavigate();
     const [loading, setLoading] = useState(null);
     const [count, setCount] = useState(1);
@@ -59,7 +44,7 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
     const tiempoEspera = 2000;
 
     const increment = () => {
-        if (count < cantidadDisponible) {
+        if (count < stockVariante) {
             setCount(count + 1);
         } else {
             const ahora = Date.now();
