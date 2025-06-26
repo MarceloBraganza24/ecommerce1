@@ -19,6 +19,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
     const [totalQuantity, setTotalQuantity] = useState('');
     const [totalWithDiscount, setTotalWithDiscount] = useState('');
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
+    const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
     const handleBtnCreateSale = () => {
         setCreateSaleModal(false)
@@ -27,6 +28,13 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
     useEffect(() => {
         setAllProducts(products);
     }, []);
+
+    const getSelectedVariante = (product) => {
+        const selectedCampos = selectedVariantsMap[product._id] || {};
+        return product.variantes?.find((v) =>
+            Object.entries(selectedCampos).every(([key, val]) => v.campos[key] === val)
+        );
+    };
 
     const toggleSelectProduct = (productId) => {
         const product = products.find(p => p._id === productId);
@@ -232,7 +240,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         });
     };
 
-    const handleIncreaseQuantity = (productId) => {
+    /* const handleIncreaseQuantity = (productId) => {
         setAddedProducts(prev =>
             prev.map(product =>
                 product._id === productId && product.quantity < product.stock
@@ -240,7 +248,41 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                     : product
             )
         );
+    }; */
+    const handleIncreaseQuantity = (productId) => {
+        setAddedProducts(prev =>
+            prev.map(product => {
+                if (product._id !== productId) return product;
+
+                // Buscar la variante seleccionada si hay
+                const varianteSeleccionada = product.variantes?.find(v =>
+                    Object.entries(product.camposSeleccionados || {}).every(
+                        ([key, val]) => v.campos?.[key] === val
+                    )
+                );
+
+                const stockDisponible = varianteSeleccionada?.stock ?? product.stock;
+
+                if (product.quantity < stockDisponible) {
+                    return { ...product, quantity: product.quantity + 1 };
+                } else {
+                    toast('No hay más stock disponible para esta variante', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    return product;
+                }
+            })
+        );
     };
+
 
     const handleDecreaseQuantity = (productId) => {
         setAddedProducts(prev =>
@@ -428,9 +470,10 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                     <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Imagen</div>
                                     <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Título</div>
                                     <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Descripción</div>
-                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Cantidad</div>
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Variantes</div>
                                     <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Precio</div>
                                     <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Stock</div>
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Cantidad</div>
                                     <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Categoría</div>
 
                                 </div>
@@ -453,20 +496,92 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                             <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__description">{product.description}</div>
                                         </div>
 
+                                        {
+                                            product.variantes?.length > 0 ? (
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                {Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                    const opciones = opcionesStr.split(',').map(op => op.trim());
+
+                                                    return (
+                                                    <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__variantes'>
+                                                        <div>{atributo}</div>
+                                                        <select
+                                                        value={product.camposSeleccionados?.[atributo] || ''}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setAddedProducts(prev =>
+                                                                prev.map(p => {
+                                                                    if (p._id !== product._id) return p;
+
+                                                                    const nuevosCampos = {
+                                                                        ...p.camposSeleccionados,
+                                                                        [atributo]: value
+                                                                    };
+
+                                                                    const varianteSeleccionada = p.variantes.find(v => {
+                                                                        return Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val);
+                                                                    });
+
+                                                                    return {
+                                                                        ...p,
+                                                                        camposSeleccionados: nuevosCampos,
+                                                                        price: varianteSeleccionada?.price ?? p.price,
+                                                                        stock: varianteSeleccionada?.stock ?? p.stock,
+                                                                        quantity: 1
+                                                                    };
+                                                                })
+                                                            );
+                                                        }}
+                                                        >
+                                                        {opciones.map((op, idx) => (
+                                                            <option key={idx} value={op}>{op}</option>
+                                                        ))}
+                                                        </select>
+                                                    </div>
+                                                    );
+                                                })}
+                                                </div>
+                                            ) : (
+                                                    <span className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__variantes'>-</span>
+                                                )
+                                        }
+
+                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
+                                                {
+                                                product.variantes?.length > 0
+                                                    ? (
+                                                    product.variantes.find(v =>
+                                                        Object.entries(product.camposSeleccionados || {}).every(([key, val]) => v.campos[key] === val)
+                                                    )?.price ?? '-'
+                                                    )
+                                                    : `$ ${product.price}`
+                                                }
+                                            </div>
+                                        </div>
+
+                                            {/* Stock */}
+                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
+                                                {
+                                                product.variantes?.length > 0
+                                                    ? (
+                                                    product.variantes.find(v =>
+                                                        Object.entries(product.camposSeleccionados || {}).every(([key, val]) => v.campos[key] === val)
+                                                    )?.stock ?? '-'
+                                                    )
+                                                    : product.stock
+                                                }
+                                            </div>
+                                        </div>
+
+
                                         <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
                                             <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity">
                                                 <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleDecreaseQuantity(product._id)}>-</button>
                                                 <span>{product.quantity}</span>
                                                 <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleIncreaseQuantity(product._id)}>+</button>
                                             </div>
-                                        </div>
-
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">$ {product.price}</div>
-                                        </div>
-
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.stock}</div>
                                         </div>
 
                                         <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
@@ -592,6 +707,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                 <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Imagen</div>
                                 <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Título</div>
                                 <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Descripción</div>
+                                <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Variantes</div>
                                 <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Precio</div>
                                 <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Stock</div>
                                 <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Categoría</div>
@@ -612,11 +728,12 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                 </>
                             :
                                 products.map((product) => (
-                                
+                                    
+                                    
+                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer">
+                                        {console.log(product)}
 
-                                    <div className="cPanelProductsContainer__productsTable__itemContainer">
-
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
                                             <input
                                                 type="checkbox"
                                                 checked={selectedProducts.includes(product._id)}
@@ -624,33 +741,83 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                             />
                                         </div>
 
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                                            <img className="cPanelProductsContainer__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            <img className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
                                         </div>
 
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                                            <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">{product.title}</div>
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.title}</div>
                                         </div>
 
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                                            <div className="cPanelProductsContainer__productsTable__itemContainer__item__description">{product.description}</div>
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__description">{product.description}</div>
                                         </div>
 
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                                            <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">$ {product.price}</div>
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            {
+                                                product.variantes?.length > 0 ? (
+                                                    Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                        const opciones = opcionesStr.split(',').map(op => op.trim());
+
+                                                        return (
+                                                            <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__variantes'>
+                                                                <div>{atributo}</div>
+                                                                <select
+                                                                    value={selectedVariantsMap[product._id]?.[atributo] || ''}
+                                                                    onChange={(e) => {
+                                                                        const value = e.target.value;
+                                                                        setSelectedVariantsMap(prev => ({
+                                                                            ...prev,
+                                                                            [product._id]: {
+                                                                                ...prev[product._id],
+                                                                                [atributo]: value
+                                                                            }
+                                                                        }));
+                                                                    }}
+                                                                >
+                                                                    {/* <option value="" disabled>{`Seleccionar ${atributo}`}</option> */}
+                                                                    {opciones.map((op, idx) => (
+                                                                        <option key={idx} value={op}>{op}</option>
+                                                                    ))}
+                                                                </select>
+                                                            </div>
+                                                        );
+                                                    })
+                                                ) : (
+                                                    <span>-</span>
+                                                )
+                                            }
                                         </div>
 
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                                            <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">{product.stock}</div>
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                                {
+                                                    product.variantes?.length > 0
+                                                        ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
+                                                        : `$ ${product.price}`
+                                                }
+                                            </div>
                                         </div>
 
-                                        <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                                            <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">{product.category}</div>
+                                        {/* Stock */}
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                                {
+                                                    product.variantes?.length > 0
+                                                        ? getSelectedVariante(product)?.stock ?? '-'
+                                                        : product.stock
+                                                }
+                                            </div>
                                         </div>
 
-                                        <div className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer'>
 
-                                            <button onClick={() => handleAddProduct(product)} className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn'>Añadir</button>
+                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category}</div>
+                                        </div>
+
+                                        <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
+
+                                            <button onClick={() => handleAddProduct(product)} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'>Añadir</button>
 
                                         </div>
 
@@ -662,8 +829,8 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                         {
                             !isLoadingProducts &&
                             
-                            <div className='cPanelProductsContainer__btnsPagesContainer'>
-                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
+                            <div className='createSaleModalContainer__createSaleModal__btnsPagesContainer'>
+                                <button className='createSaleModalContainer__createSaleModal__btnsPagesContainer__btn'
                                     disabled={!pageInfoProducts.hasPrevPage}
                                     onClick={() => handleChangePage(pageInfoProducts.prevPage)}
                                     >
@@ -672,7 +839,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                 
                                 <span>Página {pageInfoProducts.page} de {pageInfoProducts.totalPages}</span>
 
-                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                <button className='createSaleModalContainer__createSaleModal__btnsPagesContainer__btn'
                                     disabled={!pageInfoProducts.hasNextPage}
                                     onClick={() => handleChangePage(pageInfoProducts.nextPage)}
                                     >

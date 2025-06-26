@@ -2656,7 +2656,7 @@ h2 {
                 &__headerTable {
                     width: 100%;
                     display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+                    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
                     border-bottom: 0.3vh solid #d6d5d5;
                     padding: 2vh 0vh 1vh 0vh;
                     &__item {
@@ -2676,7 +2676,7 @@ h2 {
                 &__itemContainer {
                     width: 100%;
                     display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+                    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
                     border-bottom: 0.3vh solid #d6d5d5;
                     padding: 0.5vh 0vh;
                     &__item {
@@ -2708,6 +2708,10 @@ h2 {
                         }
                         &__description {
                             text-align: center;
+                            font-size: 12px;
+                        }
+                        &__variantes {
+                            @include disFC();
                             font-size: 12px;
                         }
                     }
@@ -2840,7 +2844,7 @@ h2 {
             &__headerTable {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+                grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
                 border-bottom: 0.3vh solid #d6d5d5;
                 padding: 2vh 0vh;
                 &__item {
@@ -2863,7 +2867,7 @@ h2 {
             &__itemContainer {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+                grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
                 border-bottom: 0.3vh solid #d6d5d5;
                 padding: 1vh 0vh;
                 &__item {
@@ -2883,6 +2887,11 @@ h2 {
                     }
                     &__description {
                         text-align: center;
+                        font-size: 12px;
+                    }
+                    &__variantes {
+                        @include disFC();
+                        gap: 0.5vh;
                         font-size: 12px;
                     }
                 }

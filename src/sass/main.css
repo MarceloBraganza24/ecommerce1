@@ -3040,7 +3040,7 @@ h2 {
 .createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 2vh 0vh 1vh 0vh;
 }
@@ -3060,7 +3060,7 @@ h2 {
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 0.5vh 0vh;
 }
@@ -3103,6 +3103,12 @@ h2 {
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__description {
   text-align: center;
+  font-size: 12px;
+}
+.createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__variantes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 12px;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer {
@@ -3269,7 +3275,7 @@ h2 {
 .createSaleModalContainer__createSaleModal__headerTableContainer__headerTable {
   width: 100%;
   display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 2vh 0vh;
 }
@@ -3292,7 +3298,7 @@ h2 {
 .createSaleModalContainer__createSaleModal__productsTable__itemContainer {
   width: 100%;
   display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 1vh 0vh;
 }
@@ -3316,6 +3322,13 @@ h2 {
 }
 .createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__description {
   text-align: center;
+  font-size: 12px;
+}
+.createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__variantes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5vh;
   font-size: 12px;
 }
 .createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer {

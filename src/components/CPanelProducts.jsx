@@ -1,4 +1,4 @@
-import React, {useState,useEffect,useContext} from 'react'
+import React, {useState,useEffect,useContext,useRef} from 'react'
 import NavBar from './NavBar'
 import { useNavigate } from 'react-router-dom'
 import ItemCPanelProduct from './ItemCPanelProduct';
@@ -9,6 +9,7 @@ import Spinner from './Spinner';
 
 const CPanelProducts = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const navigate = useNavigate();
@@ -37,11 +38,7 @@ const CPanelProducts = () => {
     const [showCreateProductModal, setShowCreateProductModal] = useState(false);
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
 
-    /* useEffect(() => {
-        if(user.isLoggedIn) {
-            setShowLogOutContainer(true)
-        }
-    }, [user.isLoggedIn]); */
+    const productsListRef = useRef(null); 
     
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -94,9 +91,19 @@ const CPanelProducts = () => {
         return () => clearTimeout(delay);
     }, [inputFilteredProducts, selectedField]);
     
-    /* useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pageInfo.page]); */
+    useEffect(() => {
+        setIsScrollForced(true);
+
+        if (productsListRef.current) {
+            productsListRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        const timeout = setTimeout(() => {
+            setIsScrollForced(false);
+        }, 1500);
+
+        return () => clearTimeout(timeout);
+    }, [pageInfo.page]);
 
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
@@ -513,6 +520,7 @@ const CPanelProducts = () => {
         <>
             <div className='navbarContainer'>
                 <NavBar
+                isScrollForced={isScrollForced}
                 isLoading={isLoading}
                 isLoadingAuth={isLoadingAuth}
                 user={user}
@@ -638,7 +646,7 @@ const CPanelProducts = () => {
 
                 {
                     products.length != 0 &&
-                    <div className='cPanelProductsContainer__headerTableContainer'>
+                    <div ref={productsListRef} className='cPanelProductsContainer__headerTableContainer'>
 
                         <div className="cPanelProductsContainer__headerTableContainer__headerTable">
 
