@@ -2574,7 +2574,7 @@ h2 {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 99999999;
+    z-index: 999999;
     &__createSaleModal {
         background-color: whitesmoke;
         width: 65%;
@@ -2656,7 +2656,7 @@ h2 {
                 &__headerTable {
                     width: 100%;
                     display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+                    grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
                     border-bottom: 0.3vh solid #d6d5d5;
                     padding: 2vh 0vh 1vh 0vh;
                     &__item {
@@ -2676,7 +2676,7 @@ h2 {
                 &__itemContainer {
                     width: 100%;
                     display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+                    grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
                     border-bottom: 0.3vh solid #d6d5d5;
                     padding: 0.5vh 0vh;
                     &__item {
@@ -2710,7 +2710,24 @@ h2 {
                             text-align: center;
                             font-size: 12px;
                         }
+                        
+                    }
+                    &__itemVariantes {
+                        width: 100%;
+                        @include disFC();
+                        //isplay: flex;
+                        flex-direction: column;
+                        gap: 0.3vh;
                         &__variantes {
+                            //@include disFC();
+                            display: flex;
+                            width: 100%;
+                            gap: 1vh;
+                            padding-left: 1vh;
+                            align-items: center;
+                            font-size: 12px;
+                        }
+                        &__noVariants {
                             @include disFC();
                             font-size: 12px;
                         }
@@ -2892,6 +2909,22 @@ h2 {
                     &__variantes {
                         @include disFC();
                         gap: 0.5vh;
+                        font-size: 12px;
+                    }
+                }
+                &__itemVariantes {
+                    width: 100%;
+                    @include disFC();
+                    flex-direction: column;
+                    gap: 0.3vh;
+                    &__variantes {
+                        width: 100%;
+                        display: flex;
+                        gap: 1vh;
+                        align-items: center;
+                            font-size: 12px;
+                    }
+                    &__noVariants {
                         font-size: 12px;
                     }
                 }

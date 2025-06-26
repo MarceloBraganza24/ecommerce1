@@ -160,7 +160,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        if (!formData.title.trim() || !formData.description.trim() || !formData.price || !formData.state.trim() || !formData.category.trim()) {
+        if (!formData.title.trim() || !formData.description.trim() || !formData.state.trim() || !formData.category.trim()) {
             toast('Debes completar todos los campos', {
                 position: "top-right",
                 autoClose: 2000,

@@ -2937,7 +2937,7 @@ h2 {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 99999999;
+  z-index: 999999;
 }
 .createSaleModalContainer__createSaleModal {
   background-color: whitesmoke;
@@ -3040,7 +3040,7 @@ h2 {
 .createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 2vh 0vh 1vh 0vh;
 }
@@ -3060,7 +3060,7 @@ h2 {
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer {
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 0.5vh 0vh;
 }
@@ -3105,7 +3105,23 @@ h2 {
   text-align: center;
   font-size: 12px;
 }
-.createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__variantes {
+.createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.3vh;
+}
+.createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes {
+  display: flex;
+  width: 100%;
+  gap: 1vh;
+  padding-left: 1vh;
+  align-items: center;
+  font-size: 12px;
+}
+.createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__noVariants {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -3329,6 +3345,24 @@ h2 {
   justify-content: center;
   align-items: center;
   gap: 0.5vh;
+  font-size: 12px;
+}
+.createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.3vh;
+}
+.createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes {
+  width: 100%;
+  display: flex;
+  gap: 1vh;
+  align-items: center;
+  font-size: 12px;
+}
+.createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__noVariants {
   font-size: 12px;
 }
 .createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer {

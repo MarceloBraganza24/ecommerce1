@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 
 const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
+    //console.log(products)
     const [selectedField, setSelectedField] = useState('title');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -21,7 +22,9 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
     const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
-    const handleBtnCreateSale = () => {
+    const handleBtnCloseCreateSaleModal = () => {
+        setAddedProducts([]);
+        setSelectedVariantsMap({});
         setCreateSaleModal(false)
     };
 
@@ -115,6 +118,34 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
     };
 
     const handleBtnConfirmSale = async () => {
+        // ✅ Verificación previa de stock
+        for (let product of addedProducts) {
+            const camposSeleccionados = product.camposSeleccionados || {};
+
+            const varianteSeleccionada = product.variantes?.find(v =>
+                Object.entries(camposSeleccionados).every(
+                    ([key, val]) => v.campos[key] === val
+                )
+            );
+
+            const stockDisponible = varianteSeleccionada?.stock ?? product.stock;
+
+            if (product.quantity > stockDisponible) {
+                    toast(`No hay suficiente stock para ${product.title} (${Object.entries(camposSeleccionados).map(([key, val]) => `${key}: ${val}`).join(', ') || 'sin variante'})`, {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                return; // 👈 evita continuar con la venta
+            }
+        }
+        
         const date = new Date();
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -180,16 +211,93 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         }
     }
 
-    const handleAddProduct = (product) => {
-        if (product.stock < 1) {
-            toast('No hay stock disponible en este producto!', {
+    /* const handleAddProduct = (product) => {
+        const camposSeleccionados = selectedVariantsMap[product._id] || {};
+
+        const varianteSeleccionada = product.variantes?.find(v =>
+            Object.entries(camposSeleccionados).every(
+                ([key, val]) => v.campos[key] === val
+            )
+        );
+
+        const price = varianteSeleccionada?.price ?? product.price;
+        const stock = varianteSeleccionada?.stock ?? product.stock;
+
+        if (stock < 1) {
+            toast('No hay stock disponible en este producto!');
+            return;
+        }
+
+        setAddedProducts(prev => {
+            const existingProduct = prev.find(p =>
+                p._id === product._id &&
+                JSON.stringify(p.camposSeleccionados || {}) === JSON.stringify(camposSeleccionados)
+            );
+
+            const cantidadEnLista = existingProduct?.quantity || 0;
+            const cantidadDisponible = stock - cantidadEnLista;
+
+            if (cantidadDisponible <= 0) {
+                toast('No quedan más unidades disponibles para agregar!');
+                return prev;
+            }
+
+            toast('Has añadido un producto a la venta!');
+
+            if (existingProduct) {
+                return prev.map(p =>
+                    p._id === product._id &&
+                    JSON.stringify(p.camposSeleccionados || {}) === JSON.stringify(camposSeleccionados)
+                        ? { ...p, quantity: p.quantity + 1 }
+                        : p
+                );
+            } else {
+                return [
+                    ...prev,
+                    {
+                        ...product,
+                        price,
+                        stock,
+                        quantity: 1,
+                        camposSeleccionados: camposSeleccionados
+                    }
+                ];
+            }
+        });
+    }; */
+    /* const areCamposIguales = (a = {}, b = {}) => {
+        const aEntries = Object.entries(a).sort();
+        const bEntries = Object.entries(b).sort();
+        return JSON.stringify(aEntries) === JSON.stringify(bEntries);
+    }; */
+    /* const areCamposIguales = (a = {}, b = {}) => {
+        const aKeys = Object.keys(a);
+        const bKeys = Object.keys(b);
+        if (aKeys.length !== bKeys.length) return false;
+        return aKeys.every(key => a[key] === b[key]);
+    }; */
+
+    /* const handleAddProduct = (product) => {
+        const camposSeleccionados = selectedVariantsMap[product._id] || {};
+
+        const varianteSeleccionada = product.variantes?.find(v =>
+            Object.entries(camposSeleccionados).every(
+                ([key, val]) => v.campos[key] === val
+            )
+        );
+
+        const price = varianteSeleccionada?.price ?? product.price;
+        const stock = varianteSeleccionada?.stock ?? product.stock;
+
+        if (stock < 1) {
+            const camposDisplay = Object.keys(product.camposExtras || {}).map((key) => {
+                const value = camposSeleccionados?.[key];
+                return `${key}: ${value ?? '-'}`;
+            }).join(', ');
+
+            toast(`No hay stock disponible para ${product.title} (${camposDisplay || 'sin variante'})`, {
                 position: "top-right",
                 autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
                 theme: "dark",
                 className: "custom-toast",
             });
@@ -197,19 +305,18 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         }
 
         setAddedProducts(prev => {
-            const existingProduct = prev.find(p => p._id === product._id);
+            const existingProduct = prev.find(p =>
+                p._id === product._id &&
+                areCamposIguales(p.camposSeleccionados, camposSeleccionados)
+            );
+
             const cantidadEnLista = existingProduct?.quantity || 0;
-            const cantidadDisponible = product.stock - cantidadEnLista;
+            const cantidadDisponible = stock - cantidadEnLista;
 
             if (cantidadDisponible <= 0) {
-                toast('No quedan más unidades disponibles para agregar!', {
+                toast(`No quedan más unidades disponibles para ${product.title} (${Object.entries(camposSeleccionados).map(([k, v]) => `${k}: ${v}`).join(', ') || 'sin variante'})`, {
                     position: "top-right",
                     autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
                     theme: "dark",
                     className: "custom-toast",
                 });
@@ -219,37 +326,260 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
             toast('Has añadido un producto a la venta!', {
                 position: "top-right",
                 autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
                 theme: "dark",
                 className: "custom-toast",
             });
 
             if (existingProduct) {
                 return prev.map(p =>
-                    p._id === product._id
+                    p._id === product._id &&
+                    areCamposIguales(p.camposSeleccionados, camposSeleccionados)
                         ? { ...p, quantity: p.quantity + 1 }
                         : p
                 );
             } else {
-                return [...prev, { ...product, quantity: 1 }];
+                return [
+                    ...prev,
+                    {
+                        ...product,
+                        price,
+                        stock,
+                        quantity: 1,
+                        camposSeleccionados
+                    }
+                ];
             }
         });
-    };
+    }; */
+    /* const handleAddProduct = (product) => {
+        const camposSeleccionados = selectedVariantsMap[product._id] || {};
 
-    /* const handleIncreaseQuantity = (productId) => {
-        setAddedProducts(prev =>
-            prev.map(product =>
-                product._id === productId && product.quantity < product.stock
-                    ? { ...product, quantity: product.quantity + 1 }
-                    : product
+        const varianteSeleccionada = product.variantes?.find(v =>
+            Object.entries(camposSeleccionados).every(
+                ([key, val]) => v.campos?.[key] === val
             )
         );
+
+        const price = varianteSeleccionada?.price ?? product.price;
+        const stock = varianteSeleccionada?.stock ?? product.stock;
+
+        // Si no hay stock, mostrar toast y salir
+        if (stock < 1) {
+            const hasVariants = Object.keys(camposSeleccionados || {}).length > 0;
+
+            toast(
+                hasVariants
+                    ? `No hay stock disponible para "${product.title}" con la variante seleccionada`
+                    : `No hay stock disponible para "${product.title}" (sin variante)`,
+                {
+                    position: "top-right",
+                    autoClose: 2000,
+                    theme: "dark",
+                    className: "custom-toast",
+                }
+            );
+            return;
+        }
+
+        // Añadir o actualizar producto
+        setAddedProducts(prev => {
+            const existingProduct = prev.find(p =>
+                p._id === product._id &&
+                areCamposIguales(p.camposSeleccionados, camposSeleccionados)
+            );
+
+            const cantidadEnLista = existingProduct?.quantity || 0;
+            const cantidadDisponible = stock - cantidadEnLista;
+
+            if (cantidadDisponible <= 0) {
+                const hasVariants = Object.keys(camposSeleccionados || {}).length > 0;
+
+                toast('No quedan más unidades disponibles para agregar! Ya agregaste todas las unidades disponibles',{
+                        position: "top-right",
+                        autoClose: 2000,
+                        theme: "dark",
+                        className: "custom-toast",
+                    }
+                );
+                return prev;
+            }
+
+            toast('Has añadido un producto a la venta!', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+
+            if (existingProduct) {
+                return prev.map(p =>
+                    p._id === product._id &&
+                    areCamposIguales(p.camposSeleccionados, camposSeleccionados)
+                        ? { ...p, quantity: p.quantity + 1 }
+                        : p
+                );
+            } else {
+                return [
+                    ...prev,
+                    {
+                        ...product,
+                        price,
+                        stock,
+                        quantity: 1,
+                        camposSeleccionados: camposSeleccionados
+                    }
+                ];
+            }
+        });
     }; */
-    const handleIncreaseQuantity = (productId) => {
+    /* const areCamposIguales = (a = {}, b = {}) => {
+        const aEntries = Object.entries(a).sort();
+        const bEntries = Object.entries(b).sort();
+
+        return (
+            aEntries.length === bEntries.length &&
+            aEntries.every(([key, val], i) => key === bEntries[i][0] && val === bEntries[i][1])
+        );
+    }; */
+    const getProductKey = (productId, camposSeleccionados = {}) => {
+        const sortedCampos = Object.entries(camposSeleccionados)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([key, val]) => `${key}:${val}`)
+            .join('|');
+        return `${productId}__${sortedCampos}`;
+    }; 
+
+    const areAllVariantsSelected = (product) => {
+        const selectedCampos = selectedVariantsMap[product._id] || {};
+        const variantesKeys = Object.keys(product.camposExtras || {});
+
+        return variantesKeys.every(key => selectedCampos[key] && selectedCampos[key] !== '');
+    };
+
+
+    const handleAddProduct = (product, camposSeleccionados = {}, productKey) => {
+
+        const camposRequeridos = Object.keys(product.camposExtras || {});
+        if (camposRequeridos.length > 0) {
+            const todasVariantesSeleccionadas = camposRequeridos.every(
+            campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+            );
+
+            if (!todasVariantesSeleccionadas) {
+            toast('Por favor selecciona todas las variantes antes de añadir el producto.', {
+                position: 'top-right',
+                autoClose: 3000,
+                theme: 'dark',
+            });
+            return;
+            }
+        }
+
+        const varianteSeleccionada = product.variantes?.find(v =>
+            Object.entries(camposSeleccionados).every(
+                ([key, val]) => v.campos?.[key] === val
+            )
+        );
+
+        const price = varianteSeleccionada?.price ?? product.price;
+        const stock = varianteSeleccionada?.stock ?? product.stock;
+
+        if (stock < 1) {
+            const hasVariants = Object.keys(camposSeleccionados || {}).length > 0;
+
+            toast(
+                hasVariants
+                    ? `No hay stock disponible para "${product.title}" con la variante seleccionada`
+                    : `No hay stock disponible para "${product.title}" (sin variante)`,
+                {
+                    position: "top-right",
+                    autoClose: 2000,
+                    theme: "dark",
+                    className: "custom-toast",
+                }
+            );
+            return;
+        }
+
+        setAddedProducts(prev => {
+            console.log('addedProducts actuales:', prev.map(p => p._uniqueKey));
+
+            const existingProduct = prev.find(p =>
+                (p._uniqueKey && p._uniqueKey === productKey) ||
+                (
+                    p._id === product._id &&
+                    JSON.stringify(p.camposSeleccionados || {}) === JSON.stringify(camposSeleccionados)
+                )
+            );
+
+            const cantidadEnLista = existingProduct?.quantity || 0;
+            const cantidadDisponible = stock - cantidadEnLista;
+
+            if (cantidadDisponible <= 0) {
+                toast('No quedan más unidades disponibles para agregar!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                return prev;
+            }
+
+            if (existingProduct) {
+                toast('Cantidad incrementada!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+
+                return prev.map(p =>
+                    (p._uniqueKey && p._uniqueKey === productKey) ||
+                    (
+                        p._id === product._id &&
+                        JSON.stringify(p.camposSeleccionados || {}) === JSON.stringify(camposSeleccionados)
+                    )
+                        ? { ...p, quantity: p.quantity + 1 }
+                        : p
+                );
+            }
+
+            toast('Producto añadido a la venta!', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+
+            return [
+                ...prev,
+                {
+                    ...product,
+                    price,
+                    stock,
+                    quantity: 1,
+                    camposSeleccionados,
+                    _uniqueKey: productKey
+                }
+            ];
+        });
+        setSelectedVariantsMap(prev => {
+            const newMap = { ...prev };
+            delete newMap[product._id];
+            return newMap;
+        }); 
+    };
+
+
+
+
+
+
+
+
+
+
+    /* const handleIncreaseQuantity = (productId) => {
         setAddedProducts(prev =>
             prev.map(product => {
                 if (product._id !== productId) return product;
@@ -281,10 +611,42 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                 }
             })
         );
+    }; */
+    const handleIncreaseQuantity = (productKey) => {
+        setAddedProducts(prev =>
+            prev.map(product => {
+            if (product._uniqueKey !== productKey) return product;
+
+            const varianteSeleccionada = product.variantes?.find(v =>
+                Object.entries(product.camposSeleccionados || {}).every(
+                ([key, val]) => v.campos?.[key] === val
+                )
+            );
+
+            const stockDisponible = varianteSeleccionada?.stock ?? product.stock;
+
+            if (product.quantity < stockDisponible) {
+                return { ...product, quantity: product.quantity + 1 };
+            } else {
+                toast('No hay más stock disponible para esta variante', { /* config toast */ });
+                return product;
+            }
+            })
+        );
+    };
+
+    const handleDecreaseQuantity = (productKey) => {
+        setAddedProducts(prev =>
+            prev.map(product =>
+            product._uniqueKey === productKey && product.quantity > 1
+                ? { ...product, quantity: product.quantity - 1 }
+                : product
+            )
+        );
     };
 
 
-    const handleDecreaseQuantity = (productId) => {
+    /* const handleDecreaseQuantity = (productId) => {
         setAddedProducts(prev =>
             prev.map(product =>
                 product._id === productId && product.quantity > 1
@@ -292,10 +654,14 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                     : product
             )
         );
-    };
+    }; */
 
-    const handleRemoveProduct = (productId) => {
+    /* const handleRemoveProduct = (productId) => {
         setAddedProducts(addedProducts.filter(product => product._id !== productId));
+    }; */
+    
+    const handleRemoveProduct = (productKey) => {
+      setAddedProducts(prev => prev.filter(p => p._uniqueKey !== productKey));
     };
 
     const handleInputFilteredProducts = (e) => {
@@ -424,7 +790,6 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         }
     };
 
-
     return (
 
         <>
@@ -434,7 +799,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                 <div className='createSaleModalContainer__createSaleModal'>
 
                     <div className='createSaleModalContainer__createSaleModal__btnCloseModal'>
-                        <div onClick={handleBtnCreateSale} className='createSaleModalContainer__createSaleModal__btnCloseModal__prop'>X</div>
+                        <div onClick={handleBtnCloseCreateSaleModal} className='createSaleModalContainer__createSaleModal__btnCloseModal__prop'>X</div>
                     </div>
 
                     <div className='createSaleModalContainer__createSaleModal__title'>
@@ -482,7 +847,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__list'>
                                 {addedProducts.map(product => (
 
-                                    <div key={product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer'>
+                                    <div key={product._uniqueKey || product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer'>
 
                                         <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
                                             <img className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
@@ -498,40 +863,57 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
 
                                         {
                                             product.variantes?.length > 0 ? (
-                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes">
                                                 {Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
                                                     const opciones = opcionesStr.split(',').map(op => op.trim());
 
                                                     return (
-                                                    <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__variantes'>
-                                                        <div>{atributo}</div>
+                                                    <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes'>
+                                                        <div>{atributo}:</div>
                                                         <select
                                                         value={product.camposSeleccionados?.[atributo] || ''}
                                                         onChange={(e) => {
-                                                            const value = e.target.value;
-                                                            setAddedProducts(prev =>
-                                                                prev.map(p => {
-                                                                    if (p._id !== product._id) return p;
+                                                        const value = e.target.value;
 
-                                                                    const nuevosCampos = {
-                                                                        ...p.camposSeleccionados,
-                                                                        [atributo]: value
-                                                                    };
+                                                        setAddedProducts(prev => {
+                                                            const prevSinEste = prev.filter(p => p._uniqueKey !== product._uniqueKey);
 
-                                                                    const varianteSeleccionada = p.variantes.find(v => {
-                                                                        return Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val);
-                                                                    });
+                                                            const nuevosCampos = {
+                                                                ...product.camposSeleccionados,
+                                                                [atributo]: value
+                                                            };
 
-                                                                    return {
-                                                                        ...p,
-                                                                        camposSeleccionados: nuevosCampos,
-                                                                        price: varianteSeleccionada?.price ?? p.price,
-                                                                        stock: varianteSeleccionada?.stock ?? p.stock,
-                                                                        quantity: 1
-                                                                    };
-                                                                })
+                                                            const newKey = getProductKey(product._id, nuevosCampos);
+
+                                                            const yaExiste = prevSinEste.some(p => p._uniqueKey === newKey);
+
+                                                            if (yaExiste) {
+                                                                toast('Ya has añadido este producto con esa variante.', {
+                                                                    position: "top-right",
+                                                                    autoClose: 2000,
+                                                                    theme: "dark",
+                                                                    className: "custom-toast",
+                                                                });
+                                                                return prev;
+                                                            }
+
+                                                            const varianteSeleccionada = product.variantes.find(v =>
+                                                                Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val)
                                                             );
-                                                        }}
+
+                                                            const actualizado = {
+                                                                ...product,
+                                                                camposSeleccionados: nuevosCampos,
+                                                                price: varianteSeleccionada?.price ?? product.price,
+                                                                stock: varianteSeleccionada?.stock ?? product.stock,
+                                                                quantity: 1,
+                                                                _uniqueKey: newKey
+                                                            };
+
+                                                            return [...prevSinEste, actualizado];
+                                                        });
+                                                    }}
+
                                                         >
                                                         {opciones.map((op, idx) => (
                                                             <option key={idx} value={op}>{op}</option>
@@ -542,7 +924,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                                 })}
                                                 </div>
                                             ) : (
-                                                    <span className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__variantes'>-</span>
+                                                <span className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__noVariants'>-</span>
                                                 )
                                         }
 
@@ -578,9 +960,9 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
 
                                         <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
                                             <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity">
-                                                <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleDecreaseQuantity(product._id)}>-</button>
+                                                <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleDecreaseQuantity(product._uniqueKey)}>-</button>
                                                 <span>{product.quantity}</span>
-                                                <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleIncreaseQuantity(product._id)}>+</button>
+                                                <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleIncreaseQuantity(product._uniqueKey)}>+</button>
                                             </div>
                                         </div>
 
@@ -590,7 +972,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
 
                                         <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer'>
 
-                                            <button onClick={() => handleRemoveProduct(product._id)} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer__btn'>Borrar</button>
+                                            <button onClick={() => handleRemoveProduct(product._uniqueKey)} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer__btn'>Borrar</button>
 
                                         </div>
 
@@ -727,103 +1109,144 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                     </div>
                                 </>
                             :
-                                products.map((product) => (
+                                products.map((product) => {
+                                    const camposSeleccionados = selectedVariantsMap[product._id] || {};
+                                    const productKey = getProductKey(product._id, camposSeleccionados);
+
+                                    console.log('Variantes seleccionadas para', product._id, camposSeleccionados);
+
+                                    return (
                                     
-                                    
-                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer">
-                                        {console.log(product)}
+                                        <div key={productKey} className="createSaleModalContainer__createSaleModal__productsTable__itemContainer">
 
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedProducts.includes(product._id)}
-                                                onChange={() => toggleSelectProduct(product._id)}
-                                            />
-                                        </div>
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedProducts.includes(product._id)}
+                                                    onChange={() => toggleSelectProduct(product._id)}
+                                                />
+                                            </div>
 
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <img className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
-                                        </div>
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <img className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
+                                            </div>
 
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.title}</div>
-                                        </div>
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.title}</div>
+                                            </div>
 
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__description">{product.description}</div>
-                                        </div>
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__description">{product.description}</div>
+                                            </div>
 
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            {
-                                                product.variantes?.length > 0 ? (
-                                                    Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
-                                                        const opciones = opcionesStr.split(',').map(op => op.trim());
-
-                                                        return (
-                                                            <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__variantes'>
-                                                                <div>{atributo}</div>
-                                                                <select
-                                                                    value={selectedVariantsMap[product._id]?.[atributo] || ''}
-                                                                    onChange={(e) => {
-                                                                        const value = e.target.value;
-                                                                        setSelectedVariantsMap(prev => ({
-                                                                            ...prev,
-                                                                            [product._id]: {
-                                                                                ...prev[product._id],
-                                                                                [atributo]: value
-                                                                            }
-                                                                        }));
-                                                                    }}
-                                                                >
-                                                                    {/* <option value="" disabled>{`Seleccionar ${atributo}`}</option> */}
-                                                                    {opciones.map((op, idx) => (
-                                                                        <option key={idx} value={op}>{op}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-                                                        );
-                                                    })
-                                                ) : (
-                                                    <span>-</span>
-                                                )
-                                            }
-                                        </div>
-
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes">
                                                 {
-                                                    product.variantes?.length > 0
-                                                        ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
-                                                        : `$ ${product.price}`
+                                                    product.variantes?.length > 0 ? (
+                                                        Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                            const opciones = opcionesStr.split(',').map(op => op.trim());
+
+                                                            return (
+                                                                <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes'>
+                                                                    <div>{atributo}</div>
+                                                                    <select
+                                                                        value={selectedVariantsMap[product._id]?.[atributo] || ''}
+                                                                        /* onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            setSelectedVariantsMap(prev => ({
+                                                                                ...prev,
+                                                                                [product._id]: {
+                                                                                    ...prev[product._id],
+                                                                                    [atributo]: value
+                                                                                }
+                                                                            }));
+                                                                        }} */
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            setSelectedVariantsMap(prev => {
+                                                                                const newMap = {
+                                                                                ...prev,
+                                                                                [product._id]: {
+                                                                                    ...prev[product._id],
+                                                                                    [atributo]: value
+                                                                                }
+                                                                                };
+                                                                                console.log('selectedVariantsMap actualizado:', newMap);
+                                                                                return newMap;
+                                                                            });
+                                                                        }}
+                                                                    >
+                                                                        <option value="" disabled>{`Seleccionar ${atributo}`}</option>
+                                                                        {opciones.map((op, idx) => (
+                                                                            <option key={idx} value={op}>{op}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </div>
+                                                            );
+                                                        })
+                                                    ) : (
+                                                        <span className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__noVariants'>-</span>
+                                                    )
                                                 }
                                             </div>
-                                        </div>
 
-                                        {/* Stock */}
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
-                                                {
-                                                    product.variantes?.length > 0
-                                                        ? getSelectedVariante(product)?.stock ?? '-'
-                                                        : product.stock
-                                                }
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                                    {
+                                                        product.variantes?.length > 0
+                                                            ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
+                                                            : `$ ${product.price}`
+                                                    }
+                                                </div>
                                             </div>
+
+                                            {/* Stock */}
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                                    {
+                                                        product.variantes?.length > 0
+                                                            ? getSelectedVariante(product)?.stock ?? '-'
+                                                            : product.stock
+                                                    }
+                                                </div>
+                                            </div>
+
+
+                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category}</div>
+                                            </div>
+
+                                            <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
+
+                                                {/* <button onClick={() => {console.log('Añadir producto con variantes:', selectedVariantsMap[product._id]);handleAddProduct(product, camposSeleccionados, productKey)}} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'>Añadir</button> */}
+                                                <button
+                                                    onClick={() => {
+                                                    // Validar que todas las variantes tengan valor seleccionado
+                                                    const campos = selectedVariantsMap[product._id] || {};
+                                                    const faltan = Object.values(campos).some(v => !v);
+                                                    if (product.variantes?.length > 0 && faltan) {
+                                                        toast('Por favor selecciona todas las variantes');
+                                                        return;
+                                                    }
+
+                                                    console.log('Añadiendo producto:', product._id);
+                                                    console.log('Con variantes:', campos);
+
+                                                    const key = getProductKey(product._id, campos);
+                                                    console.log('Clave única:', key);
+
+                                                    // Aquí llamás a la función para agregar producto:
+                                                    handleAddProduct(product, campos, key);
+                                                    }}
+                                                >
+                                                    Añadir
+                                                </button>
+
+                                            </div>
+
                                         </div>
-
-
-                                        <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category}</div>
-                                        </div>
-
-                                        <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
-
-                                            <button onClick={() => handleAddProduct(product)} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'>Añadir</button>
-
-                                        </div>
-
-                                    </div>
+                                    )
                                     
-                                ))
+                                })
                         }
                         
                         {
