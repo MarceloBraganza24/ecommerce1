@@ -4,6 +4,7 @@ import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
 const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selectedField,categories,selectedProducts,setSelectedProducts,toggleSelectProduct}) => {
+    //console.log(product)
     const [loading, setLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
@@ -69,13 +70,20 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">$ {product.price}</div>
+                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
+                        {
+                            product.variantes && product.variantes.length != 0 ?
+                            <div onClick={() => setShowUpdateModal(true)} style={{cursor:'pointer'}}>Ver precios</div>
+                            :
+                            <div>$ {product.price}</div>    
+                        }
+                    </div>
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
                     <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
                         {
-                            product.variantes.length != 0 ?
+                            product.variantes && product.variantes.length != 0 ?
                             <div onClick={() => setShowUpdateModal(true)} style={{cursor:'pointer'}}>Ver stock</div>
                             :
                             product.stock 

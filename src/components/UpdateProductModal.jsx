@@ -16,7 +16,8 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         camposDinamicos: []
     });
     const [variantes, setVariantes] = useState([]); 
-    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, stock: 0 });
+    //console.log(variantes)
+    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, price: '', stock: '' });
 
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
 
@@ -39,11 +40,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                 images: imagenesDelBackend
             }));
             
-            /* const camposExtras = product.camposExtras || {};
-            const camposDinamicosNormalizados = Object.entries(camposExtras).reduce((acc, [key, value]) => {
-                acc[key.toLowerCase()] = value;
-                return acc;
-            }, {}); */
             const camposExtras = product.camposExtras || {};
             const camposDinamicosArray = Object.entries(camposExtras).map(([key, value]) => ({
                 key,
@@ -112,55 +108,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         });
     };
 
-    /* const handleAddCampo = () => {
-        const keyTrimmed = nuevoCampo.key.trim();
-        const valueTrimmed = nuevoCampo.value.trim();
-    
-        const regex = /^[A-Za-z0-9 ,]+$/;
-        if (!regex.test(keyTrimmed) || !regex.test(valueTrimmed)) {
-            toast('Los campos solo deben contener letras, números y espacios.', {
-              position: "top-right",
-              autoClose: 2000,
-              theme: "dark",
-              className: "custom-toast",
-            });
-            return;
-        }
-    
-        if (!keyTrimmed || !valueTrimmed) {
-            toast('Los dos campos son requeridos', {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return;
-        }
-    
-        const existe = formData.camposDinamicos.hasOwnProperty(keyTrimmed.toLowerCase());
-    
-        if (existe) {
-            toast(`El campo "${keyTrimmed}" ya existe`, {
-              position: "top-right",
-              autoClose: 2000,
-              theme: "dark",
-              className: "custom-toast",
-            });
-            return;
-        }
-    
-        const nuevo = {
-            ...formData.camposDinamicos,
-            [keyTrimmed.toLowerCase()]: valueTrimmed // Añadir nuevo campo al objeto
-        };
-    
-        setFormData(prev => ({
-            ...prev,
-            camposDinamicos: nuevo
-        }));
-    
-        setNuevoCampo({ key: '', value: '' });
-    }; */
     const handleAddCampo = () => {
         const keyTrimmed = nuevoCampo.key.trim();
         const valueTrimmed = nuevoCampo.value.trim();
@@ -210,7 +157,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         setNuevoCampo({ key: '', value: '' });
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
     
@@ -246,11 +192,12 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         const formToSend  = new FormData();
         formToSend.append('title', formData.title);
         formToSend.append('description', formData.description);
-        formToSend.append('price', formData.price);
         if (variantes.length > 0) {
             formToSend.append('variantes', JSON.stringify(variantes));
         } else {
+            formToSend.append('price', formData.price);
             formToSend.append('stock', formData.stock);
+            formToSend.append('variantes', JSON.stringify([])); 
         }
         formToSend.append('state', formData.state);
         formToSend.append('category', formData.category);
@@ -332,6 +279,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             ...prev,
             camposDinamicos: nuevosCampos
         }));
+        setVariantes([])
     };
 
     const handleChangeNuevoCampo = (e) => {
@@ -415,7 +363,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
         // Si pasa las validaciones, agregar
         setVariantes([...variantes, nuevaVariante]);
-        setNuevaVariante({ campos: {}, stock: 0 });
+        setNuevaVariante({ campos: {}, price: '', stock: '' });
     }
 
     return (
@@ -513,42 +461,44 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                         </div>
 
-                        <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
-
-                            <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Precio</div>
-                            <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                <input
-                                    name='price'
-                                    placeholder='Precio'
-                                    type="number"
-                                    value={formData.price}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
-                                    required
-                                />
-                            </div>
-
-                        </div>
 
                         {
-                            variantes.length == 0 &&
+                            formData.camposDinamicos.length == 0 &&
+                            <>
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
 
-                            <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
+                                    <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Precio</div>
+                                    <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
+                                        <input
+                                            name='price'
+                                            placeholder='Precio'
+                                            type="number"
+                                            value={formData.price}
+                                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                            className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
+                                            required
+                                        />
+                                    </div>
 
-                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Stock</div>
-                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                    <input
-                                        name='stock'
-                                        placeholder='Stock'
-                                        type="number"
-                                        value={formData.stock}
-                                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                                        className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
-                                        required
-                                    />
                                 </div>
 
-                            </div>
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
+
+                                    <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Stock</div>
+                                    <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
+                                        <input
+                                            name='stock'
+                                            placeholder='Stock'
+                                            type="number"
+                                            value={formData.stock}
+                                            onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                                            className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
+                                            required
+                                        />
+                                    </div>
+
+                                </div>
+                            </>
                         }
 
                         <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct'>
@@ -625,44 +575,72 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                 </div>
                             </div>
                         ))}
+                        {
+                            formData.camposDinamicos.length > 0 &&
+                            <ul>
+                                {
+                                    variantes.length > 0 &&
+                                    <strong>Variantes:</strong>  
+                                }
+                                {variantes.map((v, i) => (
+                                    <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
+                                    <div style={{ marginBottom: '4px' }}>
+                                        {/* <strong>Variante:</strong>  */}{Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
+                                    </div>
 
-                        <ul>
-                            {variantes.map((v, i) => (
-                                <li key={i} style={{ marginBottom: '8px' }}>
-                                {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')} | → Stock:&nbsp; 
-                                
-                                <input
-                                    type="number"
-                                    value={v.stock}
-                                    onChange={(e) => {
-                                    const nuevasVariantes = [...variantes];
-                                    nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
-                                    setVariantes(nuevasVariantes);
-                                    }}
-                                    style={{ width: '60px', textAlign:'center' }}
-                                />
+                                    <div style={{ marginBottom: '4px' }}>
+                                        <label>
+                                        Precio:&nbsp; $&nbsp;
+                                        <input
+                                            type="number"
+                                            value={v.price}
+                                            onChange={(e) => {
+                                                const nuevasVariantes = [...variantes];
+                                                nuevasVariantes[i].price = parseInt(e.target.value) || 0;
+                                                setVariantes(nuevasVariantes);
+                                            }}
+                                            style={{ width: '80px', textAlign: 'center' }}
+                                        />
+                                        </label>
+                                    </div>
 
-                                <button
-                                    onClick={() => {
-                                    const nuevasVariantes = [...variantes];
-                                    nuevasVariantes.splice(i, 1);
-                                    setVariantes(nuevasVariantes);
-                                    }}
-                                    style={{
-                                    marginLeft: '10px',
-                                    color: 'white',
-                                    background: 'red',
-                                    border: 'none',
-                                    padding: '4px 8px',
-                                    cursor: 'pointer',
-                                    }}
-                                >
-                                    Eliminar
-                                </button>
-                                </li>
-                            ))}
-                        </ul>
+                                    <div style={{ marginBottom: '4px' }}>
+                                        <label>
+                                        Stock:&nbsp;
+                                        <input
+                                            type="number"
+                                            value={v.stock}
+                                            onChange={(e) => {
+                                                const nuevasVariantes = [...variantes];
+                                                nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
+                                                setVariantes(nuevasVariantes);
+                                            }}
+                                            style={{ width: '80px', textAlign: 'center' }}
+                                        />
+                                        </label>
+                                    </div>
 
+                                    <button
+                                        onClick={() => {
+                                            const nuevasVariantes = [...variantes];
+                                            nuevasVariantes.splice(i, 1);
+                                            setVariantes(nuevasVariantes);
+                                        }}
+                                        style={{
+                                        marginTop: '4px',
+                                        color: 'white',
+                                        background: 'red',
+                                        border: 'none',
+                                        padding: '4px 8px',
+                                        cursor: 'pointer',
+                                        }}
+                                    >
+                                        Eliminar
+                                    </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        }
 
                         <div className='updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer'>
 
@@ -738,13 +716,24 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                     })
                                 }
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>precio</div>
+                                    <input
+                                    className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
+                                    type="number"
+                                    placeholder="Precio"
+                                    value={nuevaVariante.price}
+                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, price: parseInt(e.target.value) || '' })}
+                                    />
+                                </div>
+
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
                                     <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"
                                     placeholder="Stock"
                                     value={nuevaVariante.stock}
-                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || 0 })}
+                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
                                     />
                                 </div>
 

@@ -65,11 +65,11 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
 
         const fetchFilteredProducts = async () => {
             try {
-                const res = await fetch(`http://localhost:8081/api/products/byPage?page=1&search=${searchTerm}&field=all`)
+                const res = await fetch(`http://localhost:8081/api/products/navbar-search?search=${searchTerm}`)
                 const data = await res.json();
                 //console.log(data)
-                setFilteredProducts(data.data.docs); // si usás paginación con mongoose-paginate
-                setShowDropdown(data.data.docs.length > 0);
+                setFilteredProducts(data.data); // si usás paginación con mongoose-paginate
+                setShowDropdown(data.data.length > 0);
             } catch (err) {
                 console.error('Error al buscar productos:', err);
             }

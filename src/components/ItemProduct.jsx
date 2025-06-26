@@ -7,8 +7,6 @@ import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { toast } from 'react-toastify';
 
-
-
 const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,description,price,userCart}) => {
     const [loading, setLoading] = useState(null);
     const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
@@ -19,7 +17,7 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
-    const addToCartAndSave = async () => {
+    /* const addToCartAndSave = async () => {
         if (!user_id) {
             toast("Debes iniciar sesión para agregar productos al carrito", {
                 position: "top-right",
@@ -109,13 +107,13 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
             });
             return false;
         }
-    };
+    }; */
 
-    const handleAddToCart = async () => {
+    /* const handleAddToCart = async () => {
         setLoading("addToCartAndSave");
         const success = await addToCartAndSave();
         setLoading(null);
-    };
+    }; */
 
     const handleLinkToItemDetail = () => {
         window.location.href = `/item/${id}`
@@ -164,11 +162,11 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
                 <div className='itemProduct__btnContainer'>
 
                     <button 
-                        onClick={handleAddToCart} 
-                        disabled={loading === 'addToCartAndSave'} 
+                        onClick={handleLinkToItemDetail} 
+                        //disabled={loading === 'addToCartAndSave'} 
                         className='itemProduct__btnContainer__btn'
                     >
-                        {loading === 'addToCartAndSave' ? <Spinner/> : "Agregar al Carrito"}
+                        Ver detalle
                     </button>
 
                 </div>

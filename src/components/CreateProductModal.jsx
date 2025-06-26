@@ -230,6 +230,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
     
             const data = await res.json();
+            console.log(data)
             if(data.error === 'There is already a product with that title') {
                 toast('Ya existe un producto con ese título!', {
                     position: "top-right",
@@ -491,42 +492,44 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                         </div>
 
-                        <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
-
-                            <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Precio</div>
-                            <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
-                                <input
-                                    name='price'
-                                    placeholder='Precio'
-                                    type="number"
-                                    value={product.price}
-                                    onChange={(e) => setProduct({ ...product, price: e.target.value })}
-                                    className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
-                                    required
-                                />
-                            </div>
-
-                        </div>
                         
                         {
-                            variantes.length == 0 &&
+                            product.camposDinamicos.length == 0 &&
+                            <>
+                                <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
 
-                            <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
-
-                                <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Stock</div>
-                                <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
-                                    <input
-                                        name='stock'
-                                        placeholder='Stock'
-                                        type="number"
-                                        value={product.stock}
-                                        onChange={(e) => setProduct({ ...product, stock: e.target.value })}
-                                        className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
-                                        required
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Precio</div>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
+                                        <input
+                                            name='price'
+                                            placeholder='Precio'
+                                            type="number"
+                                            value={product.price}
+                                            onChange={(e) => setProduct({ ...product, price: e.target.value })}
+                                            className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
+                                            required
                                         />
+                                    </div>
+
                                 </div>
 
-                            </div>
+                                <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
+
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Stock</div>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
+                                        <input
+                                            name='stock'
+                                            placeholder='Stock'
+                                            type="number"
+                                            value={product.stock}
+                                            onChange={(e) => setProduct({ ...product, stock: e.target.value })}
+                                            className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
+                                            required
+                                            />
+                                    </div>
+
+                                </div>
+                            </>
                         }
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
@@ -600,71 +603,72 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                             </div>
                         ))}
-                        
-                        <ul>
-                            {
-                                variantes.length > 0 &&
-                                <strong>Variantes:</strong>  
-                            }
-                            {variantes.map((v, i) => (
-                                <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
-                                <div style={{ marginBottom: '4px' }}>
-                                    {/* <strong>Variante:</strong>  */}{Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
-                                </div>
+                        {
+                            product.camposDinamicos.length > 0 &&
+                            <ul>
+                                {
+                                    variantes.length > 0 &&
+                                    <strong>Variantes:</strong>  
+                                }
+                                {variantes.map((v, i) => (
+                                    <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
+                                    <div style={{ marginBottom: '4px' }}>
+                                        {/* <strong>Variante:</strong>  */}{Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
+                                    </div>
 
-                                <div style={{ marginBottom: '4px' }}>
-                                    <label>
-                                    Precio:&nbsp;
-                                    <input
-                                        type="number"
-                                        value={v.price}
-                                        onChange={(e) => {
+                                    <div style={{ marginBottom: '4px' }}>
+                                        <label>
+                                        Precio:&nbsp;
+                                        <input
+                                            type="number"
+                                            value={v.price}
+                                            onChange={(e) => {
+                                                const nuevasVariantes = [...variantes];
+                                                nuevasVariantes[i].price = parseInt(e.target.value) || 0;
+                                                setVariantes(nuevasVariantes);
+                                            }}
+                                            style={{ width: '80px', textAlign: 'center' }}
+                                        />
+                                        </label>
+                                    </div>
+
+                                    <div style={{ marginBottom: '4px' }}>
+                                        <label>
+                                        Stock:&nbsp;
+                                        <input
+                                            type="number"
+                                            value={v.stock}
+                                            onChange={(e) => {
+                                                const nuevasVariantes = [...variantes];
+                                                nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
+                                                setVariantes(nuevasVariantes);
+                                            }}
+                                            style={{ width: '80px', textAlign: 'center' }}
+                                        />
+                                        </label>
+                                    </div>
+
+                                    <button
+                                        onClick={() => {
                                             const nuevasVariantes = [...variantes];
-                                            nuevasVariantes[i].price = parseInt(e.target.value) || 0;
+                                            nuevasVariantes.splice(i, 1);
                                             setVariantes(nuevasVariantes);
                                         }}
-                                        style={{ width: '80px', textAlign: 'center' }}
-                                    />
-                                    </label>
-                                </div>
-
-                                <div style={{ marginBottom: '4px' }}>
-                                    <label>
-                                    Stock:&nbsp;
-                                    <input
-                                        type="number"
-                                        value={v.stock}
-                                        onChange={(e) => {
-                                            const nuevasVariantes = [...variantes];
-                                            nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
-                                            setVariantes(nuevasVariantes);
+                                        style={{
+                                        marginTop: '4px',
+                                        color: 'white',
+                                        background: 'red',
+                                        border: 'none',
+                                        padding: '4px 8px',
+                                        cursor: 'pointer',
                                         }}
-                                        style={{ width: '80px', textAlign: 'center' }}
-                                    />
-                                    </label>
-                                </div>
-
-                                <button
-                                    onClick={() => {
-                                        const nuevasVariantes = [...variantes];
-                                        nuevasVariantes.splice(i, 1);
-                                        setVariantes(nuevasVariantes);
-                                    }}
-                                    style={{
-                                    marginTop: '4px',
-                                    color: 'white',
-                                    background: 'red',
-                                    border: 'none',
-                                    padding: '4px 8px',
-                                    cursor: 'pointer',
-                                    }}
-                                >
-                                    Eliminar
-                                </button>
-                                </li>
-                            ))}
-                        </ul>
-
+                                    >
+                                        Eliminar
+                                    </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        }
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer'>
 

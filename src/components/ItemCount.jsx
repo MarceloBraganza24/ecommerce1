@@ -48,7 +48,7 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
         setCount(1);
     },[selectedVariant])
 
-    const increment = () => {
+    /* const increment = () => {
         if (count < stockVariante) {
             setCount(count + 1);
         } else {
@@ -68,7 +68,42 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
                 setUltimoToast(ahora); // Actualiza el tiempo del último toast
             }
         }
+    }; */
+    //const stockDisponible = Number(stockVariante > 0 ? stockVariante : stock ?? 0);
+    const stockDisponible = variantes?.length > 0
+    ? stockVariante // usar siempre la variante si existen
+    : stock ?? 0;
+
+    const increment = () => {
+        console.log('Increment clicked, count:', count, 'stockDisponible:', stockDisponible);
+        setCount(prevCount => {
+            console.log('PrevCount:', prevCount);
+            if (prevCount < stockDisponible) {
+                console.log('Incrementing count');
+                return prevCount + 1;
+            } else {
+                console.log('No stock disponible, showing toast');
+                const ahora = Date.now();
+                if (ahora - ultimoToast >= tiempoEspera) {
+                    toast('No hay mas disponibilidad de la ingresada!', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setUltimoToast(ahora);
+                }
+                return prevCount;
+            }
+        });
     };
+
+
 
     const decrement = () => {
         setCount((prevCount) => Math.max(prevCount - 1, 1));
@@ -275,21 +310,26 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
                 <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={decrement}>-</button> : <button disabled className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={decrement}>-</button>
             }
 
-            { stockVariante > 0 ?
+            {/* { stockVariante > 0 ?
                 <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>{count}</div>
                 :
                 <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>0</div>
-            }
+            } */}
+            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>
+                { stockDisponible > 0 ? count : 0 }
+            </div>
 
             <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={increment}>+</button>
 
             {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div> */}
-            {
-                variantes?.length == 0 ?
-                <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stock} Disponibles)</div>
-                :
-                <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div>
-            }
+            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
+                ({(variantes?.length > 0 
+                    ? (stockVariante >= 10 ? '+10' : stockVariante) 
+                    : (stock >= 10 ? '+10' : stock)
+                    )} Disponibles)
+            </div>
+            {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockDisponible < 10 ? stockDisponible : '+10'} Disponibles)</div> */}
+
 
         </div> 
 
