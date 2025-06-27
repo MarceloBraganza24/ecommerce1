@@ -665,14 +665,19 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                         <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
                                             <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
                                                 {
-                                                product.variantes?.length > 0
-                                                    ? (
-                                                    product.variantes.find(v =>
-                                                        Object.entries(product.camposSeleccionados || {}).every(([key, val]) => v.campos[key] === val)
-                                                    )?.price ?? '-'
-                                                    )
-                                                    : `$ ${product.price}`
-                                                }
+                                                    product.variantes?.length > 0
+                                                        ? (
+                                                            (() => {
+                                                            const selectedVariante = product.variantes.find(v =>
+                                                                Object.entries(product.camposSeleccionados || {}).every(
+                                                                ([key, val]) => v.campos[key] === val
+                                                                )
+                                                            );
+                                                            return selectedVariante ? `$ ${selectedVariante.price}` : '-';
+                                                            })()
+                                                        )
+                                                        : `$ ${product.price}`
+                                                    }
                                             </div>
                                         </div>
 

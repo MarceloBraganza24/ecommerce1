@@ -99,6 +99,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
     };
 
     const handleAddCampo = () => {
+        
         const keyTrimmed = nuevoCampo.key.trim();
         const valueTrimmed = nuevoCampo.value.trim();
 
@@ -110,6 +111,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
               theme: "dark",
               className: "custom-toast",
             });
+
             return;
         }
 
@@ -148,6 +150,9 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         }));
     
         setNuevoCampo({ key: '', value: '' });
+
+        setVariantes([])
+
     };
     
 
@@ -157,9 +162,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         if (
             !product.title.trim() ||
             !product.description.trim() ||
-            !product.state.trim() ||
-            !product.price || isNaN(product.price) || Number(product.price) <= 0 ||
-            !product.stock || isNaN(product.stock) || Number(product.stock) < 0
+            !product.state.trim()
         ) {
             toast('Debes completar todos los campos correctamente', {
                 position: "top-right",
@@ -190,6 +193,18 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
         if (!product.images.length) {
             toast('Debes incluir al menos una imagen', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+        if (
+            product.camposDinamicos.length > 0 &&
+            (!Array.isArray(variantes) || variantes.length === 0)
+            ) {
+            toast('Debes incluir al menos una variante', {
                 position: "top-right",
                 autoClose: 2000,
                 theme: "dark",
@@ -230,7 +245,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
     
             const data = await res.json();
-            console.log(data)
+            //console.log(data)
             if(data.error === 'There is already a product with that title') {
                 toast('Ya existe un producto con ese título!', {
                     position: "top-right",
@@ -409,6 +424,10 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                         <div onClick={()=>setShowCreateProductModal(false)} className='createProductModalContainer__createProductModal__btnCloseModal__btn'>X</div>
                     </div>
 
+                    <div className='createProductModalContainer__createProductModal__title'>
+                        <div className='createProductModalContainer__createProductModal__title__prop'>Crear producto</div>
+                    </div>
+
                     <div className='createProductModalContainer__createProductModal__propsContainer'>
 
                         <div className='createProductModalContainer__createProductModal__propsContainer__propProductImage'>
@@ -517,15 +536,21 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                                     <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Stock</div>
                                     <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__input'>
-                                        <input
-                                            name='stock'
-                                            placeholder='Stock'
-                                            type="number"
-                                            value={product.stock}
-                                            onChange={(e) => setProduct({ ...product, stock: e.target.value })}
-                                            className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
-                                            required
-                                            />
+                                        <input 
+                                        name='stock'
+                                        placeholder='Stock'
+                                        type="number"
+                                        min="0"
+                                        value={product.stock}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            // Permití '' (campo vacío) o un número positivo (incluido 0)
+                                            if (val === '' || parseInt(val) >= 0) {
+                                            setProduct({ ...product, stock: val });
+                                            }
+                                        }}
+                                        className="createProductModalContainer__createProductModal__propsContainer__propProduct__input__propShort"
+                                        />
                                     </div>
 
                                 </div>
@@ -605,7 +630,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                         ))}
                         {
                             product.camposDinamicos.length > 0 &&
-                            <ul>
+                            <ul className='createProductModalContainer__createProductModal__propsContainer__variantsContainer'>
                                 {
                                     variantes.length > 0 &&
                                     <strong>Variantes:</strong>  
@@ -759,7 +784,15 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     type="number"
                                     placeholder="Stock"
                                     value={nuevaVariante.stock}
-                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
+                                    //onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        const parsed = parseInt(value, 10);
+                                        setNuevaVariante({
+                                            ...nuevaVariante,
+                                            stock: value === '' ? '' : isNaN(parsed) ? '' : Math.max(0, parsed)
+                                        });
+                                        }}
                                     />
                                 </div>
 

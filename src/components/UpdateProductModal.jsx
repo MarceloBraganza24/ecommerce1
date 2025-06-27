@@ -155,6 +155,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         }));
 
         setNuevoCampo({ key: '', value: '' });
+        setVariantes([])
     };
 
     const handleSubmit = async (e) => {
@@ -188,6 +189,19 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             });
             return;
         }
+        if (
+            formData.camposDinamicos.length > 0 &&
+            (!Array.isArray(variantes) || variantes.length === 0)
+            ) {
+            toast('Debes incluir al menos una variante', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+        //console.log(formData)
     
         const formToSend  = new FormData();
         formToSend.append('title', formData.title);
@@ -378,6 +392,10 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                         <div onClick={()=>setShowUpdateModal(false)} className='updateProductModalContainer__updateProductModal__btnCloseModal__btn'>X</div>
                     </div>
 
+                    <div className='updateProductModalContainer__updateProductModal__title'>
+                        <div className='updateProductModalContainer__updateProductModal__title__prop'>Actualizar producto</div>
+                    </div>
+
                     <div className='updateProductModalContainer__updateProductModal__propsContainer'>
 
                         <div className='updateProductModalContainer__updateProductModal__propsContainer__propProductImage'>
@@ -486,14 +504,28 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                                     <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Stock</div>
                                     <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                        <input
+                                        {/* <input
                                             name='stock'
                                             placeholder='Stock'
                                             type="number"
                                             value={formData.stock}
                                             onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                                             className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
-                                            required
+                                        /> */}
+                                        <input 
+                                        name='stock'
+                                        placeholder='Stock'
+                                        type="number"
+                                        min="0"
+                                        value={formData.stock}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            // Permití '' (campo vacío) o un número positivo (incluido 0)
+                                            if (val === '' || parseInt(val) >= 0) {
+                                            setFormData({ ...formData, stock: val });
+                                            }
+                                        }}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
                                         />
                                     </div>
 
@@ -577,7 +609,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                         ))}
                         {
                             formData.camposDinamicos.length > 0 &&
-                            <ul>
+                            <ul className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer'>
                                 {
                                     variantes.length > 0 &&
                                     <strong>Variantes:</strong>  
@@ -728,12 +760,27 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
                                     <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
-                                    <input
+                                    {/* <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"
                                     placeholder="Stock"
                                     value={nuevaVariante.stock}
                                     onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
+                                    /> */}
+                                    <input
+                                    className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
+                                    type="number"
+                                    placeholder="Stock"
+                                    value={nuevaVariante.stock}
+                                    //onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        const parsed = parseInt(value, 10);
+                                        setNuevaVariante({
+                                            ...nuevaVariante,
+                                            stock: value === '' ? '' : isNaN(parsed) ? '' : Math.max(0, parsed)
+                                        });
+                                        }}
                                     />
                                 </div>
 

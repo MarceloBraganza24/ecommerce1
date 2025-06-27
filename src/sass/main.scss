@@ -2297,8 +2297,8 @@ h2 {
         background-color: whitesmoke;
         width: 50%;
         height: 70%;
-        overflow: auto;
         display: flex;
+        //overflow: auto;
         flex-direction: column;
         border-radius: 0.5vh;
         padding: 0vh 4vh 4vh 4vh;
@@ -2310,14 +2310,23 @@ h2 {
             &__btn {
                 font-size: 20px;
                 padding-right: 2vh;
+                cursor: pointer;
+            }
+        }
+        &__title {
+            @include disFC();
+            padding: 0vh 0vh 2vh 0vh;
+            &__prop {
+                font-size: 30px;
             }
         }
         &__propsContainer {
             background-color: white;
             width: 85%;
-            @include disFC();
+            //@include disFC();
+            overflow: auto;
             align-self: center;
-            flex-direction: column;
+            //flex-direction: column;
             padding: 2vh;
             &__propProductImage {
                 width: 90%;
@@ -2418,6 +2427,10 @@ h2 {
                         }
                     }
                 }
+            }
+            &__variantsContainer {
+                @include disFC();
+                flex-direction: column;
             }
             &__propProduct {
                 width: 90%;
@@ -2577,7 +2590,7 @@ h2 {
     z-index: 999999;
     &__createSaleModal {
         background-color: whitesmoke;
-        width: 65%;
+        width: 70%;
         height: 90%;
         display: flex;
         flex-direction: column;
@@ -2661,9 +2674,9 @@ h2 {
                 &__headerTable {
                     width: 100%;
                     display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
+                    grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1fr 0.5fr 1fr 1fr 1fr;
                     border-bottom: 0.3vh solid #d6d5d5;
-                    padding: 2vh 0vh 1vh 0vh;
+                    padding: 2vh 17px 1vh 0vh;
                     &__item {
                         font-size: 12px;
                         font-weight: bold;
@@ -2678,10 +2691,11 @@ h2 {
                 flex-direction: column;
                 align-self: center;
                 overflow: auto;
+                scrollbar-gutter: stable;
                 &__itemContainer {
                     width: 100%;
                     display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr 1fr;
+                    grid-template-columns: 1fr 1fr 1.5fr 1.5fr 1fr 0.5fr 1fr 1fr 1fr;
                     border-bottom: 0.3vh solid #d6d5d5;
                     padding: 0.5vh 0vh;
                     &__item {
@@ -2868,9 +2882,9 @@ h2 {
             &__headerTable {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 1fr 1fr 1fr 1.5fr 1fr 0.5fr 1fr 1fr;
+                grid-template-columns: 0.5fr 1fr 1fr 1.5fr 1.5fr 1fr 0.5fr 1fr 1fr;
                 border-bottom: 0.3vh solid #d6d5d5;
-                padding: 2vh 0vh;
+                padding: 2vh 17px 2vh 0vh;
                 &__item {
                     font-size: 14px;
                     font-weight: bold;
@@ -2885,13 +2899,14 @@ h2 {
             flex-direction: column;
             align-self: center;
             overflow: auto;
+            //scrollbar-gutter: stable;
             margin-bottom: 2vh;
             border-bottom-left-radius: 0.5vh;
             border-bottom-right-radius: 0.5vh;
             &__itemContainer {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 1fr 1fr 1fr 1.5fr 1fr 0.5fr 1fr 1fr;
+                grid-template-columns: 0.5fr 1fr 1fr 1.5fr 1.5fr 1fr 0.5fr 1fr 1fr;
                 border-bottom: 0.3vh solid #d6d5d5;
                 padding: 1vh 0vh;
                 &__item {
@@ -2989,7 +3004,6 @@ h2 {
         background-color: whitesmoke;
         width: 50%;
         height: 70%;
-        overflow: auto;
         display: flex;
         flex-direction: column;
         border-radius: 0.5vh;
@@ -3004,12 +3018,20 @@ h2 {
                 padding-right: 2vh;
             }
         }
+        &__title {
+            @include disFC();
+            padding: 0vh 0vh 2vh 0vh;
+            &__prop {
+                font-size: 30px;
+            }
+        }
         &__propsContainer {
             background-color: white;
             width: 85%;
-            @include disFC();
+            //@include disFC();
+            overflow: auto;
             align-self: center;
-            flex-direction: column;
+            //flex-direction: column;
             padding: 2vh;
             &__propProductImage {
                 width: 90%;
@@ -3108,6 +3130,10 @@ h2 {
                         }
                     }
                 }
+            }
+            &__variantsContainer {
+                @include disFC();
+                flex-direction: column;
             }
             &__propProduct {
                 width: 90%;
