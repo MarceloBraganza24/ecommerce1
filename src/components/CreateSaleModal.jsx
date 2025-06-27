@@ -211,236 +211,6 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         }
     }
 
-    /* const handleAddProduct = (product) => {
-        const camposSeleccionados = selectedVariantsMap[product._id] || {};
-
-        const varianteSeleccionada = product.variantes?.find(v =>
-            Object.entries(camposSeleccionados).every(
-                ([key, val]) => v.campos[key] === val
-            )
-        );
-
-        const price = varianteSeleccionada?.price ?? product.price;
-        const stock = varianteSeleccionada?.stock ?? product.stock;
-
-        if (stock < 1) {
-            toast('No hay stock disponible en este producto!');
-            return;
-        }
-
-        setAddedProducts(prev => {
-            const existingProduct = prev.find(p =>
-                p._id === product._id &&
-                JSON.stringify(p.camposSeleccionados || {}) === JSON.stringify(camposSeleccionados)
-            );
-
-            const cantidadEnLista = existingProduct?.quantity || 0;
-            const cantidadDisponible = stock - cantidadEnLista;
-
-            if (cantidadDisponible <= 0) {
-                toast('No quedan más unidades disponibles para agregar!');
-                return prev;
-            }
-
-            toast('Has añadido un producto a la venta!');
-
-            if (existingProduct) {
-                return prev.map(p =>
-                    p._id === product._id &&
-                    JSON.stringify(p.camposSeleccionados || {}) === JSON.stringify(camposSeleccionados)
-                        ? { ...p, quantity: p.quantity + 1 }
-                        : p
-                );
-            } else {
-                return [
-                    ...prev,
-                    {
-                        ...product,
-                        price,
-                        stock,
-                        quantity: 1,
-                        camposSeleccionados: camposSeleccionados
-                    }
-                ];
-            }
-        });
-    }; */
-    /* const areCamposIguales = (a = {}, b = {}) => {
-        const aEntries = Object.entries(a).sort();
-        const bEntries = Object.entries(b).sort();
-        return JSON.stringify(aEntries) === JSON.stringify(bEntries);
-    }; */
-    /* const areCamposIguales = (a = {}, b = {}) => {
-        const aKeys = Object.keys(a);
-        const bKeys = Object.keys(b);
-        if (aKeys.length !== bKeys.length) return false;
-        return aKeys.every(key => a[key] === b[key]);
-    }; */
-
-    /* const handleAddProduct = (product) => {
-        const camposSeleccionados = selectedVariantsMap[product._id] || {};
-
-        const varianteSeleccionada = product.variantes?.find(v =>
-            Object.entries(camposSeleccionados).every(
-                ([key, val]) => v.campos[key] === val
-            )
-        );
-
-        const price = varianteSeleccionada?.price ?? product.price;
-        const stock = varianteSeleccionada?.stock ?? product.stock;
-
-        if (stock < 1) {
-            const camposDisplay = Object.keys(product.camposExtras || {}).map((key) => {
-                const value = camposSeleccionados?.[key];
-                return `${key}: ${value ?? '-'}`;
-            }).join(', ');
-
-            toast(`No hay stock disponible para ${product.title} (${camposDisplay || 'sin variante'})`, {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return;
-        }
-
-        setAddedProducts(prev => {
-            const existingProduct = prev.find(p =>
-                p._id === product._id &&
-                areCamposIguales(p.camposSeleccionados, camposSeleccionados)
-            );
-
-            const cantidadEnLista = existingProduct?.quantity || 0;
-            const cantidadDisponible = stock - cantidadEnLista;
-
-            if (cantidadDisponible <= 0) {
-                toast(`No quedan más unidades disponibles para ${product.title} (${Object.entries(camposSeleccionados).map(([k, v]) => `${k}: ${v}`).join(', ') || 'sin variante'})`, {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                return prev;
-            }
-
-            toast('Has añadido un producto a la venta!', {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-
-            if (existingProduct) {
-                return prev.map(p =>
-                    p._id === product._id &&
-                    areCamposIguales(p.camposSeleccionados, camposSeleccionados)
-                        ? { ...p, quantity: p.quantity + 1 }
-                        : p
-                );
-            } else {
-                return [
-                    ...prev,
-                    {
-                        ...product,
-                        price,
-                        stock,
-                        quantity: 1,
-                        camposSeleccionados
-                    }
-                ];
-            }
-        });
-    }; */
-    /* const handleAddProduct = (product) => {
-        const camposSeleccionados = selectedVariantsMap[product._id] || {};
-
-        const varianteSeleccionada = product.variantes?.find(v =>
-            Object.entries(camposSeleccionados).every(
-                ([key, val]) => v.campos?.[key] === val
-            )
-        );
-
-        const price = varianteSeleccionada?.price ?? product.price;
-        const stock = varianteSeleccionada?.stock ?? product.stock;
-
-        // Si no hay stock, mostrar toast y salir
-        if (stock < 1) {
-            const hasVariants = Object.keys(camposSeleccionados || {}).length > 0;
-
-            toast(
-                hasVariants
-                    ? `No hay stock disponible para "${product.title}" con la variante seleccionada`
-                    : `No hay stock disponible para "${product.title}" (sin variante)`,
-                {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                }
-            );
-            return;
-        }
-
-        // Añadir o actualizar producto
-        setAddedProducts(prev => {
-            const existingProduct = prev.find(p =>
-                p._id === product._id &&
-                areCamposIguales(p.camposSeleccionados, camposSeleccionados)
-            );
-
-            const cantidadEnLista = existingProduct?.quantity || 0;
-            const cantidadDisponible = stock - cantidadEnLista;
-
-            if (cantidadDisponible <= 0) {
-                const hasVariants = Object.keys(camposSeleccionados || {}).length > 0;
-
-                toast('No quedan más unidades disponibles para agregar! Ya agregaste todas las unidades disponibles',{
-                        position: "top-right",
-                        autoClose: 2000,
-                        theme: "dark",
-                        className: "custom-toast",
-                    }
-                );
-                return prev;
-            }
-
-            toast('Has añadido un producto a la venta!', {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-
-            if (existingProduct) {
-                return prev.map(p =>
-                    p._id === product._id &&
-                    areCamposIguales(p.camposSeleccionados, camposSeleccionados)
-                        ? { ...p, quantity: p.quantity + 1 }
-                        : p
-                );
-            } else {
-                return [
-                    ...prev,
-                    {
-                        ...product,
-                        price,
-                        stock,
-                        quantity: 1,
-                        camposSeleccionados: camposSeleccionados
-                    }
-                ];
-            }
-        });
-    }; */
-    /* const areCamposIguales = (a = {}, b = {}) => {
-        const aEntries = Object.entries(a).sort();
-        const bEntries = Object.entries(b).sort();
-
-        return (
-            aEntries.length === bEntries.length &&
-            aEntries.every(([key, val], i) => key === bEntries[i][0] && val === bEntries[i][1])
-        );
-    }; */
     const getProductKey = (productId, camposSeleccionados = {}) => {
         const sortedCampos = Object.entries(camposSeleccionados)
             .sort(([a], [b]) => a.localeCompare(b))
@@ -449,29 +219,21 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         return `${productId}__${sortedCampos}`;
     }; 
 
-    const areAllVariantsSelected = (product) => {
-        const selectedCampos = selectedVariantsMap[product._id] || {};
-        const variantesKeys = Object.keys(product.camposExtras || {});
-
-        return variantesKeys.every(key => selectedCampos[key] && selectedCampos[key] !== '');
-    };
-
-
     const handleAddProduct = (product, camposSeleccionados = {}, productKey) => {
 
         const camposRequeridos = Object.keys(product.camposExtras || {});
         if (camposRequeridos.length > 0) {
             const todasVariantesSeleccionadas = camposRequeridos.every(
-            campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
-            );
+                campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+                );
 
             if (!todasVariantesSeleccionadas) {
-            toast('Por favor selecciona todas las variantes antes de añadir el producto.', {
-                position: 'top-right',
-                autoClose: 3000,
-                theme: 'dark',
-            });
-            return;
+                toast('Por favor selecciona todas las variantes antes de añadir el producto.', {
+                    position: 'top-right',
+                    autoClose: 3000,
+                    theme: 'dark',
+                });
+                return;
             }
         }
 
@@ -502,8 +264,6 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         }
 
         setAddedProducts(prev => {
-            console.log('addedProducts actuales:', prev.map(p => p._uniqueKey));
-
             const existingProduct = prev.find(p =>
                 (p._uniqueKey && p._uniqueKey === productKey) ||
                 (
@@ -525,6 +285,8 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                 return prev;
             }
 
+            let newList;
+
             if (existingProduct) {
                 toast('Cantidad incrementada!', {
                     position: "top-right",
@@ -533,7 +295,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                     className: "custom-toast",
                 });
 
-                return prev.map(p =>
+                newList = prev.map(p =>
                     (p._uniqueKey && p._uniqueKey === productKey) ||
                     (
                         p._id === product._id &&
@@ -542,76 +304,39 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                         ? { ...p, quantity: p.quantity + 1 }
                         : p
                 );
+            } else {
+                toast('Producto añadido a la venta!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+
+                newList = [
+                    ...prev,
+                    {
+                        ...product,
+                        price,
+                        stock,
+                        quantity: 1,
+                        camposSeleccionados,
+                        _uniqueKey: productKey
+                    }
+                ];
             }
 
-            toast('Producto añadido a la venta!', {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
+            // ✅ Resetear los selects solo si se agrega o incrementa correctamente
+            setSelectedVariantsMap(prev => {
+                const newMap = { ...prev };
+                delete newMap[product._id];
+                return newMap;
             });
 
-            return [
-                ...prev,
-                {
-                    ...product,
-                    price,
-                    stock,
-                    quantity: 1,
-                    camposSeleccionados,
-                    _uniqueKey: productKey
-                }
-            ];
+            return newList;
         });
-        setSelectedVariantsMap(prev => {
-            const newMap = { ...prev };
-            delete newMap[product._id];
-            return newMap;
-        }); 
+
     };
 
-
-
-
-
-
-
-
-
-
-    /* const handleIncreaseQuantity = (productId) => {
-        setAddedProducts(prev =>
-            prev.map(product => {
-                if (product._id !== productId) return product;
-
-                // Buscar la variante seleccionada si hay
-                const varianteSeleccionada = product.variantes?.find(v =>
-                    Object.entries(product.camposSeleccionados || {}).every(
-                        ([key, val]) => v.campos?.[key] === val
-                    )
-                );
-
-                const stockDisponible = varianteSeleccionada?.stock ?? product.stock;
-
-                if (product.quantity < stockDisponible) {
-                    return { ...product, quantity: product.quantity + 1 };
-                } else {
-                    toast('No hay más stock disponible para esta variante', {
-                        position: "top-right",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        className: "custom-toast",
-                    });
-                    return product;
-                }
-            })
-        );
-    }; */
     const handleIncreaseQuantity = (productKey) => {
         setAddedProducts(prev =>
             prev.map(product => {
@@ -645,21 +370,6 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
         );
     };
 
-
-    /* const handleDecreaseQuantity = (productId) => {
-        setAddedProducts(prev =>
-            prev.map(product =>
-                product._id === productId && product.quantity > 1
-                    ? { ...product, quantity: product.quantity - 1 }
-                    : product
-            )
-        );
-    }; */
-
-    /* const handleRemoveProduct = (productId) => {
-        setAddedProducts(addedProducts.filter(product => product._id !== productId));
-    }; */
-    
     const handleRemoveProduct = (productKey) => {
       setAddedProducts(prev => prev.filter(p => p._uniqueKey !== productKey));
     };
@@ -733,62 +443,84 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
             return;
         }
 
-        const selectedToAdd = selectedProductData; // Usar los productos seleccionados completos
+        setAddedProducts(prev => {
+            const updated = [...prev];
 
-        const productsWithStock = selectedToAdd.filter(p => p.stock > 0);
-        const productsWithoutStock = selectedToAdd.filter(p => p.stock < 1);
+            for (const product of selectedProductData) {
+                const camposSeleccionados = selectedVariantsMap[product._id] || {};
+                const camposRequeridos = Object.keys(product.camposExtras || {});
+                const tieneVariantes = camposRequeridos.length > 0;
 
-        if (productsWithStock.length > 0) {
-            setAddedProducts(prev => {
-                const updated = [...prev];
+                // Validar que estén todas las variantes seleccionadas
+                const variantesCompletas = camposRequeridos.every(
+                    campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+                );
 
-                for (const product of productsWithStock) {
-                    const existingIndex = updated.findIndex(p => p._id === product._id);
-                    const existingProduct = updated[existingIndex];
-                    const cantidadEnLista = existingProduct?.quantity || 0;
-                    const cantidadDisponible = product.stock - cantidadEnLista;
-
-                    if (cantidadDisponible <= 0) {
-                        toast('No quedan más unidades disponibles para agregar!', {
-                            position: "top-right",
-                            autoClose: 2000,
-                            theme: "dark",
-                            className: "custom-toast",
-                        });
-                        // No agregamos más unidades para este producto, seguimos con el siguiente
-                        continue;
-                    }
-
-                    if (existingIndex !== -1) {
-                        updated[existingIndex].quantity += 1;
-                    } else {
-                        updated.push({ ...product, quantity: 1 });
-                    }
+                if (tieneVariantes && !variantesCompletas) {
+                    toast(`Faltan seleccionar variantes para "${product.title}"`, {
+                        position: "top-right",
+                        autoClose: 2000,
+                        theme: "dark",
+                    });
+                    continue;
                 }
 
-                return updated;
-            });
-        }
+                // Buscar variante específica si hay
+                const varianteSeleccionada = product.variantes?.find(v =>
+                    Object.entries(camposSeleccionados).every(
+                        ([key, val]) => v.campos?.[key] === val
+                    )
+                );
+
+                const stock = varianteSeleccionada?.stock ?? product.stock;
+                const price = varianteSeleccionada?.price ?? product.price;
+
+                const productKey = getProductKey(product._id, camposSeleccionados);
+
+                const existingIndex = updated.findIndex(p => p._uniqueKey === productKey);
+                const existingProduct = updated[existingIndex];
+                const cantidadEnLista = existingProduct?.quantity || 0;
+                const cantidadDisponible = stock - cantidadEnLista;
+
+                if (cantidadDisponible <= 0) {
+                    toast(`No queda stock disponible para "${product.title}"`, {
+                        position: "top-right",
+                        autoClose: 2000,
+                        theme: "dark",
+                    });
+                    continue;
+                }
+
+                if (existingIndex !== -1) {
+                    updated[existingIndex].quantity += 1;
+                } else {
+                    updated.push({
+                        ...product,
+                        price,
+                        stock,
+                        quantity: 1,
+                        camposSeleccionados,
+                        _uniqueKey: productKey,
+                    });
+                }
+
+                // Limpiar selects después de añadir
+                if (tieneVariantes) {
+                    setSelectedVariantsMap(prev => {
+                        const newMap = { ...prev };
+                        delete newMap[product._id];
+                        return newMap;
+                    });
+                }
+            }
+
+            return updated;
+        });
 
         setSelectedProducts([]);
         setSelectedProductData([]);
-
-        if (productsWithoutStock.length === selectedToAdd.length) {
-            toast('Ninguno de los productos seleccionados tiene stock disponible.', {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } else if (productsWithoutStock.length > 0) {
-            toast(`${productsWithoutStock.length} producto(s) no fueron añadidos por falta de stock.`, {
-                position: "top-right",
-                autoClose: 2000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
     };
+
 
     return (
 
@@ -828,6 +560,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                         addedProducts.length > 0 && 
                         <div className='createSaleModalContainer__createSaleModal__addedProducts'>
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__title'>- Productos añadidos -</div>
+                            <div className='createSaleModalContainer__createSaleModal__addedProducts__subTitle'>Cantidad de productos añadidos: {addedProducts.length}</div>
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer'>
 
                                 <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable">
@@ -871,6 +604,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                                     <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes'>
                                                         <div>{atributo}:</div>
                                                         <select
+                                                        className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes__select'
                                                         value={product.camposSeleccionados?.[atributo] || ''}
                                                         onChange={(e) => {
                                                         const value = e.target.value;
@@ -1113,8 +847,6 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                     const camposSeleccionados = selectedVariantsMap[product._id] || {};
                                     const productKey = getProductKey(product._id, camposSeleccionados);
 
-                                    console.log('Variantes seleccionadas para', product._id, camposSeleccionados);
-
                                     return (
                                     
                                         <div key={productKey} className="createSaleModalContainer__createSaleModal__productsTable__itemContainer">
@@ -1149,17 +881,8 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                                                 <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes'>
                                                                     <div>{atributo}</div>
                                                                     <select
+                                                                        className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes__select'
                                                                         value={selectedVariantsMap[product._id]?.[atributo] || ''}
-                                                                        /* onChange={(e) => {
-                                                                            const value = e.target.value;
-                                                                            setSelectedVariantsMap(prev => ({
-                                                                                ...prev,
-                                                                                [product._id]: {
-                                                                                    ...prev[product._id],
-                                                                                    [atributo]: value
-                                                                                }
-                                                                            }));
-                                                                        }} */
                                                                         onChange={(e) => {
                                                                             const value = e.target.value;
                                                                             setSelectedVariantsMap(prev => {
@@ -1170,12 +893,11 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                                                                     [atributo]: value
                                                                                 }
                                                                                 };
-                                                                                console.log('selectedVariantsMap actualizado:', newMap);
                                                                                 return newMap;
                                                                             });
                                                                         }}
                                                                     >
-                                                                        <option value="" disabled>{`Seleccionar ${atributo}`}</option>
+                                                                        <option value="" disabled>{`Elegir ${atributo}`}</option>
                                                                         {opciones.map((op, idx) => (
                                                                             <option key={idx} value={op}>{op}</option>
                                                                         ))}
@@ -1191,24 +913,38 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
 
                                             <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
                                                 <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
-                                                    {
-                                                        product.variantes?.length > 0
-                                                            ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
-                                                            : `$ ${product.price}`
-                                                    }
+                                                    {product.variantes?.length > 0 ? (
+                                                        (() => {
+                                                            const camposSeleccionados = selectedVariantsMap[product._id] || {};
+                                                            const camposRequeridos = Object.keys(product.camposExtras || {});
+                                                            const variantesCompletas = camposRequeridos.every(
+                                                                campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+                                                            );
+                                                            return variantesCompletas
+                                                                ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
+                                                                : '-';
+                                                        })()
+                                                    ) : `$ ${product.price}`}
                                                 </div>
                                             </div>
 
-                                            {/* Stock */}
                                             <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
                                                 <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
-                                                    {
-                                                        product.variantes?.length > 0
-                                                            ? getSelectedVariante(product)?.stock ?? '-'
-                                                            : product.stock
-                                                    }
+                                                    {product.variantes?.length > 0 ? (
+                                                        (() => {
+                                                            const camposSeleccionados = selectedVariantsMap[product._id] || {};
+                                                            const camposRequeridos = Object.keys(product.camposExtras || {});
+                                                            const variantesCompletas = camposRequeridos.every(
+                                                                campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+                                                            );
+                                                            return variantesCompletas
+                                                                ? getSelectedVariante(product)?.stock ?? '-'
+                                                                : '-';
+                                                        })()
+                                                    ) : product.stock}
                                                 </div>
                                             </div>
+
 
 
                                             <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
@@ -1219,6 +955,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
 
                                                 {/* <button onClick={() => {console.log('Añadir producto con variantes:', selectedVariantsMap[product._id]);handleAddProduct(product, camposSeleccionados, productKey)}} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'>Añadir</button> */}
                                                 <button
+                                                    className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'
                                                     onClick={() => {
                                                     // Validar que todas las variantes tengan valor seleccionado
                                                     const campos = selectedVariantsMap[product._id] || {};
@@ -1227,13 +964,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                                                         toast('Por favor selecciona todas las variantes');
                                                         return;
                                                     }
-
-                                                    console.log('Añadiendo producto:', product._id);
-                                                    console.log('Con variantes:', campos);
-
                                                     const key = getProductKey(product._id, campos);
-                                                    console.log('Clave única:', key);
-
                                                     // Aquí llamás a la función para agregar producto:
                                                     handleAddProduct(product, campos, key);
                                                     }}

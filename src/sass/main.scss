@@ -2647,6 +2647,11 @@ h2 {
                 text-align: center;
                 font-size: 20px;
             }
+            &__subTitle {
+                text-align: center;
+                font-size: 16px;
+                padding-top: 1vh;
+            }
             &__headerTableContainer {
                 width: 100%;
                 @include disFC();
@@ -2715,17 +2720,19 @@ h2 {
                     &__itemVariantes {
                         width: 100%;
                         @include disFC();
-                        //isplay: flex;
                         flex-direction: column;
                         gap: 0.3vh;
                         &__variantes {
-                            //@include disFC();
-                            display: flex;
-                            width: 100%;
+                            width: 95%;
                             gap: 1vh;
-                            padding-left: 1vh;
-                            align-items: center;
+                            display: grid;
+                            grid-template-columns: 1fr 1.5fr;
                             font-size: 12px;
+                            align-items: center;
+                            align-self: center;
+                            &__select {
+                                width: 100%;
+                            }
                         }
                         &__noVariants {
                             @include disFC();
@@ -2861,7 +2868,7 @@ h2 {
             &__headerTable {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+                grid-template-columns: 0.5fr 1fr 1fr 1fr 1.5fr 1fr 0.5fr 1fr 1fr;
                 border-bottom: 0.3vh solid #d6d5d5;
                 padding: 2vh 0vh;
                 &__item {
@@ -2884,7 +2891,7 @@ h2 {
             &__itemContainer {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
+                grid-template-columns: 0.5fr 1fr 1fr 1fr 1.5fr 1fr 0.5fr 1fr 1fr;
                 border-bottom: 0.3vh solid #d6d5d5;
                 padding: 1vh 0vh;
                 &__item {
@@ -2895,18 +2902,22 @@ h2 {
                         height: 50px;
                     }
                     &__label {
+                        width: 100%;
                         text-align: center;
                         font-size: 16px;
                     }
                     &__labelLong {
+                        width: 100%;
                         text-align: center;
                         font-size: 14px;
                     }
                     &__description {
+                        width: 100%;
                         text-align: center;
                         font-size: 12px;
                     }
                     &__variantes {
+                        width: 100%;
                         @include disFC();
                         gap: 0.5vh;
                         font-size: 12px;
@@ -2918,11 +2929,16 @@ h2 {
                     flex-direction: column;
                     gap: 0.3vh;
                     &__variantes {
-                        width: 100%;
-                        display: flex;
+                        width: 90%;
                         gap: 1vh;
+                        display: grid;
+                        grid-template-columns: 1fr 2fr;
+                        font-size: 12px;
                         align-items: center;
-                            font-size: 12px;
+                        align-self: center;
+                        &__select {
+                            width: 100%;
+                        }
                     }
                     &__noVariants {
                         font-size: 12px;
