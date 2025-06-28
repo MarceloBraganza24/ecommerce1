@@ -17,6 +17,7 @@ const Cart = () => {
     const navigate = useNavigate();
     const isLoadingAuth = user === undefined;
     const [userCart, setUserCart] = useState({});
+    //console.log(userCart)
     const [categories, setCategories] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +75,7 @@ const Cart = () => {
     const [total, setTotal] = useState('');
     const [totalQuantity, setTotalQuantity] = useState('');
     
-    useEffect(() => {
+    /* useEffect(() => {
         
         if(userCart.products && Array.isArray(userCart.products)) {
             const total = Array.isArray(userCart.products)?userCart.products.reduce((acumulador, producto) => acumulador + (producto.product.price * producto.quantity), 0): 0;
@@ -83,6 +84,19 @@ const Cart = () => {
             setTotalQuantity(totalQuantity)
         }
 
+    }, [userCart]); */
+    useEffect(() => {
+        if (userCart.products && Array.isArray(userCart.products)) {
+            const total = userCart.products.reduce((acumulador, producto) => {
+                const price = producto.selectedVariant?.price ?? producto.product.price;
+                return acumulador + (price * producto.quantity);
+            }, 0);
+
+            const totalQuantity = userCart.products.reduce((sum, producto) => sum + producto.quantity, 0);
+
+            setTotal(total);
+            setTotalQuantity(totalQuantity);
+        }
     }, [userCart]);
     
     useEffect(() => {
@@ -419,7 +433,7 @@ const Cart = () => {
                                         description={itemCart.product.description}
                                         price={itemCart.product.price}
                                         quantity={itemCart.quantity}
-                                        variantes={itemCart.selectedVariant}
+                                        selectedVariant={itemCart.selectedVariant}
                                         fetchCartByUserId={fetchCartByUserId}
                                         />
                                         

@@ -30,7 +30,7 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
         return Object.entries(campos2).every(([key, value]) => campos1[key] === value);
     });
 
-    const stockVariante = varianteSeleccionada?.stock || 0;
+    const stockVariante = varianteSeleccionada?.stock || stock;
 
     // Buscar en el carrito si ya hay esta combinación
     const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
@@ -48,28 +48,6 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
         setCount(1);
     },[selectedVariant])
 
-    /* const increment = () => {
-        if (count < stockVariante) {
-            setCount(count + 1);
-        } else {
-            const ahora = Date.now();
-            if (ahora - ultimoToast >= tiempoEspera) {
-                toast('No hay mas disponibilidad de la ingresada!', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setUltimoToast(ahora); // Actualiza el tiempo del último toast
-            }
-        }
-    }; */
-    //const stockDisponible = Number(stockVariante > 0 ? stockVariante : stock ?? 0);
     const stockDisponible = variantes?.length > 0
     ? stockVariante // usar siempre la variante si existen
     : stock ?? 0;

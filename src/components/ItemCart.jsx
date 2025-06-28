@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const ItemCart = ({user_id,id,title,description,quantity,img,price,variantes,fetchCartByUserId}) => {
-    //console.log(variantes)
+const ItemCart = ({user_id,id,title,description,quantity,img,price,selectedVariant,fetchCartByUserId}) => {
+    //console.log(selectedVariant)
 
     const {deleteItemCart,updateQuantity} = useContext(CartContext);
     const [loadingQuantity, setLoadingQuantity] = useState(false);
@@ -14,12 +14,12 @@ const ItemCart = ({user_id,id,title,description,quantity,img,price,variantes,fet
     const handleUpdateQuantity = async (newQuantity) => {
         setLoadingQuantity(true);
         //await updateQuantity(user_id, id, newQuantity, fetchCartByUserId);
-        await updateQuantity(user_id, id, newQuantity, variantes, fetchCartByUserId);
+        await updateQuantity(user_id, id, newQuantity, selectedVariant, fetchCartByUserId);
         setLoadingQuantity(false);
     };
 
     const handleIncrement = () => {
-        const variantStock = variantes?.stock ?? 0;
+        const variantStock = selectedVariant?.stock ?? 0;
         if (quantity < variantStock) {
             handleUpdateQuantity(quantity + 1);
         } else {
@@ -39,7 +39,7 @@ const ItemCart = ({user_id,id,title,description,quantity,img,price,variantes,fet
 
     const handleDelete = async () => {
         setLoadingDelete(true);
-        await deleteItemCart(user_id, id,variantes, fetchCartByUserId);
+        await deleteItemCart(user_id, id,selectedVariant, fetchCartByUserId);
         setLoadingDelete(false);
     };
 
@@ -63,18 +63,11 @@ const ItemCart = ({user_id,id,title,description,quantity,img,price,variantes,fet
                     <div className='itemCart__description__prop'>{description}</div>
                 </div>
 
-                {/* <div className='itemCart__variantes'>
-                    {Object.entries(variantes.campos).map(([key, value]) => (
-                        <div key={key} className='itemCart__variantes__prop'>
-                            {key}: {value}
-                        </div>
-                    ))}
-                </div> */}
                 {
-                    variantes ?
+                    selectedVariant ?
                     <div className='itemCart__variantesContainer'>
                         <div className='itemCart__variantesContainer__variantes'>
-                            {Object.entries(variantes.campos).map(([key, value]) => (
+                            {Object.entries(selectedVariant.campos).map(([key, value]) => (
                                 <div key={key} className='itemCart__variantesContainer__variantes__prop'>
                                     {key}: {value}
                                 </div>
@@ -112,11 +105,15 @@ const ItemCart = ({user_id,id,title,description,quantity,img,price,variantes,fet
                 </div>
 
                 <div className='itemCart__price'>
-                    <div className='itemCart__price__prop'>${price}</div>
+                    <div className='itemCart__price__prop'>
+                        ${selectedVariant?.price ?? price}
+                    </div>
                 </div>
 
                 <div className='itemCart__subtotal'>
-                    <div className='itemCart__subtotal__prop'>${quantity * price}</div>
+                    <div className='itemCart__subtotal__prop'>
+                        ${Math.round(quantity * (selectedVariant?.price ?? price))}
+                    </div>
                 </div>
 
                 <div className='itemCart__btn'>

@@ -3465,6 +3465,7 @@ h2 {
 .createProductModalContainer__createProductModal__btnCloseModal__btn {
   font-size: 20px;
   padding-right: 2vh;
+  cursor: pointer;
 }
 .createProductModalContainer__createProductModal__title {
   display: flex;

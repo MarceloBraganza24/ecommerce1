@@ -111,7 +111,7 @@ const Shipping = () => {
         }
     };
     
-    useEffect(() => {
+    /* useEffect(() => {
         
         if(userCart.products && Array.isArray(userCart.products) && validatedCoupon) {
             const total = Array.isArray(userCart.products)?userCart.products.reduce((acumulador, producto) => acumulador + (producto.product.price * producto.quantity), 0): 0;
@@ -123,7 +123,25 @@ const Shipping = () => {
             setTotalWithDiscount(totalWithDiscount)
         }
 
-    }, [userCart,validatedCoupon]);
+    }, [userCart,validatedCoupon]); */
+    useEffect(() => {
+        if (userCart.products && Array.isArray(userCart.products) && validatedCoupon) {
+            const total = userCart.products.reduce((acumulador, producto) => {
+                const price = producto.selectedVariant?.price ?? producto.product.price;
+                return acumulador + (price * producto.quantity);
+            }, 0);
+
+            const totalQuantity = userCart.products.reduce((sum, producto) => sum + producto.quantity, 0);
+
+            const discountPercentage = validatedCoupon.discount;
+            const totalWithDiscount = total - (total * (discountPercentage / 100));
+
+            setTotal(total);
+            setTotalQuantity(totalQuantity);
+            setTotalWithDiscount(totalWithDiscount);
+        }
+    }, [userCart, validatedCoupon]);
+
 
     const corregirCapitalizacion = (texto) => {
         if (!texto) return '';
