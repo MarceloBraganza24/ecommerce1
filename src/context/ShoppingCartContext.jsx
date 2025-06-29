@@ -32,7 +32,8 @@ export const ShoppingCartContext = ({children}) => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ selectedVariant })
+                //body: JSON.stringify({ selectedVariant })
+                body: JSON.stringify({ selectedVariant: selectedVariant || null })
             });
             const data = await response.json();
             if (response.ok) {

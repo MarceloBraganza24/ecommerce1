@@ -75,16 +75,6 @@ const Cart = () => {
     const [total, setTotal] = useState('');
     const [totalQuantity, setTotalQuantity] = useState('');
     
-    /* useEffect(() => {
-        
-        if(userCart.products && Array.isArray(userCart.products)) {
-            const total = Array.isArray(userCart.products)?userCart.products.reduce((acumulador, producto) => acumulador + (producto.product.price * producto.quantity), 0): 0;
-            setTotal(total)
-            const totalQuantity = Array.isArray(userCart.products)?userCart.products.reduce((sum, producto) => sum + producto.quantity, 0):0;
-            setTotalQuantity(totalQuantity)
-        }
-
-    }, [userCart]); */
     useEffect(() => {
         if (userCart.products && Array.isArray(userCart.products)) {
             const total = userCart.products.reduce((acumulador, producto) => {
@@ -432,9 +422,11 @@ const Cart = () => {
                                         title={itemCart.product.title}
                                         description={itemCart.product.description}
                                         price={itemCart.product.price}
+                                        stock={itemCart.product.stock}
                                         quantity={itemCart.quantity}
                                         selectedVariant={itemCart.selectedVariant}
                                         fetchCartByUserId={fetchCartByUserId}
+                                        userCart={userCart}
                                         />
                                         
                                     )

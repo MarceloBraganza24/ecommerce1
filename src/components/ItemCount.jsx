@@ -30,7 +30,10 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
         return Object.entries(campos2).every(([key, value]) => campos1[key] === value);
     });
 
-    const stockVariante = varianteSeleccionada?.stock || stock;
+    //const stockVariante = varianteSeleccionada?.stock || stock;
+    const stockVariante = variantes?.length > 0
+        ? (varianteSeleccionada?.stock ?? 0)
+        : stock;
 
     // Buscar en el carrito si ya hay esta combinación
     const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
@@ -149,7 +152,7 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
             product: id,
             quantity: count,
             title,
-            selectedVariant
+            ...(selectedVariant && Object.keys(selectedVariant).length > 0 ? { selectedVariant } : {})
         };
     
         try {
@@ -300,11 +303,14 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
             <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={increment}>+</button>
 
             {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div> */}
-            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
+            {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
                 ({(variantes?.length > 0 
                     ? (stockVariante >= 10 ? '+10' : stockVariante) 
                     : (stock >= 10 ? '+10' : stock)
                     )} Disponibles)
+            </div> */}
+            <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
+                ({stockVariante >= 10 ? '+10' : stockVariante} Disponibles)
             </div>
             {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockDisponible < 10 ? stockDisponible : '+10'} Disponibles)</div> */}
 

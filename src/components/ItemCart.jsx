@@ -3,13 +3,22 @@ import {CartContext} from '../context/ShoppingCartContext'
 import { Link } from 'react-router-dom';
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import isEqual from 'lodash.isequal';
 
-const ItemCart = ({user_id,id,title,description,quantity,img,price,selectedVariant,fetchCartByUserId}) => {
+const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,price,selectedVariant,fetchCartByUserId}) => {
     //console.log(selectedVariant)
 
     const {deleteItemCart,updateQuantity} = useContext(CartContext);
     const [loadingQuantity, setLoadingQuantity] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
+
+    /* const cantidadEnCarrito = userCart?.products?.reduce((acc, item) => {
+        const sameProduct = item.product._id === id;
+        const sameVariant = isEqual(item.selectedVariant?.campos, selectedVariant?.campos);
+        return sameProduct && sameVariant ? acc + item.quantity : acc;
+    }, 0);
+
+    const cantidadDisponible = (selectedVariant?.stock ?? stock) - cantidadEnCarrito; */
 
     const handleUpdateQuantity = async (newQuantity) => {
         setLoadingQuantity(true);
@@ -19,8 +28,9 @@ const ItemCart = ({user_id,id,title,description,quantity,img,price,selectedVaria
     };
 
     const handleIncrement = () => {
-        const variantStock = selectedVariant?.stock ?? 0;
-        if (quantity < variantStock) {
+        const maxStock = selectedVariant?.stock ?? stock;
+
+        if (quantity < maxStock) {
             handleUpdateQuantity(quantity + 1);
         } else {
             toast('No quedan más unidades disponibles para agregar!', {
