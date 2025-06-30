@@ -186,6 +186,7 @@ const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,se
 
                     <div className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products">
                         {ticket.items.map((item, index) => {
+                            console.log(item)
                             const product = item.product;
                             const snapshot = item.snapshot;
 
@@ -200,6 +201,8 @@ const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,se
                                     : [];
 
                             const relativePath = images.length > 0 ? images[0] : null;
+
+                            const variantCampos = item.selectedVariant?.campos || snapshot?.variant?.campos;
 
                             const imageUrl = relativePath
                                 ? `http://localhost:8081/${relativePath}` // reemplazá con tu dominio real
@@ -227,6 +230,21 @@ const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,se
                                     </div>
                                     <div className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__title">
                                         {title}
+                                    </div>
+                                    <div className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__title">
+                                        {/* Variante si existe */}
+                                        {variantCampos && (
+                                            <div className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variant">
+                                                {Object.entries(variantCampos).map(([key, value]) => (
+                                                    <div
+                                                        key={key}
+                                                        className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variant__prop"
+                                                    >
+                                                        {key}: {value}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__quantity">
                                         x {item.quantity}

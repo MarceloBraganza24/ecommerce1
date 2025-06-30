@@ -111,19 +111,6 @@ const Shipping = () => {
         }
     };
     
-    /* useEffect(() => {
-        
-        if(userCart.products && Array.isArray(userCart.products) && validatedCoupon) {
-            const total = Array.isArray(userCart.products)?userCart.products.reduce((acumulador, producto) => acumulador + (producto.product.price * producto.quantity), 0): 0;
-            setTotal(total)
-            const totalQuantity = Array.isArray(userCart.products)?userCart.products.reduce((sum, producto) => sum + producto.quantity, 0):0;
-            setTotalQuantity(totalQuantity)
-            const discountPercentage = validatedCoupon.discount;
-            const totalWithDiscount = total - (total * (discountPercentage / 100));
-            setTotalWithDiscount(totalWithDiscount)
-        }
-
-    }, [userCart,validatedCoupon]); */
     useEffect(() => {
         if (userCart.products && Array.isArray(userCart.products) && validatedCoupon) {
             const total = userCart.products.reduce((acumulador, producto) => {
@@ -332,7 +319,7 @@ const Shipping = () => {
                     setUser(user)
                     fetchCartByUserId(user._id);
                 }
-                setIsLoading(false)
+                //setIsLoading(false)
             }
         } catch (error) {
             console.error('Error:', error);

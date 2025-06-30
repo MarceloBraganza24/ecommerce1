@@ -131,7 +131,7 @@ h2 {
 }
 .header__gridUp__inputSearch__productsListContainer__productItem {
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr 1fr;
+  grid-template-columns: 1fr 4fr;
   gap: 10px;
   align-items: center;
   color: black;
@@ -2557,7 +2557,7 @@ h2 {
 .myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__productLine {
   display: grid;
   align-items: center;
-  grid-template-columns: 1fr 3fr 1fr 2fr;
+  grid-template-columns: 1fr 3fr 2fr 1fr 2fr;
   cursor: pointer;
   padding-bottom: 0.5vh;
 }
