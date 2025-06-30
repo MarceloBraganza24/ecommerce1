@@ -203,6 +203,7 @@ const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,se
                             const relativePath = images.length > 0 ? images[0] : null;
 
                             const variantCampos = item.selectedVariant?.campos || snapshot?.variant?.campos;
+                            //  console.log(snapshot)
 
                             const imageUrl = relativePath
                                 ? `http://localhost:8081/${relativePath}` // reemplazá con tu dominio real

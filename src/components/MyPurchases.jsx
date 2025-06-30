@@ -194,7 +194,7 @@ const MyPurchases = () => {
         try {
             const response = await fetch(`http://localhost:8081/api/tickets/byPageAndEmail?page=${page}&search=${search}&email=${email}`)
             const ticketsAll = await response.json();
-            console.log(ticketsAll.data)
+            //console.log(ticketsAll.data)
             if (response.ok) {
                 setTickets(ticketsAll.data.docs); 
                 setTotalTickets(ticketsAll.data.totalDocs)
