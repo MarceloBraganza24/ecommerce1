@@ -797,18 +797,18 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                             </div>
                         }
 
-                        <div className='updateProductModalContainer__updateProductModal__propsContainer__btnContainer'>
-                            <button disabled={loading} onClick={handleSubmit} className='updateProductModalContainer__updateProductModal__propsContainer__btnContainer__btn'>
-                                {loading ? (
-                                    <>
-                                        Guardando <Spinner />
-                                    </>
-                                ) : (
-                                    'Guardar cambios'
-                                )}
-                            </button>
-                        </div>
 
+                    </div>
+                    <div className='updateProductModalContainer__updateProductModal__propsContainer__btnContainer'>
+                        <button disabled={loading} onClick={handleSubmit} className='updateProductModalContainer__updateProductModal__propsContainer__btnContainer__btn'>
+                            {loading ? (
+                                <>
+                                    Guardando <Spinner />
+                                </>
+                            ) : (
+                                'Guardar cambios'
+                            )}
+                        </button>
                     </div>
 
                 </div>

@@ -2236,7 +2236,7 @@ h2 {
 .cPanelSalesContainer__headerTableCPanelSalesContainer__headerTable {
   width: 95%;
   display: grid;
-  grid-template-columns: 0.5fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 0.5fr;
   padding: 1vh 0vh;
 }
 .cPanelSalesContainer__headerTableCPanelSalesContainer__headerTable__item {
@@ -2263,7 +2263,7 @@ h2 {
   width: 95%;
   display: grid;
   align-self: center;
-  grid-template-columns: 0.5fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 0.5fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 1vh 0vh;
   border-radius: 1vh;
@@ -2310,10 +2310,22 @@ h2 {
   flex-direction: column;
   gap: 0.5vh;
 }
+.cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__variant__prop {
+  font-size: 12px;
+  padding-left: 1vh;
+}
+.cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__noVariant {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__noVariant__prop {
+  font-size: 10px;
+}
 .cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__productLine {
   display: grid;
   align-items: center;
-  grid-template-columns: 1fr 3fr 1fr 2fr;
+  grid-template-columns: 1fr 3fr 3fr 1fr 2fr;
   cursor: pointer;
 }
 .cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__productLine__title {
@@ -2547,6 +2559,18 @@ h2 {
   display: inline-block;
   font-size: 16px;
 }
+.myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variantContainer__variant__prop {
+  font-size: 12px;
+  padding-left: 1vh;
+}
+.myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variantContainer__noVariant {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variantContainer__noVariant__prop {
+  font-size: 10px;
+}
 .myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__img {
   display: flex;
   justify-content: center;
@@ -2558,7 +2582,7 @@ h2 {
 .myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__productLine {
   display: grid;
   align-items: center;
-  grid-template-columns: 1fr 3fr 2fr 1fr 2fr;
+  grid-template-columns: 1fr 3fr 3fr 1fr 2fr;
   cursor: pointer;
   padding-bottom: 0.5vh;
 }
@@ -2917,9 +2941,10 @@ h2 {
   color: var(--secondary-color);
 }
 .updateProductModalContainer__updateProductModal__propsContainer__btnContainer {
-  width: 100%;
+  width: 85%;
   display: flex;
   justify-content: end;
+  align-self: center;
   padding-top: 2vh;
 }
 .updateProductModalContainer__updateProductModal__propsContainer__btnContainer__btn {
@@ -3818,9 +3843,10 @@ h2 {
   color: var(--secondary-text-color);
 }
 .createProductModalContainer__createProductModal__propsContainer__btnContainer {
-  width: 100%;
+  width: 85%;
   display: flex;
   justify-content: end;
+  align-self: center;
   padding-top: 2vh;
 }
 .createProductModalContainer__createProductModal__propsContainer__btnContainer__btn {

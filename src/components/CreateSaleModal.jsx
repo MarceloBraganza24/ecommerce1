@@ -10,6 +10,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
     const [selectedProductData, setSelectedProductData] = useState([]); // Objetos completos
     const [allProducts, setAllProducts] = useState([]); // todos los productos sin filtrar
     const [addedProducts, setAddedProducts] = useState([]);
+    //console.log(addedProducts)
     const [loadingBtnConfirmSale, setLoadingBtnConfirmSale] = useState(false);
     const headerRef = useRef(null);
     const [inputDiscount, setInputDiscount] = useState('');
@@ -320,6 +321,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                         stock,
                         quantity: 1,
                         camposSeleccionados,
+                        selectedVariant: varianteSeleccionada ?? null,
                         _uniqueKey: productKey
                     }
                 ];
