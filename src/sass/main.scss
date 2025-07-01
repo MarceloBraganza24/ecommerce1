@@ -1973,6 +1973,9 @@ h2 {
             @include disFC();
             padding: 2vh 0vh;
         }
+        &__spaceBody {
+            padding: 15vh 0vh;
+        }
         &__itemContainer {
             background-color: white;
             width: 95%;

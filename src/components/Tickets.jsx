@@ -91,9 +91,9 @@ const Tickets = () => {
         }
     }, [storeSettings]);
 
-    /* useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pageInfo.page]); */
+    useEffect(() => {
+        fetchTickets(1, "", "", selectedDate);
+    }, [selectedDate]); 
 
     const goToPreviousDay = () => {
         const prevDate = new Date(selectedDate);
@@ -114,20 +114,11 @@ const Tickets = () => {
         return `${year}-${month}-${day}`;
     };
 
-    const filteredByDate = tickets.filter(ticket => {
-        const ticketDate = new Date(ticket.purchase_datetime);
-        return (
-            ticketDate.getFullYear() === selectedDate.getFullYear() &&
-            ticketDate.getMonth() === selectedDate.getMonth() &&
-            ticketDate.getDate() === selectedDate.getDate()
-        );
-    });
-
-    const ticketsOrdenados = [...filteredByDate].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
+    const ticketsOrdenados = [...tickets].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
 
     useEffect(() => {
         if (user?.email) {
-            fetchTickets(1, "", "");
+            fetchTickets(1, "", "", selectedDate);
         }
     }, [user]);
 
@@ -188,10 +179,20 @@ const Tickets = () => {
         }
     };
 
-    const fetchTickets = async (page = 1, search = "",field = "") => {
+    const fetchTickets = async (page = 1, search = "",field = "", selectedDate = null) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/tickets/byPage?page=${page}&search=${search}&field=${field}`)
+            const params = new URLSearchParams({
+                page,
+                search,
+                field,
+            });
+
+            if (selectedDate) {
+                params.append("selectedDate", selectedDate.toISOString());
+            }
+            const response = await fetch(`http://localhost:8081/api/tickets/byPage?${params.toString()}`);
             const ticketsAll = await response.json();
+            console.log(ticketsAll.data)
             if (response.ok) {
                 setTotalTickets(ticketsAll.data.totalDocs)
                 setTickets(ticketsAll.data.docs)
@@ -369,7 +370,7 @@ const Tickets = () => {
             const data = await res.json();
             if (res.ok) {
                 setSelectedTickets([]);
-                fetchTickets(1,inputFilteredTickets, selectedField)
+                fetchTickets(1,inputFilteredTickets, selectedField, selectedDate)
                 toast('Tickets eliminados correctamente', {
                     position: "top-right",
                     autoClose: 2000,
@@ -427,7 +428,7 @@ const Tickets = () => {
 
     useEffect(() => {
         const delay = setTimeout(() => {
-            fetchTickets(1, inputFilteredTickets, selectedField);
+            fetchTickets(1, inputFilteredTickets, selectedField, selectedDate);
         }, 300); // debounce
 
         return () => clearTimeout(delay);
@@ -580,6 +581,7 @@ const Tickets = () => {
                                                 ticket={ticket}
                                                 fechaHora={`${formattedDate} ${formattedTime}`}
                                                 fetchTickets={fetchTickets}
+                                                selectedDate={selectedDate}
                                                 email={user.email}
                                                 role={user.role}
                                                 selectedTickets={selectedTickets}
@@ -593,7 +595,7 @@ const Tickets = () => {
                                 <div className='cPanelSalesContainer__btnsPagesContainer'>
                                     <button className='cPanelSalesContainer__btnsPagesContainer__btn'
                                         disabled={!pageInfo.hasPrevPage}
-                                        onClick={() => fetchTickets(pageInfo.prevPage, inputFilteredTickets, selectedField)}
+                                        onClick={() => fetchTickets(pageInfo.prevPage, inputFilteredTickets, selectedField, selectedDate)}
                                         >
                                         Anterior
                                     </button>
@@ -602,7 +604,7 @@ const Tickets = () => {
 
                                     <button className='cPanelSalesContainer__btnsPagesContainer__btn'
                                         disabled={!pageInfo.hasNextPage}
-                                        onClick={() => fetchTickets(pageInfo.nextPage, inputFilteredTickets, selectedField)}
+                                        onClick={() => fetchTickets(pageInfo.nextPage, inputFilteredTickets, selectedField, selectedDate)}
                                         >
                                         Siguiente
                                     </button>
@@ -610,9 +612,12 @@ const Tickets = () => {
                             </>
                             
                         :
-                            <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
-                                Aún no existen ventas
-                            </div>
+                            <>
+                                <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
+                                    Aún no existen ventas
+                                </div>
+                                <div className="cPanelSalesContainer__salesTable__spaceBody"></div>
+                            </>
 
                     }
 
@@ -628,6 +633,7 @@ const Tickets = () => {
                 user={user}
                 fetchProducts={fetchProducts}
                 fetchTickets={fetchTickets}
+                selectedDate={selectedDate}
                 isLoadingProducts={isLoadingProducts}
                 totalProducts={totalProducts}
                 pageInfoProducts={pageInfoProducts}

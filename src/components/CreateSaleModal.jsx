@@ -2,7 +2,7 @@ import React, {useState,useEffect,useRef } from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 
-const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
+const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
     //console.log(products)
     const [selectedField, setSelectedField] = useState('title');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
@@ -147,14 +147,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
             }
         }
         
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const currentDate = `${year}-${month}-${day} ${hours}:${minutes}`;
-        const purchase_datetime = currentDate;
+        const purchase_datetime = new Date();
 
         const newTicket = {
             amount: showLabelDiscountApplied?totalWithDiscount:total,
@@ -189,7 +182,7 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
                 });
                 setTimeout(() => {
                     setCreateSaleModal(false)
-                    fetchTickets(1, "", "");
+                    fetchTickets(1, "", "", selectedDate);
                 }, 2500);
             } else {
                 toast('Ha ocurrido un error, intente nuevamente!', {
@@ -960,7 +953,6 @@ const CreateSaleModal = ({fetchTickets,setCreateSaleModal,user,products,fetchPro
 
                                             <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
 
-                                                {/* <button onClick={() => {console.log('Añadir producto con variantes:', selectedVariantsMap[product._id]);handleAddProduct(product, camposSeleccionados, productKey)}} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'>Añadir</button> */}
                                                 <button
                                                     className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'
                                                     onClick={() => {

@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
-const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
+const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
     const [loading, setLoading] = useState(false);
 
     const handleBtnDeleteTicket = async () => {
@@ -19,7 +19,7 @@ const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,se
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchTickets(1, "", "");
+                fetchTickets(1, "", "", selectedDate);
                 setSelectedTickets([])
             } else {
                 toast('No se ha podido borrar el ticket, intente nuevamente', {
@@ -49,7 +49,7 @@ const ItemTicket = ({ticket,fetchTickets,fechaHora,email,role,selectedTickets,se
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchTickets(1, "", email);
+                fetchTickets(1, "", "", selectedDate);
             } else {
                 toast('No se ha podido eliminar la venta, intente nuevamente', {
                     position: "top-right",

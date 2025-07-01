@@ -2258,6 +2258,9 @@ h2 {
   align-items: center;
   padding: 2vh 0vh;
 }
+.cPanelSalesContainer__salesTable__spaceBody {
+  padding: 15vh 0vh;
+}
 .cPanelSalesContainer__salesTable__itemContainer {
   background-color: white;
   width: 95%;
