@@ -1,15 +1,23 @@
-import React, {useState,useEffect,useRef } from 'react'
+import React, {useState,useEffect,useRef,useContext } from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import {SalesContext} from '../context/CPanelSalesContext'
 
 const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
     //console.log(products)
+    const {
+        addedProducts,
+        setAddedProducts,
+        selectedVariantsMap,
+        setSelectedVariantsMap,
+        resetSale
+    } = useContext(SalesContext);
     const [selectedField, setSelectedField] = useState('title');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedProductData, setSelectedProductData] = useState([]); // Objetos completos
     const [allProducts, setAllProducts] = useState([]); // todos los productos sin filtrar
-    const [addedProducts, setAddedProducts] = useState([]);
+    //const [addedProducts, setAddedProducts] = useState([]);
     //console.log(addedProducts)
     const [loadingBtnConfirmSale, setLoadingBtnConfirmSale] = useState(false);
     const headerRef = useRef(null);
@@ -21,11 +29,11 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
     const [totalQuantity, setTotalQuantity] = useState('');
     const [totalWithDiscount, setTotalWithDiscount] = useState('');
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
-    const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
+    //const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
     const handleBtnCloseCreateSaleModal = () => {
-        setAddedProducts([]);
-        setSelectedVariantsMap({});
+        //setAddedProducts([]);
+        //setSelectedVariantsMap({});
         setCreateSaleModal(false)
     };
 
@@ -785,7 +793,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__btnContainer'>
                                 <button
                                     className="createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn"
-                                    onClick={() => setAddedProducts([])}
+                                    onClick={() => resetSale()}
                                 >
                                     Vaciar productos añadidos
                                 </button>

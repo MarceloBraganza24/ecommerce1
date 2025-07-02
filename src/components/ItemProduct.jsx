@@ -9,111 +9,13 @@ import { toast } from 'react-toastify';
 
 const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,description,price,userCart}) => {
     const [loading, setLoading] = useState(null);
-    const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
-    const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
-    const cantidadDisponible = stock - cantidadEnCarrito;
+    // const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
+    // const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
+    // const cantidadDisponible = stock - cantidadEnCarrito;
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
-
-    /* const addToCartAndSave = async () => {
-        if (!user_id) {
-            toast("Debes iniciar sesión para agregar productos al carrito", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return false;
-        }
-        if(stock == 0) {
-            toast("No hay stock disponible en este producto!", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return;
-        }
-        if (1 > cantidadDisponible) {
-            toast(`La cantidad debe ser igual o menor al stock!`, {
-            //toast(`No quedan más unidades disponibles para agregar!`, {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return;
-        }
-    
-        const newItem = {
-            product: id,
-            quantity: 1,
-            title
-        };
-    
-        try {
-            const response = await fetch("http://localhost:8081/api/carts", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id, products: [newItem] }),
-            });
-    
-            const data = await response.json();
-            if (response.ok) {
-                toast("Has agregado el producto al carrito!", {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchCartByUserId(user_id);
-                return true;
-            } else {
-                throw new Error(data.message || "Error desconocido");
-            }
-        } catch (error) {
-            toast("Error al guardar el producto en el carrito!", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return false;
-        }
-    }; */
-
-    /* const handleAddToCart = async () => {
-        setLoading("addToCartAndSave");
-        const success = await addToCartAndSave();
-        setLoading(null);
-    }; */
 
     const handleLinkToItemDetail = () => {
         window.location.href = `/item/${id}`
@@ -126,6 +28,16 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
             <div className="itemProduct">
 
                 <div className="itemProduct__imgContainer">
+
+                    <button
+                        className="itemProduct__favoriteBtn"
+                        onClick={(e) => {
+                            e.stopPropagation(); // Evita que dispare handleLinkToItemDetail
+                            handleToggleFavorite(productId); // Lógica que definas para favoritos
+                        }}
+                    >
+                        ❤️
+                    </button>
 
                     <Swiper
                         navigation

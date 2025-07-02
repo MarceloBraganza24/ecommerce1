@@ -2259,7 +2259,7 @@ h2 {
   padding: 2vh 0vh;
 }
 .cPanelSalesContainer__salesTable__spaceBody {
-  padding: 15vh 0vh;
+  padding: 20vh 0vh;
 }
 .cPanelSalesContainer__salesTable__itemContainer {
   background-color: white;
@@ -4174,6 +4174,26 @@ h2 {
   overflow: hidden;
   border-radius: 0.3vh;
   position: relative;
+}
+.itemProduct__imgContainer__favoriteBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.itemProduct__imgContainer__favoriteBtn:hover {
+  transform: scale(1.1);
+  background: rgb(255, 255, 255);
 }
 .itemProduct__imgContainer__img {
   width: 100%;

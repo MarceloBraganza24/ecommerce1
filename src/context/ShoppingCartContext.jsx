@@ -36,6 +36,7 @@ export const ShoppingCartContext = ({children}) => {
                 body: JSON.stringify({ selectedVariant: selectedVariant || null })
             });
             const data = await response.json();
+            console.log(data)
             if (response.ok) {
                 fetchCartByUserId(user_id);
                 toast('Has eliminado el producto del carrito!', {

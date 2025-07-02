@@ -1,23 +1,21 @@
-import React, {useState,useRef,useEffect} from 'react'
+import React, {useState,useRef,useEffect,useContext} from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { Link } from 'react-router-dom';
+import {ProductsContext} from '../context/CPanelProductsContext'
 
 const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}) => {
+    const {
+        product,
+        setProduct,
+        nuevoCampo,
+        setNuevoCampo,
+        variantes,
+        setVariantes,
+        nuevaVariante,
+        setNuevaVariante
+    } = useContext(ProductsContext);
     const [loading, setLoading] = useState(false);
-    const [product, setProduct] = useState({
-        images: [],
-        title: '',
-        description: '',
-        price: '',
-        stock: '',
-        state: '',
-        category: '',
-        camposDinamicos: []
-    });
-    const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
-    const [variantes, setVariantes] = useState([]);
-    const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, price: '', stock: '' });
 
     const fileInputRef = useRef(null);
 

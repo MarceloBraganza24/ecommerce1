@@ -1974,7 +1974,7 @@ h2 {
             padding: 2vh 0vh;
         }
         &__spaceBody {
-            padding: 15vh 0vh;
+            padding: 20vh 0vh;
         }
         &__itemContainer {
             background-color: white;
@@ -3676,6 +3676,27 @@ h2 {
         border-radius: 0.3vh;
         //margin-bottom: 1rem;
         position: relative;
+        &__favoriteBtn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            &:hover {
+                transform: scale(1.1);
+                background: rgba(255, 255, 255, 1);
+            }
+        }
+
         &__img {
             width: 100%;
             height: 100%;

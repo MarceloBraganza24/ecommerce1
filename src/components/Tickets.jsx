@@ -96,12 +96,14 @@ const Tickets = () => {
     }, [selectedDate]); 
 
     const goToPreviousDay = () => {
+        setIsLoadingTickets(true);
         const prevDate = new Date(selectedDate);
         prevDate.setDate(prevDate.getDate() - 1);
         setSelectedDate(prevDate);
     };
     
     const goToNextDay = () => {
+        setIsLoadingTickets(true);
         const nextDate = new Date(selectedDate);
         nextDate.setDate(nextDate.getDate() + 1);
         setSelectedDate(nextDate);
@@ -505,6 +507,14 @@ const Tickets = () => {
                 }
 
                 {
+                    isLoadingTickets ? 
+                        <>
+                            <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
+                                Cargando ventas&nbsp;&nbsp;<Spinner/>
+                            </div>
+                            <div className="cPanelSalesContainer__salesTable__spaceBody"></div>
+                        </>
+                    :
                     ticketsOrdenados.length != 0 &&
                     <div className='cPanelSalesContainer__btnDeleteSelected'>
                         <div className='cPanelSalesContainer__btnDeleteSelected__btnContainer'>
@@ -530,6 +540,14 @@ const Tickets = () => {
                 }
 
                 {
+                    isLoadingTickets ? 
+                        <>
+                            <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
+                                Cargando ventas&nbsp;&nbsp;<Spinner/>
+                            </div>
+                            <div className="cPanelSalesContainer__salesTable__spaceBody"></div>
+                        </>
+                    :
                     ticketsOrdenados.length != 0 &&
                     <div className='cPanelSalesContainer__headerTableCPanelSalesContainer'>
 
@@ -557,6 +575,7 @@ const Tickets = () => {
                                 <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
                                     Cargando ventas&nbsp;&nbsp;<Spinner/>
                                 </div>
+                                <div className="cPanelSalesContainer__salesTable__spaceBody"></div>
                             </>
                         : ticketsOrdenados.length != 0 ?
 

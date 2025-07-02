@@ -24,6 +24,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from './context/ThemeProviderContext.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import { CPanelProductsContext } from './context/CPanelProductsContext';
+import { CPanelSalesContext } from './context/CPanelSalesContext';
+import GlobalContexts from './context/GlobalContexts.jsx';
 
 
 function App() {
@@ -78,45 +81,37 @@ function App() {
             <img onClick={handleBtnWhatsAppIcon} class="networksContainer__network" src="/src/assets/WhatsApp_icon.png" alt="WhatsApp"/>
         </a>
         
-        <BrowserRouter>
+        <GlobalContexts>
 
-            <ScrollToTop />
+            <BrowserRouter>
 
-            <ThemeProvider>
+                <ScrollToTop />
 
-                <IsLoggedInContext>
+                    <Routes>
 
-                    <ShoppingCartContext>
+                        <Route exact path="/" element={<Home/>}/>
+                        <Route exact path="/about" element={<About/>}/>
+                        <Route exact path="/contact" element={<Contact/>}/>
+                        <Route exact path="/logIn" element={<Login/>}/>
+                        <Route exact path="/signIn" element={<SignIn/>}/>
+                        <Route exact path="/cart" element={<Cart/>}/>
+                        <Route exact path="/item/:id" element={<ItemDetailContainer/>}/>
+                        <Route exact path="/category/:category" element={<CategoryContainer/>}/>
+                        <Route exact path="/shipping" element={<Shipping/>}/>
+                        <Route exact path="/deliveryForm" element={<DeliveryForm/>}/>
+                        <Route exact path="/cpanel/products" element={<CPanelProducts/>}/>
+                        <Route exact path="/cpanel" element={<CPanel/>}/>
+                        <Route exact path="/tickets" element={<Tickets/>}/>
+                        <Route exact path="/myPurchases" element={<MyPurchases/>}/>
+                        <Route exact path="/bin" element={<Bin/>}/>
 
-                        <Routes>
+                    </Routes>
 
-                            <Route exact path="/" element={<Home/>}/>
-                            <Route exact path="/about" element={<About/>}/>
-                            <Route exact path="/contact" element={<Contact/>}/>
-                            <Route exact path="/logIn" element={<Login/>}/>
-                            <Route exact path="/signIn" element={<SignIn/>}/>
-                            <Route exact path="/cart" element={<Cart/>}/>
-                            <Route exact path="/item/:id" element={<ItemDetailContainer/>}/>
-                            <Route exact path="/category/:category" element={<CategoryContainer/>}/>
-                            <Route exact path="/shipping" element={<Shipping/>}/>
-                            <Route exact path="/deliveryForm" element={<DeliveryForm/>}/>
-                            <Route exact path="/cpanel/products" element={<CPanelProducts/>}/>
-                            <Route exact path="/cpanel" element={<CPanel/>}/>
-                            <Route exact path="/tickets" element={<Tickets/>}/>
-                            <Route exact path="/myPurchases" element={<MyPurchases/>}/>
-                            <Route exact path="/bin" element={<Bin/>}/>
+                    <ToastContainer />
 
-                        </Routes>
+            </BrowserRouter>
 
-                        <ToastContainer />
-
-                    </ShoppingCartContext>
-                    
-                </IsLoggedInContext>
-
-            </ThemeProvider>
-
-        </BrowserRouter>
+        </GlobalContexts>
         
         </>
     )
