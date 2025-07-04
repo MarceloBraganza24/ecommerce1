@@ -6,12 +6,14 @@ import Footer from './Footer';
 import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { useFavorites } from '../context/FavoritesContext';
 
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 const Favorites = () => {
     const firstRender = useRef(true);
+    const [loadingClearAll, setLoadingClearAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -21,11 +23,11 @@ const Favorites = () => {
     const [userCart, setUserCart] = useState({});
     const [products, setProducts] = useState([]);
     const [isLoadingDeliveryForm, setIsLoadingDeliveryForm] = useState(true);
-    const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [sellerAddresses, setSellerAddresses] = useState([]);
-    const [favorites, setFavorites] = useState([]);
+    //const [favorites, setFavorites] = useState([]);
+    const { favorites, fetchContextFavorites,isLoadingFavorites,clearAllFavorites  } = useFavorites();
     //console.log(favorites)
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
     const [deliveryAddressFormData, setDeliveryAddressFormData] = useState({
@@ -123,11 +125,10 @@ const Favorites = () => {
         }
     };
 
-    const fetchFavorites = async () => {
+    /* const fetchFavorites = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/favorites/user/${user._id}`);
+            const response = await fetch(`http://localhost:8081/api/favorites/user/${user_id}`);
             const data = await response.json();
-            //console.log(data.data)
             if (response.ok) {
                 setFavorites(data.data.products); 
             } else {
@@ -149,7 +150,7 @@ const Favorites = () => {
         } finally {
             setIsLoadingFavorites(false)
         }
-    };
+    }; */
 
     const fetchCartByUserId = async (user_id) => {
         try {
@@ -365,16 +366,16 @@ const Favorites = () => {
         fetchProducts();
         fetchSellerAddresses();
         fetchDeliveryForm();
-        fetchFavorites();
+        //fetchFavorites();
         fetchStoreSettings();
         //window.scrollTo(0, 0);
     }, []);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if(user?._id) {
-            fetchFavorites();
+            setIsLoadingFavorites(false)
         }
-    }, [user]);
+    }, [user]); */
 
     function hexToRgba(hex, opacity) {
         const cleanHex = hex.replace('#', '');
@@ -388,6 +389,24 @@ const Favorites = () => {
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
+
+    /* const handleBtnDeleteAllFavorites = async () => {
+        try {
+            const res = await fetch(`http://localhost:8081/api/favorites/clear`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user._id })
+            });
+            if (res.ok) {
+                toast('Se eliminaron todos los favoritos', { theme: 'dark' });
+                fetchContextFavorites(); // actualiza el contexto
+            } else {
+                toast.error('Error al eliminar favoritos');
+            }
+        } catch (err) {
+            console.error("Error al eliminar todos los favoritos:", err);
+        }
+    }; */
     
     const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
     const [sortOrder, setSortOrder] = useState('desc'); // 'asc' para ascendente, 'desc' para descendente
@@ -419,173 +438,108 @@ const Favorites = () => {
                 />
             </div>
 
+            {/* 
+            
             <div className='favoritesContiner'>
 
                 {isLoadingFavorites ? (
-                    <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                    <div className="favoritesContiner__isLoadingLabel">
                         Cargando favoritos&nbsp;&nbsp;<Spinner />
                     </div>
-                ) : favorites.length > 0 && (
+                ) : favorites.length > 0 ? (
                     <>
-                    {favorites.map((product) => (
-                        <ItemProduct
-                        key={product._id}
-                        user_id={user?._id}
-                        fetchCartByUserId={fetchCartByUserId}
-                        id={product._id}
-                        stock={product.stock}
-                        images={product.images}
-                        title={product.title}
-                        description={product.description}
-                        price={product.price}
-                        userCart={userCart}
-                        />
-                    ))}
-                    {/* <div className='cPanelProductsContainer__btnsPagesContainer'>
-                        <button
-                        className='cPanelProductsContainer__btnsPagesContainer__btn'
-                        disabled={!pageInfo.hasPrevPage}
-                        onClick={() => fetchProducts(pageInfo.prevPage)}
-                        >
-                        Anterior
-                        </button>
-
-                        <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
-
-                        <button
-                        className='cPanelProductsContainer__btnsPagesContainer__btn'
-                        disabled={!pageInfo.hasNextPage}
-                        onClick={() => fetchProducts(pageInfo.nextPage)}
-                        >
-                        Siguiente
-                        </button>
-                    </div> */}
-                    </>
-                ) /* : (
-                    <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet'>
-                    <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__label'>
-                        No se encontraron productos que coincidan con los filtros
-                    </div>
-                    {user?.role === 'admin' && (
-                        <Link
-                        to={`/cpanel/products`}
-                        className="categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__link"
-                        >
-                        Agregar productos
-                        </Link>
-                    )}
-                    </div>
-                ) */}
-                
-                {/* <div className="categoryContainer__grid">
-
-                    <div className='categoryContainer__grid__categoriesListContainer'>
-                        
-                        <div className='categoryContainer__grid__categoriesListContainer__categoriesList'>
-                            <div className='categoryContainer__grid__categoriesListContainer__categoriesList__label'>Categorías</div>
-                            {
-                                categories.map(category => (
-                                    <Link className='categoryContainer__grid__categoriesListContainer__categoriesList__category' to={`/category/${category.name}`}>
-                                        - {capitalizeFirstLetter(category.name)}
-                                    </Link>
-                                ))
-                            }
-                        </div>
-
-                        <div className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer'>
-                            <label>Filtrar por precio</label>
-                            <Slider
-                                range
-                                min={0}
-                                max={100000}
-                                value={[priceRange.min, priceRange.max]}
-                                onChange={([min, max]) => setPriceRange({ min, max })}
-                            />
-                            <p>Desde ${priceRange.min} hasta ${priceRange.max}</p>
-                        </div>
-
-                        <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
-                            <select className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-                                <option value="asc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: menor a mayor</option>
-                                <option value="desc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: mayor a menor</option>
-                            </select>
-                        </div>
-
-                    </div>
-                                
-                    {
-                        <div className="categoryContainer__grid__catalog">
-
-                            <div className='categoryContainer__grid__catalog__categorieContainer__title'>
-                                <h2 className='categoryContainer__grid__catalog__categorieContainer__title__prop'>{category}</h2>
+                        <div className='favoritesContiner__gridContainer'>
+                            <div className='favoritesContiner__gridContainer__grid'>
+                                {favorites.map((product) => (
+                                <ItemProduct
+                                    key={product._id}
+                                    user_id={user?._id}
+                                    fetchContextFavorites={fetchContextFavorites}
+                                    fetchCartByUserId={fetchCartByUserId}
+                                    id={product._id}
+                                    stock={product.stock}
+                                    images={product.images}
+                                    title={product.title}
+                                    description={product.description}
+                                    price={product.price}
+                                    userCart={userCart}
+                                    />
+                                ))}
                             </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className='favoritesContiner__nonProductsYet'>
+                        <div className='favoritesContiner__nonProductsYet__label'>
+                            Aún no tienes favoritos guardados
+                        </div>
+                    </div>
+                )}
+                
+            </div> 
+            
+            */}
+            <div className='favoritesContiner'>
+                {isLoadingFavorites ? (
+                    <div className="favoritesContiner__isLoadingLabel">
+                        Cargando favoritos&nbsp;&nbsp;<Spinner />
+                    </div>
+                ) : (
+                    <>
+                        {favorites.length > 0 ? (
+                            <div className='favoritesContiner__gridContainer'>
+                                <div className='favoritesContiner__gridContainer__btn'>
+                                    {/* <button onClick={() => clearAllFavorites(user._id)} className='favoritesContiner__gridContainer__btn__prop'>Eliminar todos</button> */}
+                                    <button
+                                        onClick={async () => {
+                                            /* const confirmDelete = confirm("¿Estás seguro de que deseas eliminar todos los favoritos?");
+                                            if (!confirmDelete) return; */
 
-                            <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer'>
-
-                                {isLoadingProducts ? (
-                                    <div className="catalogContainer__grid__catalog__isLoadingLabel">
-                                        Cargando productos&nbsp;&nbsp;<Spinner />
-                                    </div>
-                                ) : products.length !== 0 ? (
-                                    <>
-                                    {products.map((product) => (
+                                            setLoadingClearAll(true);
+                                            await clearAllFavorites(user._id);
+                                            setLoadingClearAll(false);
+                                        }}
+                                        className='favoritesContiner__gridContainer__btn__prop'
+                                        disabled={loadingClearAll}
+                                    >
+                                        {loadingClearAll ? (
+                                            <span>
+                                                <Spinner/>
+                                            </span>
+                                        ) : (
+                                            'Eliminar todos'
+                                        )}
+                                    </button>
+                                </div>
+                                <div className='favoritesContiner__gridContainer__grid'>
+                                    {favorites.map((product) => (
                                         <ItemProduct
-                                        key={product._id}
-                                        user_id={user?._id}
-                                        fetchCartByUserId={fetchCartByUserId}
-                                        id={product._id}
-                                        stock={product.stock}
-                                        images={product.images}
-                                        title={product.title}
-                                        description={product.description}
-                                        price={product.price}
-                                        userCart={userCart}
+                                            key={product._id}
+                                            user_id={user?._id}
+                                            fetchContextFavorites={fetchContextFavorites}
+                                            fetchCartByUserId={fetchCartByUserId}
+                                            id={product._id}
+                                            stock={product.stock}
+                                            images={product.images}
+                                            title={product.title}
+                                            description={product.description}
+                                            price={product.price}
+                                            userCart={userCart}
                                         />
                                     ))}
-                                    <div className='cPanelProductsContainer__btnsPagesContainer'>
-                                        <button
-                                        className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                        disabled={!pageInfo.hasPrevPage}
-                                        onClick={() => fetchProducts(pageInfo.prevPage)}
-                                        >
-                                        Anterior
-                                        </button>
-
-                                        <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
-
-                                        <button
-                                        className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                        disabled={!pageInfo.hasNextPage}
-                                        onClick={() => fetchProducts(pageInfo.nextPage)}
-                                        >
-                                        Siguiente
-                                        </button>
-                                    </div>
-                                    </>
-                                ) : (
-                                    <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet'>
-                                    <div className='categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__label'>
-                                        No se encontraron productos que coincidan con los filtros
-                                    </div>
-                                    {user?.role === 'admin' && (
-                                        <Link
-                                        to={`/cpanel/products`}
-                                        className="categoryContainer__grid__catalog__categorieContainer__productsContainer__nonProductsYet__link"
-                                        >
-                                        Agregar productos
-                                        </Link>
-                                    )}
-                                    </div>
-                                )}
-
+                                </div>
                             </div>
-                            
-                        </div>
-                    }
-
-                </div> */}
-
+                        ) : (
+                            <div className='favoritesContiner__nonProductsYet'>
+                                <div className='favoritesContiner__nonProductsYet__label'>
+                                    Aún no tienes favoritos guardados
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
             </div>
+
 
             <Footer
             isLoggedIn={user?.isLoggedIn}

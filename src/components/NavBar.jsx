@@ -276,14 +276,22 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                     <SmartLink to={'/'} className={`header__menu__item header__menu__itemBorder ${location.pathname === '/' ? 'activeLink' : ''}`}>
                         INICIO
                     </SmartLink>
-
+                    {
+                        user ?
+                        <Link to='/favorites' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
+                            FAVORITOS
+                        </Link>
+                        :
+                        <Link className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
+                            FAVORITOS
+                        </Link>
+                    }
                     {/* WRAPPER agregado */}
                     <div
                     className='menuCategoriesWrapper'
                     onMouseEnter={() => setShowCategories(true)}
                     onMouseLeave={() => setShowCategories(false)}
                     >
-                        {/* <div className={`header__menu__item header__menu__itemBorder ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}> */}
                         <div className={`header__menu__item header__menu__itemBorder ${showCategories ? 'hoverLink' : ''} ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}>
                             CATEGORÍAS
                         </div>
@@ -315,10 +323,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                             </div>
                         </div>
                     </div>
-
-                    <Link to='/favorites' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
-                        FAVORITOS
-                    </Link>
                     <Link to='/about' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/about' ? 'activeLink' : ''}`}>
                         SOBRE NOSOTROS
                     </Link>

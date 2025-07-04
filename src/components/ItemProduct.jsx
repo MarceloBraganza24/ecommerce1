@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState,useEffect} from 'react'
 import Spinner from './Spinner';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -8,9 +8,15 @@ import { Navigation, Pagination } from "swiper/modules";
 import { toast } from 'react-toastify';
 import { useFavorites } from '../context/FavoritesContext';
 
-const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,description,price,userCart}) => {
+const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,id,stock,images,title,description,price,userCart}) => {
     const [loading, setLoading] = useState(null);
     const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+    const [loadingFavorite, setLoadingFavorite] = useState(false);
+    const [localFavorite, setLocalFavorite] = useState(false);
+
+    useEffect(() => {
+        setLocalFavorite(favorites?.some(fav => fav._id === id));
+    }, [favorites, id]);
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -22,11 +28,28 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
 
     const isFavorite = favorites?.some(fav => fav._id === id);
 
-    const toggleFavorite = () => {
+    /* const toggleFavorite = async () => {
         if (isFavorite) {
-            removeFromFavorites(user_id, id);
+            await removeFromFavorites(user_id, id);
+            fetchContextFavorites();
         } else {
-            addToFavorites(user_id, id);
+            await addToFavorites(user_id, id);
+        }
+    }; */
+    const toggleFavorite = async () => {
+        setLoadingFavorite(true);
+        try {
+            if (localFavorite) {
+                await removeFromFavorites(user_id, id);
+                setLocalFavorite(false);
+            } else {
+                await addToFavorites(user_id, id);
+                setLocalFavorite(true);
+            }
+        } catch (err) {
+            console.error("Error al actualizar favoritos", err);
+        } finally {
+            setLoadingFavorite(false);
         }
     };
 
@@ -38,9 +61,35 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
 
                 <div className="itemProduct__imgContainer">
 
-                    <button onClick={toggleFavorite} className="itemProduct__favoriteBtn">
-                        {isFavorite ? "💖" : "🤍"}
-                    </button>
+                    {/* {
+                        user_id &&
+                        <button onClick={toggleFavorite} className="itemProduct__favoriteBtn">
+                            {isFavorite ? "💖" : "🤍"}
+                        </button>
+                    } */}
+                    {/* {user_id && (
+                        <button onClick={toggleFavorite} className="itemProduct__favoriteBtn" disabled={loadingFavorite}>
+                            {loadingFavorite ? (
+                                <span className="itemProduct__favoriteSpinner">
+                                    <Spinner/>
+                                </span> // Podés poner un ícono mejor si querés
+                            ) : (
+                                isFavorite ? "💖" : "🤍"
+                            )}
+                        </button>
+                    )} */}
+                    {user_id && (
+                        <button onClick={toggleFavorite} className="itemProduct__favoriteBtn" disabled={loadingFavorite}>
+                            {loadingFavorite ? (
+                                <span className="itemProduct__favoriteSpinner">
+                                    <Spinner/>
+                                </span> // Podés poner un ícono mejor si querés
+                            ) : (
+                                localFavorite ? "💖" : "🤍"
+                            )}
+                        </button>
+                    )}
+                    
 
                     <Swiper
                         navigation
