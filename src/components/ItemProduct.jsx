@@ -6,12 +6,11 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { toast } from 'react-toastify';
+import { useFavorites } from '../context/FavoritesContext';
 
 const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,description,price,userCart}) => {
     const [loading, setLoading] = useState(null);
-    // const productoEnCarrito = userCart?.products?.find(p => p.product._id === id);
-    // const cantidadEnCarrito = productoEnCarrito?.quantity || 0;
-    // const cantidadDisponible = stock - cantidadEnCarrito;
+    const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -19,6 +18,16 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
 
     const handleLinkToItemDetail = () => {
         window.location.href = `/item/${id}`
+    };
+
+    const isFavorite = favorites?.some(fav => fav._id === id);
+
+    const toggleFavorite = () => {
+        if (isFavorite) {
+            removeFromFavorites(user_id, id);
+        } else {
+            addToFavorites(user_id, id);
+        }
     };
 
     return (
@@ -29,14 +38,8 @@ const ItemProduct = ({user_id,fetchCartByUserId,id,stock,images,title,descriptio
 
                 <div className="itemProduct__imgContainer">
 
-                    <button
-                        className="itemProduct__favoriteBtn"
-                        onClick={(e) => {
-                            e.stopPropagation(); // Evita que dispare handleLinkToItemDetail
-                            handleToggleFavorite(productId); // Lógica que definas para favoritos
-                        }}
-                    >
-                        ❤️
+                    <button onClick={toggleFavorite} className="itemProduct__favoriteBtn">
+                        {isFavorite ? "💖" : "🤍"}
                     </button>
 
                     <Swiper

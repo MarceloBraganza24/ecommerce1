@@ -1,44 +1,60 @@
-import { createContext, useState } from "react"
-import { toast } from "react-toastify"
+import { createContext, useContext, useState, useEffect } from 'react';
+import { IsLoggedContext } from './IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
-export const FavoritesProvider = createContext(null)
+export const FavoritesContext = createContext();
 
-export const FavoritesContext = ({children}) => {
+export const useFavorites = () => useContext(FavoritesContext);
+
+export const FavoritesProvider = ({ children }) => {
     const [favorites, setFavorites] = useState([]);
+    const { user } = useContext(IsLoggedContext);
 
-    // Opcional: cargar favoritos desde la base de datos al iniciar sesión
-    const fetchFavorites = async (userId) => {
-        const res = await fetch(`http://localhost:8081/api/favorites/${userId}`);
-        const data = await res.json();
-        setFavorites(data.favorites || []);
+    const fetchFavorites = async () => {
+        try {
+            const res = await fetch(`http://localhost:8081/api/favorites/${user._id}`);
+            const data = await res.json();
+            if (res.ok) setFavorites(data.payload);
+        } catch (err) {
+            console.error("Error al obtener favoritos:", err);
+        }
     };
 
     const addToFavorites = async (userId, productId) => {
-        const res = await fetch(`http://localhost:8081/api/favorites/${userId}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId })
-        });
-        const data = await res.json();
-        if (res.ok) setFavorites(data.favorites);
+        try {
+            const res = await fetch(`http://localhost:8081/api/favorites/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, productId })
+            });
+            const data = await res.json();
+            if (res.ok) fetchFavorites();
+        } catch (err) {
+            console.error("Error al agregar favorito:", err);
+        }
     };
 
     const removeFromFavorites = async (userId, productId) => {
-        const res = await fetch(`http://localhost:8081/api/favorites/${userId}/${productId}`, {
-            method: "DELETE"
-        });
-        const data = await res.json();
-        if (res.ok) setFavorites(data.favorites);
+        try {
+            const res = await fetch(`http://localhost:8081/api/favorites/remove`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, productId })
+            });
+            if (res.ok) fetchFavorites();
+        } catch (err) {
+            console.error("Error al quitar favorito:", err);
+        }
     };
-    
+
+    useEffect(() => {
+        if (user?._id) {
+            fetchFavorites();
+        }
+    }, [user]);
+
     return (
-
-        <FavoritesProvider.Provider 
-            value={{ favorites, fetchFavorites, addToFavorites, removeFromFavorites }}
-        >
+        <FavoritesContext.Provider value={{ favorites, addToFavorites, removeFromFavorites }}>
             {children}
-        </FavoritesProvider.Provider>
-
-    )
-
-}
+        </FavoritesContext.Provider>
+    );
+};

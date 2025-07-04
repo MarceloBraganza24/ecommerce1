@@ -1798,6 +1798,12 @@ h2 {
   padding-top: 1vh;
 }
 
+.favoritesContiner {
+  background-color: rgba(183, 183, 183, 0.85);
+  width: 100%;
+  padding: 28vh 0vh 5vh 0vh;
+}
+
 .cPanelProductsContainer {
   background-color: rgba(183, 183, 183, 0.85);
   width: 100%;

@@ -316,6 +316,9 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                         </div>
                     </div>
 
+                    <Link to='/favorites' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
+                        FAVORITOS
+                    </Link>
                     <Link to='/about' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/about' ? 'activeLink' : ''}`}>
                         SOBRE NOSOTROS
                     </Link>

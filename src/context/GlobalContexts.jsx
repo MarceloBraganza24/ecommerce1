@@ -11,19 +11,19 @@ import { FavoritesProvider } from "./FavoritesContext";
 
 const GlobalContexts = ({ children }) => {
     return (
-        <FavoritesProvider>
-            <CPanelProductsContext>
-                <CPanelSalesContext>
-                    <ShoppingCartContext>
-                        <ThemeProvider>
-                            <IsLoggedInContext>
-                                {children}
-                            </IsLoggedInContext>
-                        </ThemeProvider>
-                    </ShoppingCartContext>
-                </CPanelSalesContext>
-            </CPanelProductsContext>
-        </FavoritesProvider>
+        <IsLoggedInContext>
+            <FavoritesProvider>
+                <CPanelProductsContext>
+                    <CPanelSalesContext>
+                        <ShoppingCartContext>
+                            <ThemeProvider>
+                                    {children}
+                            </ThemeProvider>
+                        </ShoppingCartContext>
+                    </CPanelSalesContext>
+                </CPanelProductsContext>
+            </FavoritesProvider>
+        </IsLoggedInContext>
     );
 };
 

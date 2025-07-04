@@ -27,6 +27,7 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import { CPanelProductsContext } from './context/CPanelProductsContext';
 import { CPanelSalesContext } from './context/CPanelSalesContext';
 import GlobalContexts from './context/GlobalContexts.jsx';
+import Favorites from './components/Favorites.jsx';
 
 
 function App() {
@@ -104,6 +105,7 @@ function App() {
                         <Route exact path="/tickets" element={<Tickets/>}/>
                         <Route exact path="/myPurchases" element={<MyPurchases/>}/>
                         <Route exact path="/bin" element={<Bin/>}/>
+                        <Route exact path="/favorites" element={<Favorites/>}/>
 
                     </Routes>
 
