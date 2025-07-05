@@ -49,7 +49,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchTickets(1, "", "", selectedDate);
+                fetchTickets(1, "", email);
             } else {
                 toast('No se ha podido eliminar la venta, intente nuevamente', {
                     position: "top-right",
@@ -69,7 +69,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
     return (
         <>
             {
-                role == 'admin' ?
+                (role == 'admin' || role == 'premium') ?
 
                 <div className="cPanelSalesContainer__salesTable__itemContainer">
 
@@ -180,7 +180,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                             <Spinner/>
                             </button>
                         ) 
-                        : role == 'admin' &&
+                        : (role == 'admin' || role == 'premium') &&
                         (
                             <button
                             onClick={handleBtnDeleteTicket}

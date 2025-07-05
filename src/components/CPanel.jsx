@@ -971,6 +971,7 @@ const CPanel = () => {
         ],
         aboutText: '',
         footerLogoText: '',
+        copyrightText: '', 
         sliderLogos: [],
         socialNetworks: []
     });
@@ -1137,9 +1138,6 @@ const CPanel = () => {
         }));
     };
 
-    /* const addPhoneNumber = () => {
-        setConfigurationSiteformData(prev => ({ ...prev, phoneNumbers: [...prev.phoneNumbers, ''] }));
-    }; */
     const addPhoneNumber = () => {
         setConfigurationSiteformData(prev => ({
             ...prev,
@@ -1147,10 +1145,6 @@ const CPanel = () => {
         }));
     };
 
-    /* const removePhoneNumber = (index) => {
-        const updatedPhones = configurationSiteformData.phoneNumbers.filter((_, i) => i !== index);
-        setConfigurationSiteformData(prev => ({ ...prev, phoneNumbers: updatedPhones }));
-    }; */
     const removePhoneNumber = (index) => {
         if (configurationSiteformData.phoneNumbers.length === 1) return;
 
@@ -1336,6 +1330,18 @@ const CPanel = () => {
                 setInitialColorSelect(colorSelectFormData);
                 setInitialSiteImages(siteImages);
                 //console.log('Resultado:', result);
+            } else {
+                toast('ha ocurrido un error al guardar, intente nuevamente', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
             }
         } catch (error) {
             console.error('Error al enviar la configuración:', error);
@@ -1963,6 +1969,21 @@ const CPanel = () => {
 
                         </div>
 
+                        <div className="cPanelContainer__siteConfiguration__form__copyrightText" style={{marginTop: '2vh'}}>
+                            <label className="cPanelContainer__siteConfiguration__form__copyrightText__label">
+                                Copyright (footer):
+                            </label>
+                            <input
+                            type="text"
+                            placeholder="Ej: © 2025 Mi Tienda. Todos los derechos reservados."
+                            name="copyrightText"
+                            value={configurationSiteformData.copyrightText}
+                            onChange={handleChange}
+                            className="cPanelContainer__siteConfiguration__form__copyrightText__input"
+                            />
+                        </div>
+
+
                         <div className='cPanelContainer__siteConfiguration__form__btnContainer'>
                             <button onClick={handleSubmitConfigSite} className='cPanelContainer__siteConfiguration__form__btnContainer__btn'>Guardar configuración</button>
                         </div>
@@ -2291,6 +2312,7 @@ const CPanel = () => {
                                     >
                                     <option value="user">User</option>
                                     <option value="admin">Administrador</option>
+                                    <option value="premium">Premium</option>
                                 </select>
                             </div>
                         </div>

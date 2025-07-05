@@ -2,7 +2,7 @@ import React from 'react'
 import { Link,useLocation, useNavigate } from 'react-router-dom'
 import SmartLink from './SmartLink';
 
-const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,phoneNumbers,contactEmail}) => {
+const Footer = ({isLoggedIn,copyrightText,sellerAddresses,socialNetworks,logo_store,aboutText,phoneNumbers,contactEmail}) => {
     // const navigate = useNavigate();
     // const location = useLocation();
 
@@ -153,6 +153,12 @@ const Footer = ({isLoggedIn,sellerAddresses,socialNetworks,logo_store,aboutText,
                         </>
                     ))}
                 </div>
+            </div>
+
+            <div className='footerContainer__copyrightTextContainer'>
+
+                <div className='footerContainer__copyrightTextContainer__copyrightText'>{copyrightText}</div>
+
             </div>
 
         </>

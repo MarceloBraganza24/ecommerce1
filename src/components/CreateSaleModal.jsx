@@ -4,7 +4,6 @@ import Spinner from './Spinner';
 import {SalesContext} from '../context/CPanelSalesContext'
 
 const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
-    //console.log(products)
     const {
         addedProducts,
         setAddedProducts,
@@ -17,8 +16,6 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedProductData, setSelectedProductData] = useState([]); // Objetos completos
     const [allProducts, setAllProducts] = useState([]); // todos los productos sin filtrar
-    //const [addedProducts, setAddedProducts] = useState([]);
-    //console.log(addedProducts)
     const [loadingBtnConfirmSale, setLoadingBtnConfirmSale] = useState(false);
     const headerRef = useRef(null);
     const [inputDiscount, setInputDiscount] = useState('');
@@ -29,11 +26,8 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
     const [totalQuantity, setTotalQuantity] = useState('');
     const [totalWithDiscount, setTotalWithDiscount] = useState('');
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
-    //const [selectedVariantsMap, setSelectedVariantsMap] = useState({});
 
     const handleBtnCloseCreateSaleModal = () => {
-        //setAddedProducts([]);
-        //setSelectedVariantsMap({});
         setCreateSaleModal(false)
     };
 
@@ -190,6 +184,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                 });
                 setTimeout(() => {
                     setCreateSaleModal(false)
+                    setAddedProducts([])
                     fetchTickets(1, "", "", selectedDate);
                 }, 2500);
             } else {

@@ -571,6 +571,7 @@ const ItemDetailContainer = () => {
             phoneNumbers={storeSettings.phoneNumbers}
             contactEmail={storeSettings.contactEmail}
             socialNetworks={storeSettings.socialNetworks}
+            copyrightText={storeSettings.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

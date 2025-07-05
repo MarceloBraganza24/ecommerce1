@@ -783,6 +783,32 @@ h2 {
                     border: 0.3vh solid black;
                     border-radius: 0.5vh;
                 }
+                &__input {
+                    width: 500px;
+                    height: 30px;
+                    text-align: center;
+                    border: 0.3vh solid black;
+                    border-radius: 0.5vh;
+                }
+            }
+            &__copyrightText {
+                display: flex;
+                align-items: center;
+                gap: 2vh;
+                &__label {
+                    width: 400px;
+                    //font-size: 18px;
+                    font-size: 30px;
+                    padding-bottom: 2vh;
+                    font-weight: bold;
+                }
+                &__input {
+                    width: 500px;
+                    height: 30px;
+                    text-align: center;
+                    border: 0.3vh solid black;
+                    border-radius: 0.5vh;
+                }
             }
             &__btnContainer {
                 @include disFC();
@@ -1412,7 +1438,7 @@ h2 {
         }
     }
     &__headerTableContainer {
-        background-color: whitesmoke;
+        //background-color: whitesmoke;
         width: 95%;
         @include disFC();
         align-self: center;
@@ -1432,20 +1458,23 @@ h2 {
         }
     }
     &__productsTable {
-        background-color: whitesmoke;
-        width: 95%;
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-self: center;
         margin-bottom: 4vh;
         border-bottom-left-radius: 0.5vh;
         border-bottom-right-radius: 0.5vh;
+        gap: 0.5vh;
         &__itemContainer {
-            width: 100%;
+            background-color: whitesmoke;
+            width: 95%;
             display: grid;
+            align-self: center;
             grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1.5fr;
             border-bottom: 0.3vh solid #d6d5d5;
             padding: 1vh 0vh;
+            border-radius: 1vh;
             &__item {
                 width: 100%;
                 @include disFC();
@@ -1482,7 +1511,7 @@ h2 {
         }
     }
     &__headerSalesTableContainer {
-        background-color: whitesmoke;
+        //background-color: whitesmoke;
         width: 95%;
         @include disFC();
         align-self: center;
@@ -1491,8 +1520,8 @@ h2 {
         &__headerTable {
             width: 95%;
             display: grid;
-            grid-template-columns: 0.5fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1.5fr;
-            border-bottom: 0.3vh solid #d6d5d5;
+            grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
+            //border-bottom: 0.3vh solid #d6d5d5;
             padding: 2vh 0vh;
             &__item {
                 font-size: 18px;
@@ -1502,22 +1531,24 @@ h2 {
         }
     }
     &__salesTable {
-        background-color: whitesmoke;
-        width: 95%;
+        background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-self: center;
         gap: 0.5vh;
+        padding-bottom: 10vh;
         &__dayContainer {
             background-color: rgb(214, 213, 213);
             @include disFC();
             padding: 2vh 0vh;
         }
         &__itemContainer {
+            background-color: whitesmoke;
             width: 95%;
             display: grid;
             align-self: center;
-            grid-template-columns: 0.5fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1.5fr;
+            grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
             padding: 1vh 0vh;
             border-radius: 1vh;
             &__item {
@@ -1559,7 +1590,7 @@ h2 {
                     &__productLine {
                         display: grid;
                         align-items: center;
-                        grid-template-columns: 1fr 3fr 1fr 2fr;
+                        grid-template-columns: 1fr 3fr 3fr 1fr 2fr;
                         cursor: pointer;
                         &__title {
                             display: flex;
@@ -1578,10 +1609,13 @@ h2 {
                         &__img {
                             @include disFC();
                             &__prop {
-                                width: 50%;
+                                width: 100%;
                             }
                         }
                         &__quantity {
+                            justify-self: center;
+                        }
+                        &__price {
                             justify-self: end;
                         }
                     }
@@ -1589,10 +1623,11 @@ h2 {
             }
             &__btnsContainer {
                 width: 100%;
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
+                @include disFC();
+                flex-direction: column;
+                gap: 0.5vh;
                 &__btn {
+                    width: 90%;
                     padding: 0.5vh 1vh;
                     border-radius: 0.5vh;
                     text-align: center;
@@ -3736,32 +3771,28 @@ h2 {
         border-radius: 0.3vh;
         //margin-bottom: 1rem;
         position: relative;
-        &__favoriteBtn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(255, 255, 255, 0.85);
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            &:hover {
-                transform: scale(1.1);
-                background: rgba(255, 255, 255, 1);
-            }
-        }
         &__favoriteSpinner {
-            width: 5px;
+            font-size: 24px; /* Cambia a lo que necesites: 16px, 32px, 2rem, etc */
+            line-height: 1;
+            position: absolute;
+            z-index: 10;
+            right: 4px;
+            top: 4px;
+        }
+        &__favoriteIcon {
+            background-color: black;
+            border-radius: 50%;
+            padding: 0.5vh 0.5vh 0.8vh 0.5vh;
+            font-size: 16px; /* Cambia a lo que necesites: 16px, 32px, 2rem, etc */
+            line-height: 1;
+            position: absolute;
+            z-index: 10;
+            right: 4px;
+            cursor: pointer;
+            top: 4px;
         }
         &__img {
             width: 100%;
-            height: 100%;
             height: 250px; // ⬅️ Imagen vertical
             object-fit: cover; // ⬅️ Rellena el espacio sin deformarse
             display: block;
@@ -3773,14 +3804,12 @@ h2 {
         width: 70%;
         max-width: 100%;
         padding-top: 1vh;
-        //padding-bottom: 2px;
         scroll-behavior: smooth;
         text-align: center; // ✅ centrado seguro
         &::-webkit-scrollbar {
             display: none; /* Oculta la barra de desplazamiento */
         }
         &__prop {
-            //width: 90%;
             display: inline-block;
             font-size: 16px;
             white-space: nowrap;
@@ -5075,7 +5104,7 @@ h2 {
     }
     &__socialNetworks {
         background-color: var(--primary-color);
-        padding-bottom: 5vh;
+        padding-bottom: 2vh;
         &__title {
             @include disFC();
             padding: 2vh 0vh;
@@ -5109,6 +5138,15 @@ h2 {
                     }
                 }
             }
+        }
+    }
+    &__copyrightTextContainer {
+        background-color: var(--primary-color);
+        @include disFC();
+        padding: 1vh 0vh;
+        &__copyrightText {
+            font-size: 14px;
+            color: var(--primary-text-color);
         }
     }
 }

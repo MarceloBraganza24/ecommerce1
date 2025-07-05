@@ -674,6 +674,7 @@ const Bin = () => {
                                 )
                                 
                             })
+
                         :
                         <>
                             <div className="catalogContainer__grid__catalog__isLoadingLabel">

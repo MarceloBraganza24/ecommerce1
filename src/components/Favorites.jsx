@@ -438,49 +438,16 @@ const Favorites = () => {
                 />
             </div>
 
-            {/* 
-            
             <div className='favoritesContiner'>
-
-                {isLoadingFavorites ? (
+                {isLoadingAuth ? (
                     <div className="favoritesContiner__isLoadingLabel">
-                        Cargando favoritos&nbsp;&nbsp;<Spinner />
+                        {/* Cargando sesión &nbsp;&nbsp;*/}<Spinner />
                     </div>
-                ) : favorites.length > 0 ? (
-                    <>
-                        <div className='favoritesContiner__gridContainer'>
-                            <div className='favoritesContiner__gridContainer__grid'>
-                                {favorites.map((product) => (
-                                <ItemProduct
-                                    key={product._id}
-                                    user_id={user?._id}
-                                    fetchContextFavorites={fetchContextFavorites}
-                                    fetchCartByUserId={fetchCartByUserId}
-                                    id={product._id}
-                                    stock={product.stock}
-                                    images={product.images}
-                                    title={product.title}
-                                    description={product.description}
-                                    price={product.price}
-                                    userCart={userCart}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className='favoritesContiner__nonProductsYet'>
-                        <div className='favoritesContiner__nonProductsYet__label'>
-                            Aún no tienes favoritos guardados
-                        </div>
+                ) : !user ? (
+                    <div className="favoritesContiner__isLoadingLabel">
+                        Debes iniciar sesión para ver los favoritos
                     </div>
-                )}
-                
-            </div> 
-            
-            */}
-            <div className='favoritesContiner'>
-                {isLoadingFavorites ? (
+                ) : isLoadingFavorites ? (
                     <div className="favoritesContiner__isLoadingLabel">
                         Cargando favoritos&nbsp;&nbsp;<Spinner />
                     </div>
@@ -489,12 +456,8 @@ const Favorites = () => {
                         {favorites.length > 0 ? (
                             <div className='favoritesContiner__gridContainer'>
                                 <div className='favoritesContiner__gridContainer__btn'>
-                                    {/* <button onClick={() => clearAllFavorites(user._id)} className='favoritesContiner__gridContainer__btn__prop'>Eliminar todos</button> */}
                                     <button
                                         onClick={async () => {
-                                            /* const confirmDelete = confirm("¿Estás seguro de que deseas eliminar todos los favoritos?");
-                                            if (!confirmDelete) return; */
-
                                             setLoadingClearAll(true);
                                             await clearAllFavorites(user._id);
                                             setLoadingClearAll(false);
@@ -502,20 +465,14 @@ const Favorites = () => {
                                         className='favoritesContiner__gridContainer__btn__prop'
                                         disabled={loadingClearAll}
                                     >
-                                        {loadingClearAll ? (
-                                            <span>
-                                                <Spinner/>
-                                            </span>
-                                        ) : (
-                                            'Eliminar todos'
-                                        )}
+                                        {loadingClearAll ? <Spinner /> : 'Eliminar todos'}
                                     </button>
                                 </div>
                                 <div className='favoritesContiner__gridContainer__grid'>
                                     {favorites.map((product) => (
                                         <ItemProduct
                                             key={product._id}
-                                            user_id={user?._id}
+                                            user_id={user._id}
                                             fetchContextFavorites={fetchContextFavorites}
                                             fetchCartByUserId={fetchCartByUserId}
                                             id={product._id}
@@ -541,6 +498,8 @@ const Favorites = () => {
             </div>
 
 
+
+
             <Footer
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
@@ -548,6 +507,7 @@ const Favorites = () => {
             phoneNumbers={storeSettings.phoneNumbers}
             contactEmail={storeSettings.contactEmail}
             socialNetworks={storeSettings.socialNetworks}
+            copyrightText={storeSettings.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

@@ -405,7 +405,7 @@ const Tickets = () => {
         setSelectAll(checked);
 
         if (checked) {
-            const allIds = filteredByDate.map(ticket => ticket._id);
+            const allIds = tickets.map(ticket => ticket._id);
             setSelectedTickets(allIds);
         } else {
             setSelectedTickets([]);
@@ -628,6 +628,11 @@ const Tickets = () => {
                                         Siguiente
                                     </button>
                                 </div>
+                                
+                                {
+                                    (ticketsOrdenados.length == 1 || ticketsOrdenados.length == 2) &&
+                                    <div style={{padding:'5vh 0vh'}}></div>
+                                }
                             </>
                             
                         :

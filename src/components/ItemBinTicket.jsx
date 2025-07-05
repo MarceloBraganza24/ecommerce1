@@ -110,6 +110,7 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                                 : [];
 
                         const relativePath = images.length > 0 ? images[0] : null;
+                        const variantCampos = item.selectedVariant?.campos || snapshot?.variant?.campos;
 
                         const imageUrl = relativePath
                             ? `http://localhost:8081/${relativePath}`  // <-- reemplazá con tu dominio real
@@ -128,11 +129,30 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                                 <div className="binContainer__salesTable__itemContainer__itemProduct__products__productLine__title">
                                     {title}
                                 </div>
+                                <div className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer">
+                                    {variantCampos ? (
+                                        <div className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__variant">
+                                            {Object.entries(variantCampos).map(([key, value]) => (
+                                                <div
+                                                    key={key}
+                                                    className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__variant__prop"
+                                                >
+                                                    {key}: {value}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )
+                                    :
+                                    <div className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__noVariant">
+                                        -
+                                    </div>
+                                    }
+                                </div>
                                 <div className="binContainer__salesTable__itemContainer__itemProduct__products__productLine__quantity">
                                     x {item.quantity}
                                 </div>
-                                <div className="binContainer__salesTable__itemContainer__itemProduct__products__productLine__quantity">
-                                    ${item.snapshot.price}
+                                <div className="binContainer__salesTable__itemContainer__itemProduct__products__productLine__price">
+                                    ${snapshot?.price || product?.price || '-'}
                                 </div>
                             </div>
                         );

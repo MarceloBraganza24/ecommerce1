@@ -28,14 +28,6 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,id,stock,i
 
     const isFavorite = favorites?.some(fav => fav._id === id);
 
-    /* const toggleFavorite = async () => {
-        if (isFavorite) {
-            await removeFromFavorites(user_id, id);
-            fetchContextFavorites();
-        } else {
-            await addToFavorites(user_id, id);
-        }
-    }; */
     const toggleFavorite = async () => {
         setLoadingFavorite(true);
         try {
@@ -61,35 +53,19 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,id,stock,i
 
                 <div className="itemProduct__imgContainer">
 
-                    {/* {
-                        user_id &&
-                        <button onClick={toggleFavorite} className="itemProduct__favoriteBtn">
-                            {isFavorite ? "💖" : "🤍"}
-                        </button>
-                    } */}
-                    {/* {user_id && (
-                        <button onClick={toggleFavorite} className="itemProduct__favoriteBtn" disabled={loadingFavorite}>
-                            {loadingFavorite ? (
-                                <span className="itemProduct__favoriteSpinner">
-                                    <Spinner/>
-                                </span> // Podés poner un ícono mejor si querés
-                            ) : (
-                                isFavorite ? "💖" : "🤍"
-                            )}
-                        </button>
-                    )} */}
                     {user_id && (
-                        <button onClick={toggleFavorite} className="itemProduct__favoriteBtn" disabled={loadingFavorite}>
+                        <button onClick={toggleFavorite} className="itemProduct__imgContainer__favoriteBtn" disabled={loadingFavorite}>
                             {loadingFavorite ? (
-                                <span className="itemProduct__favoriteSpinner">
+                                <span className="itemProduct__imgContainer__favoriteSpinner">
                                     <Spinner/>
                                 </span> // Podés poner un ícono mejor si querés
                             ) : (
-                                localFavorite ? "💖" : "🤍"
+                                <span className="itemProduct__imgContainer__favoriteIcon">
+                                    {localFavorite ? "💖" : "🤍"}
+                                </span>
                             )}
                         </button>
                     )}
-                    
 
                     <Swiper
                         navigation

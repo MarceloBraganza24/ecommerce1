@@ -64,7 +64,6 @@ export const FavoritesProvider = ({ children }) => {
         }
     };
 
-
     const addToFavorites = async (userId, productId) => {
         try {
             const res = await fetch(`http://localhost:8081/api/favorites/add`, {
@@ -121,6 +120,8 @@ export const FavoritesProvider = ({ children }) => {
     useEffect(() => {
         if (user?._id) {
             fetchContextFavorites();
+        } else {
+            setIsLoadingFavorites(false); // importante para salir del loading si no hay user
         }
     }, [user]);
 
