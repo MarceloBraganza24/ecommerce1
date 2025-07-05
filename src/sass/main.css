@@ -1597,7 +1597,7 @@ h2 {
   color: var(--secondary-text-color);
 }
 .binContainer__headerTableContainer {
-  width: 95%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1606,9 +1606,10 @@ h2 {
   border-top-right-radius: 0.5vh;
 }
 .binContainer__headerTableContainer__headerTable {
-  width: 100%;
+  width: 95%;
   display: grid;
   grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1.5fr;
+  grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 2vh 0vh;
 }
@@ -1633,6 +1634,7 @@ h2 {
   display: grid;
   align-self: center;
   grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1.5fr;
+  grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
   border-bottom: 0.3vh solid #d6d5d5;
   padding: 1vh 0vh;
   border-radius: 1vh;
@@ -1662,10 +1664,13 @@ h2 {
 .binContainer__productsTable__itemContainer__btnsContainer {
   width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  gap: 0.5vh;
 }
 .binContainer__productsTable__itemContainer__btnsContainer__btn {
+  width: 90%;
   padding: 0.5vh 1vh;
   border-radius: 0.5vh;
   text-align: center;
@@ -1678,7 +1683,7 @@ h2 {
   color: var(--secondary-text-color);
 }
 .binContainer__headerSalesTableContainer {
-  width: 95%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

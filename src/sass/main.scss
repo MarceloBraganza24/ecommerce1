@@ -1439,15 +1439,16 @@ h2 {
     }
     &__headerTableContainer {
         //background-color: whitesmoke;
-        width: 95%;
+        width: 100%;
         @include disFC();
         align-self: center;
         border-top-left-radius: 0.5vh;
         border-top-right-radius: 0.5vh;
         &__headerTable {
-            width: 100%;
+            width: 95%;
             display: grid;
             grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1.5fr;
+            grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
             border-bottom: 0.3vh solid #d6d5d5;
             padding: 2vh 0vh;
             &__item {
@@ -1472,6 +1473,7 @@ h2 {
             display: grid;
             align-self: center;
             grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1.5fr;
+            grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
             border-bottom: 0.3vh solid #d6d5d5;
             padding: 1vh 0vh;
             border-radius: 1vh;
@@ -1497,10 +1499,11 @@ h2 {
             }
             &__btnsContainer {
                 width: 100%;
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
+                @include disFC();
+                flex-direction: column;
+                gap: 0.5vh;
                 &__btn {
+                    width: 90%;
                     padding: 0.5vh 1vh;
                     border-radius: 0.5vh;
                     text-align: center;
@@ -1512,7 +1515,7 @@ h2 {
     }
     &__headerSalesTableContainer {
         //background-color: whitesmoke;
-        width: 95%;
+        width: 100%;
         @include disFC();
         align-self: center;
         border-top-left-radius: 0.5vh;
