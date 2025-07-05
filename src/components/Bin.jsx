@@ -5,6 +5,7 @@ import ItemBinProduct from "./ItemBinProduct";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import ItemBinTicket from "./ItemBinTicket";
+import {IsLoggedContext} from '../context/IsLoggedContext';
 
 const Bin = () => {
     const [selectedTickets, setSelectedTickets] = useState([]);
@@ -13,8 +14,9 @@ const Bin = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
+    // const [user, setUser] = useState(undefined);
+    // const isLoadingAuth = user === undefined;
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -96,30 +98,6 @@ const Bin = () => {
             console.error('Error:', error);
         } finally {
             setIsLoadingTickets(false)
-        }
-    };
-
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                navigate('/')
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
         }
     };
 
@@ -244,9 +222,7 @@ const Bin = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 

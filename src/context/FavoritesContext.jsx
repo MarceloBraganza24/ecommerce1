@@ -8,7 +8,7 @@ export const useFavorites = () => useContext(FavoritesContext);
 
 export const FavoritesProvider = ({ children }) => {
     const [favorites, setFavorites] = useState([]);
-    const { user } = useContext(IsLoggedContext);
+    const { user,loadingUser } = useContext(IsLoggedContext);
     const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
 
     const fetchContextFavorites = async () => {
@@ -118,13 +118,20 @@ export const FavoritesProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        if (user?._id) {
-            fetchContextFavorites();
-        } else {
-            setIsLoadingFavorites(false); // importante para salir del loading si no hay user
+        if (!loadingUser) {
+            if (user && user._id) {
+                fetchContextFavorites();
+            } else {
+                setFavorites([]);
+                setIsLoadingFavorites(false);
+            }
         }
-    }, [user]);
+    }, [user?._id, loadingUser]);
 
+
+    useEffect(() => {
+        console.log('⭐ FAVORITOS ACTUALIZADOS:', favorites);
+    }, [favorites]);
     return (
         <FavoritesContext.Provider value={{ favorites,isLoadingFavorites, addToFavorites, removeFromFavorites, fetchContextFavorites,clearAllFavorites }}>
             {children}

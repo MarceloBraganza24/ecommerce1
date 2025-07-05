@@ -9,14 +9,14 @@ import Spinner from './Spinner';
 
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const CategoryContainer = () => {
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const firstRender = useRef(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
     const [userCart, setUserCart] = useState({});
     const [products, setProducts] = useState([]);
@@ -65,9 +65,7 @@ const CategoryContainer = () => {
     
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -276,7 +274,7 @@ const CategoryContainer = () => {
     };
 
 
-    const fetchCurrentUser = async () => {
+    /* const fetchCurrentUser = async () => {
         try {
             const response = await fetch('http://localhost:8081/api/sessions/current', {
                 method: 'GET',
@@ -297,7 +295,7 @@ const CategoryContainer = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    };
+    }; */
 
     const fetchStoreSettings = async () => {
         try {

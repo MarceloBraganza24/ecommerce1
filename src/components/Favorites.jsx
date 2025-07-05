@@ -9,16 +9,16 @@ import Spinner from './Spinner';
 import { useFavorites } from '../context/FavoritesContext';
 
 import Slider from 'rc-slider';
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import 'rc-slider/assets/index.css';
 
 const Favorites = () => {
     const firstRender = useRef(true);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [loadingClearAll, setLoadingClearAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
     const [userCart, setUserCart] = useState({});
     const [products, setProducts] = useState([]);
@@ -26,9 +26,7 @@ const Favorites = () => {
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [sellerAddresses, setSellerAddresses] = useState([]);
-    //const [favorites, setFavorites] = useState([]);
     const { favorites, fetchContextFavorites,isLoadingFavorites,clearAllFavorites  } = useFavorites();
-    //console.log(favorites)
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
     const [deliveryAddressFormData, setDeliveryAddressFormData] = useState({
         street: "",
@@ -70,9 +68,7 @@ const Favorites = () => {
     
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -124,33 +120,6 @@ const Favorites = () => {
             setIsLoadingSellerAddresses(false)
         }
     };
-
-    /* const fetchFavorites = async (user_id) => {
-        try {
-            const response = await fetch(`http://localhost:8081/api/favorites/user/${user_id}`);
-            const data = await response.json();
-            if (response.ok) {
-                setFavorites(data.data.products); 
-            } else {
-                toast('Error al cargar favoritos', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoadingFavorites(false)
-        }
-    }; */
 
     const fetchCartByUserId = async (user_id) => {
         try {
@@ -307,30 +276,6 @@ const Favorites = () => {
         }
     };
 
-
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
     const fetchStoreSettings = async () => {
         try {
             setIsLoadingStoreSettings(true)
@@ -366,16 +311,8 @@ const Favorites = () => {
         fetchProducts();
         fetchSellerAddresses();
         fetchDeliveryForm();
-        //fetchFavorites();
         fetchStoreSettings();
-        //window.scrollTo(0, 0);
     }, []);
-
-    /* useEffect(() => {
-        if(user?._id) {
-            setIsLoadingFavorites(false)
-        }
-    }, [user]); */
 
     function hexToRgba(hex, opacity) {
         const cleanHex = hex.replace('#', '');
@@ -389,24 +326,6 @@ const Favorites = () => {
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
-
-    /* const handleBtnDeleteAllFavorites = async () => {
-        try {
-            const res = await fetch(`http://localhost:8081/api/favorites/clear`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user._id })
-            });
-            if (res.ok) {
-                toast('Se eliminaron todos los favoritos', { theme: 'dark' });
-                fetchContextFavorites(); // actualiza el contexto
-            } else {
-                toast.error('Error al eliminar favoritos');
-            }
-        } catch (err) {
-            console.error("Error al eliminar todos los favoritos:", err);
-        }
-    }; */
     
     const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
     const [sortOrder, setSortOrder] = useState('desc'); // 'asc' para ascendente, 'desc' para descendente

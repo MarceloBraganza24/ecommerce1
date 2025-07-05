@@ -12,16 +12,16 @@ import "swiper/css/pagination";
 import { Navigation, Pagination,Autoplay  } from "swiper/modules";
 import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const Home = () => {
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const firstRender = useRef(true);
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [isVisible, setIsVisible] = useState(false);
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
     const [storeSettings, setStoreSettings] = useState({});
@@ -48,48 +48,16 @@ const Home = () => {
     
     const location = useLocation();
 
-    /* useEffect(() => {
-        if (location.hash) {
-            const scrollToElement = () => {
-                const element = document.querySelector(location.hash);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                    return true;
-                }
-                return false;
-            };
-
-            // Intentamos hacer scroll cada 100ms, hasta que el elemento exista
-            const interval = setInterval(() => {
-                const success = scrollToElement();
-                if (success) clearInterval(interval);
-            }, 100);
-
-            // Cancelamos por seguridad después de 3 segundos
-            const timeout = setTimeout(() => clearInterval(interval), 3000);
-
-            return () => {
-                clearInterval(interval);
-                clearTimeout(timeout);
-            };
-        }
-    }, [location]); */
-
     useEffect(() => {
         if (firstRender.current) {
             firstRender.current = false;
             return;
         }
-
-        // Ocultar el navbar durante scroll forzado
         setIsScrollForced(true);
-
         const el = document.getElementById('catalogContainer');
         if (el) {
             el.scrollIntoView({ behavior: 'smooth' });
         }
-
-        // Volver al comportamiento normal luego de 500ms
         const timeout = setTimeout(() => {
             setIsScrollForced(false);
         }, 1500);
@@ -221,7 +189,7 @@ const Home = () => {
         }
     };
 
-    const fetchCurrentUser = async () => {
+    /* const fetchCurrentUser = async () => {
         try {
             const response = await fetch('http://localhost:8081/api/sessions/current', {
                 method: 'GET',
@@ -243,7 +211,7 @@ const Home = () => {
         } catch (error) {
             console.error('Error:', error);
         }
-    };
+    }; */
 
     const fetchSellerAddresses = async () => {
         try {
@@ -327,21 +295,6 @@ const Home = () => {
     };
 
     useEffect(() => {
-        /* const scrollToCatalog = sessionStorage.getItem('scrollToCatalog');
-        if (scrollToCatalog === 'true') {
-            sessionStorage.removeItem('scrollToCatalog');
-            
-            const interval = setInterval(() => {
-                const el = document.querySelector('.catalogContainer');
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                    clearInterval(interval);
-                }
-            }, 50);
-
-            setTimeout(() => clearInterval(interval), 1000); // Dejá de intentar después de 1s
-        } */
-
         fetchCategories();
         fetchProductsByCategory();
         fetchCurrentUser();
@@ -361,9 +314,7 @@ const Home = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -374,7 +325,7 @@ const Home = () => {
         });
     };
     
-    const LogOut = () => {
+    /* const LogOut = () => {
 
         const handleBtnLogOut = async () => {
             const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
@@ -415,7 +366,7 @@ const Home = () => {
 
         )
 
-    }
+    } */
 
     function hexToRgba(hex, opacity) {
         const cleanHex = hex.replace('#', '');
@@ -459,10 +410,10 @@ const Home = () => {
                     <img className="homeContainer__img__prop" src={`http://localhost:8081/${storeSettings?.siteImages?.homeImage}`} alt="" />
                 </div>
             </div>
-            {
+            {/* {
                 showLogOutContainer&&
                 <LogOut/>
-            }
+            } */}
 
             {
                 storeSettings?.sliderLogos?.length != 0 &&

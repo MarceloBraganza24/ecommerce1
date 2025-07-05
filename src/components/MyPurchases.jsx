@@ -1,16 +1,16 @@
-import {useState,useEffect} from 'react'
+import {useState,useEffect,useContext} from 'react'
 import NavBar from './NavBar'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import ItemTicket from './ItemTicket';
+import {IsLoggedContext} from '../context/IsLoggedContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 const MyPurchases = () => {
     const navigate = useNavigate();
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [isLoading, setIsLoading] = useState(true);
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -35,9 +35,7 @@ const MyPurchases = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -234,31 +232,6 @@ const MyPurchases = () => {
             });
         } finally {
             setIsLoadingTickets(false)
-        }
-    };
-
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setIsLoadingTickets(false)
-                navigate('/')
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
         }
     };
 

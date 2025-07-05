@@ -8,14 +8,14 @@ import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import SmartLink from './SmartLink';
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const Cart = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState(undefined);
     const navigate = useNavigate();
-    const isLoadingAuth = user === undefined;
     const [userCart, setUserCart] = useState({});
     //console.log(userCart)
     const [categories, setCategories] = useState([]);
@@ -47,9 +47,7 @@ const Cart = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -282,39 +280,12 @@ const Cart = () => {
         }
     };
 
-    
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setIsLoadingProducts(false)
-                navigate('/')
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
     useEffect(() => {
         fetchCurrentUser();
         fetchCategories();
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
-        //window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

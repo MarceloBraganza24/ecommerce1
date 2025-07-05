@@ -3,13 +3,13 @@ import NavBar from './NavBar'
 import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const Contact = () => {
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [userCart, setUserCart] = useState({});
@@ -65,9 +65,7 @@ const Contact = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -180,29 +178,6 @@ const Contact = () => {
                 theme: "dark",
                 className: "custom-toast",
             });
-        }
-    };
-    
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
         }
     };
 

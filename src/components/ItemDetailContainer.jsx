@@ -6,13 +6,13 @@ import Footer from './Footer';
 import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const ItemDetailContainer = () => {
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
     const [userCart, setUserCart] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +21,6 @@ const ItemDetailContainer = () => {
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState({});
-    //console.log(selectedVariant)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -49,9 +48,7 @@ const ItemDetailContainer = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -303,29 +300,6 @@ const ItemDetailContainer = () => {
         }
     };
 
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
     const fetchSellerAddresses = async () => {
         try {
             const response = await fetch('http://localhost:8081/api/sellerAddresses');
@@ -468,14 +442,6 @@ const ItemDetailContainer = () => {
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__description__prop'>{capitalizeFirstLetter(`${productById?.description}`)}</div>
                                         </div>
 
-                                        {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
-                                            {
-                                                stockDisponible >= 1 ?
-                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>Stock disponible</div>
-                                                :
-                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>Sin stock</div>
-                                            }
-                                        </div> */}
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
                                             {
                                                 (productById?.variantes?.length > 0
@@ -493,10 +459,6 @@ const ItemDetailContainer = () => {
                                             }
                                         </div>
 
-
-                                        {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
-                                            <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>$ {productById?.price}</div>
-                                        </div> */}
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>
                                                 $ {selectedVariant?.price ?? productById?.price}

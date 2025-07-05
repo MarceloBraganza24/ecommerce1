@@ -8,6 +8,7 @@ import Spinner from './Spinner';
 import { useUnsavedChangesPrompt } from '../hooks/useUnsavedChangesPrompt';
 //import { useBlockNavigation } from '../hooks/useBlockNavigation';
 import isEqual from 'lodash.isequal';
+import {IsLoggedContext} from '../context/IsLoggedContext';
 
 const CPanel = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
@@ -17,11 +18,11 @@ const CPanel = () => {
     const [deletingIdAddress, setDeletingIdAddress] = useState(null);
     const [creatingCoupon, setCreatingCoupon] = useState(false);
     const [deletingIdCoupon, setDeletingIdCoupon] = useState(null);
-    const [user, setUser] = useState(undefined);
+    // const [user, setUser] = useState(undefined);
+    // const isLoadingAuth = user === undefined;
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [admins, setAdmins] = useState([]);
     const [adminsEdited, setAdminsEdited] = useState([]);
-    //console.log(admins)
-    const isLoadingAuth = user === undefined;
     const [isLoading, setIsLoading] = useState(true);
     const [categoryName, setCategoryName] = useState('');
     const [codeCoupon, setCodeCoupon] = useState('');
@@ -49,9 +50,7 @@ const CPanel = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -871,30 +870,6 @@ const CPanel = () => {
             console.error(error);
         } finally {
             setIsLoadingStoreSettings(false)
-        }
-    };
-
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                navigate('/')
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
         }
     };
 

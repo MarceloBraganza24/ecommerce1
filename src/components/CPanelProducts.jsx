@@ -9,12 +9,11 @@ import Spinner from './Spinner';
 
 const CPanelProducts = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const navigate = useNavigate();
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [products, setProducts] = useState([]);
     const [totalProducts, setTotalProducts] = useState("");
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -42,9 +41,7 @@ const CPanelProducts = () => {
     
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -237,32 +234,6 @@ const CPanelProducts = () => {
             });
             setUserCart({ user_id, products: [] }); // 👈 cambio clave
             return [];
-        }
-    };
-    
-
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setIsLoadingProducts(false)
-                navigate('/')
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
         }
     };
 
