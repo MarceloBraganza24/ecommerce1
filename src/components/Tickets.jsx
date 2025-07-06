@@ -42,9 +42,7 @@ const Tickets = () => {
 
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    // const [user, setUser] = useState(undefined);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
-    // const isLoadingAuth = user === undefined;
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -463,6 +461,7 @@ const Tickets = () => {
                 </div>
 
                 {
+                    !isLoadingTickets &&
                     ticketsOrdenados.length != 0 ?
                     <div className='cPanelSalesContainer__quantitySales'>
                         <div className='cPanelSalesContainer__quantitySales__prop'>Cantidad de ventas: {ticketsOrdenados.length}</div>        
@@ -483,14 +482,8 @@ const Tickets = () => {
                 }
 
                 {
-                    isLoadingTickets ? 
-                        <>
-                            <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
-                                Cargando ventas&nbsp;&nbsp;<Spinner/>
-                            </div>
-                            <div className="cPanelSalesContainer__salesTable__spaceBody"></div>
-                        </>
-                    :
+                    !isLoadingTickets &&
+
                     ticketsOrdenados.length != 0 &&
                     <div className='cPanelSalesContainer__btnDeleteSelected'>
                         <div className='cPanelSalesContainer__btnDeleteSelected__btnContainer'>
@@ -516,14 +509,8 @@ const Tickets = () => {
                 }
 
                 {
-                    isLoadingTickets ? 
-                        <>
-                            <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
-                                Cargando ventas&nbsp;&nbsp;<Spinner/>
-                            </div>
-                            <div className="cPanelSalesContainer__salesTable__spaceBody"></div>
-                        </>
-                    :
+                    !isLoadingTickets &&
+
                     ticketsOrdenados.length != 0 &&
                     <div className='cPanelSalesContainer__headerTableCPanelSalesContainer'>
 

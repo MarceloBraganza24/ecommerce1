@@ -870,7 +870,7 @@ h2 {
 .cPanelContainer__siteConfiguration__form__copyrightText__input {
   width: 500px;
   height: 30px;
-  text-align: center;
+  padding-left: 1vh;
   border: 0.3vh solid black;
   border-radius: 0.5vh;
 }
@@ -1539,10 +1539,23 @@ h2 {
 .binContainer {
   background-color: rgba(183, 183, 183, 0.85);
   width: 100%;
-  height: 90vh;
+  height: auto;
   display: flex;
   flex-direction: column;
-  padding: 30vh 0vh 15vh 0vh;
+  padding: 30vh 0vh 8vh 0vh;
+}
+.binContainer__separator {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1vh 0vh;
+}
+.binContainer__separator__prop {
+  background-color: whitesmoke;
+  width: 60%;
+  height: 4px;
+  border-radius: 40%;
 }
 .binContainer__title {
   width: 100%;
@@ -1671,6 +1684,9 @@ h2 {
 }
 .binContainer__productsTable__itemContainer__btnsContainer__btn {
   width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0.5vh 1vh;
   border-radius: 0.5vh;
   text-align: center;
@@ -1703,7 +1719,6 @@ h2 {
   text-align: center;
 }
 .binContainer__salesTable {
-  background-color: rgba(183, 183, 183, 0.85);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -1712,7 +1727,6 @@ h2 {
   padding-bottom: 10vh;
 }
 .binContainer__salesTable__dayContainer {
-  background-color: rgb(214, 213, 213);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -3465,6 +3479,7 @@ h2 {
   flex-direction: column;
   align-self: center;
   overflow: auto;
+  scrollbar-gutter: stable;
   margin-bottom: 2vh;
   border-bottom-left-radius: 0.5vh;
   border-bottom-right-radius: 0.5vh;

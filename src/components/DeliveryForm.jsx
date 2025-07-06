@@ -6,17 +6,16 @@ import DeliveryAddress from './DeliveryAddress'
 import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const DeliveryForm = () => {
     const navigate = useNavigate();
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const [user, setUser] = useState(undefined);
-    const isLoadingAuth = user === undefined;
     const [loadingDeleteId, setLoadingDeleteId] = useState(null);
     const [loadingSaveDeliveryForm, setLoadingSaveDeliveryForm] = useState(false);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [deliveryFormsById, setDeliveryFormsById] = useState('');
-    //console.log(deliveryFormsById)
     const [isLoading, setIsLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const [isLoadingDeliveryForm, setIsLoadingDeliveryForm] = useState(true);
@@ -82,9 +81,7 @@ const DeliveryForm = () => {
 
     useEffect(() => {
         if (user?.isLoggedIn) {
-            setShowLogOutContainer(true);
-        } else {
-            setShowLogOutContainer(false);
+            fetchCartByUserId(user._id)
         }
     }, [user]);
 
@@ -161,8 +158,7 @@ const DeliveryForm = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchCurrentUser()
-                //fetchUser(cookieValue)
+                fetchCurrentUser();
             } else {
                 toast('Error al actualizar el domicilio', {
                     position: "top-right",
@@ -415,30 +411,6 @@ const DeliveryForm = () => {
         }
     };
 
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setUser(null)
-                navigate('/')
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
     const fetchSellerAddresses = async () => {
         try {
             const response = await fetch('http://localhost:8081/api/sellerAddresses');
@@ -472,7 +444,6 @@ const DeliveryForm = () => {
         fetchCategories();
         fetchStoreSettings();
         fetchDeliveryForm();
-        //window.scrollTo(0, 0);
     }, []);
 
     const handleInputChange = (e) => {

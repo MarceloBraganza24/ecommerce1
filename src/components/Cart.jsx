@@ -17,7 +17,6 @@ const Cart = () => {
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const navigate = useNavigate();
     const [userCart, setUserCart] = useState({});
-    //console.log(userCart)
     const [categories, setCategories] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

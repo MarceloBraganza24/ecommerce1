@@ -562,7 +562,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                     required
                                 >
                                     <option value="">Selecciona una categoría</option>
-                                    {categories.map((category) => (
+                                    {categories?.map((category) => (
                                         <option key={category._id} value={category.name}>
                                             {capitalizeFirstLetter(category.name)}
                                         </option>

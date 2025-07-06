@@ -797,7 +797,6 @@ h2 {
                 gap: 2vh;
                 &__label {
                     width: 400px;
-                    //font-size: 18px;
                     font-size: 30px;
                     padding-bottom: 2vh;
                     font-weight: bold;
@@ -805,7 +804,7 @@ h2 {
                 &__input {
                     width: 500px;
                     height: 30px;
-                    text-align: center;
+                    padding-left: 1vh;
                     border: 0.3vh solid black;
                     border-radius: 0.5vh;
                 }
@@ -1390,10 +1389,21 @@ h2 {
 .binContainer {
     background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
     width: 100%;
-    height: 90vh;
+    height: auto;
     display: flex;
     flex-direction: column;
-    padding: 30vh 0vh 15vh 0vh;
+    padding: 30vh 0vh 8vh 0vh;
+    &__separator {
+        width: 100%;
+        @include disFC();
+        padding: 1vh 0vh;
+        &__prop {
+            background-color: whitesmoke;
+            width: 60%;
+            height: 4px;
+            border-radius: 40%;
+        }
+    }
     &__title {
         width: 100%;
         @include disFC();
@@ -1504,6 +1514,7 @@ h2 {
                 gap: 0.5vh;
                 &__btn {
                     width: 90%;
+                    @include disFC();
                     padding: 0.5vh 1vh;
                     border-radius: 0.5vh;
                     text-align: center;
@@ -1514,7 +1525,6 @@ h2 {
         }
     }
     &__headerSalesTableContainer {
-        //background-color: whitesmoke;
         width: 100%;
         @include disFC();
         align-self: center;
@@ -1524,7 +1534,6 @@ h2 {
             width: 95%;
             display: grid;
             grid-template-columns: 0.5fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
-            //border-bottom: 0.3vh solid #d6d5d5;
             padding: 2vh 0vh;
             &__item {
                 font-size: 18px;
@@ -1534,7 +1543,6 @@ h2 {
         }
     }
     &__salesTable {
-        background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
         width: 100%;
         display: flex;
         flex-direction: column;
@@ -1542,7 +1550,6 @@ h2 {
         gap: 0.5vh;
         padding-bottom: 10vh;
         &__dayContainer {
-            background-color: rgb(214, 213, 213);
             @include disFC();
             padding: 2vh 0vh;
         }
@@ -3030,7 +3037,7 @@ h2 {
             flex-direction: column;
             align-self: center;
             overflow: auto;
-            //scrollbar-gutter: stable;
+            scrollbar-gutter: stable;
             margin-bottom: 2vh;
             border-bottom-left-radius: 0.5vh;
             border-bottom-right-radius: 0.5vh;

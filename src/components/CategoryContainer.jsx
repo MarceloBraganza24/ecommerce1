@@ -273,30 +273,6 @@ const CategoryContainer = () => {
         }
     };
 
-
-    /* const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }; */
-
     const fetchStoreSettings = async () => {
         try {
             setIsLoadingStoreSettings(true)
@@ -333,7 +309,6 @@ const CategoryContainer = () => {
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
-        //window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

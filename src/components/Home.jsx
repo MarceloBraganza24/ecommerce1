@@ -189,30 +189,6 @@ const Home = () => {
         }
     };
 
-    /* const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                setIsLoading(false)
-                setIsLoadingProducts(false)
-                setUser(null)
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }; */
-
     const fetchSellerAddresses = async () => {
         try {
             const response = await fetch('http://localhost:8081/api/sellerAddresses');
@@ -324,49 +300,6 @@ const Home = () => {
           behavior: 'smooth'
         });
     };
-    
-    /* const LogOut = () => {
-
-        const handleBtnLogOut = async () => {
-            const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
-                method: 'POST',         
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include', // 👈 Esto es clave
-            })
-            const data = await response.json();
-            if(response.ok) {
-                toast('Gracias por visitar nuestra página', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchCurrentUser()
-                setShowLogOutContainer(false)
-                fetchCartByUserId(user._id)
-                setTimeout(() => {
-                    window.location.reload()
-                }, 2500);
-            }
-        }
-    
-
-        return (
-            
-            <div className='logOutContainer'>
-                <div onClick={handleBtnLogOut} className='logOutContainer__label'>LOG OUT</div>
-            </div>
-
-        )
-
-    } */
 
     function hexToRgba(hex, opacity) {
         const cleanHex = hex.replace('#', '');
@@ -410,10 +343,6 @@ const Home = () => {
                     <img className="homeContainer__img__prop" src={`http://localhost:8081/${storeSettings?.siteImages?.homeImage}`} alt="" />
                 </div>
             </div>
-            {/* {
-                showLogOutContainer&&
-                <LogOut/>
-            } */}
 
             {
                 storeSettings?.sliderLogos?.length != 0 &&

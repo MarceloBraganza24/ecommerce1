@@ -226,9 +226,15 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
 
             if (!todasVariantesSeleccionadas) {
                 toast('Por favor selecciona todas las variantes antes de añadir el producto.', {
-                    position: 'top-right',
-                    autoClose: 3000,
-                    theme: 'dark',
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
                 });
                 return;
             }
@@ -257,6 +263,8 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                     className: "custom-toast",
                 }
             );
+            
+            
             return;
         }
 
@@ -351,7 +359,17 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
             if (product.quantity < stockDisponible) {
                 return { ...product, quantity: product.quantity + 1 };
             } else {
-                toast('No hay más stock disponible para esta variante', { /* config toast */ });
+                toast('No hay más stock disponible para esta variante', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
                 return product;
             }
             })
@@ -458,7 +476,13 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                     toast(`Faltan seleccionar variantes para "${product.title}"`, {
                         position: "top-right",
                         autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
                         theme: "dark",
+                        className: "custom-toast",
                     });
                     continue;
                 }
@@ -484,7 +508,13 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                     toast(`No queda stock disponible para "${product.title}"`, {
                         position: "top-right",
                         autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
                         theme: "dark",
+                        className: "custom-toast",
                     });
                     continue;
                 }

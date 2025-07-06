@@ -2,10 +2,12 @@ import {useState,useContext,useEffect} from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import {IsLoggedContext} from '../context/IsLoggedContext';
 
 const Shipping = () => {
     const [loadingCheckOut, setLoadingCheckOut] = useState(false);
     const [showLabelAddCoupon, setShowLabelAddCoupon] = useState(true);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [showInputCouponContainer, setShowInputCouponContainer] = useState(false);
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
     const [showLabelValidatedCoupon, setShowLabelValidatedCoupon] = useState(false);
@@ -13,7 +15,6 @@ const Shipping = () => {
     const [validatedCoupon, setValidatedCoupon] = useState({});
     const [metodoEntrega, setMetodoEntrega] = useState("domicilio");
     const [userCart, setUserCart] = useState({});
-    const [user, setUser] = useState('');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
@@ -304,34 +305,18 @@ const Shipping = () => {
 
     }, [user,userCart,sellerAddresses,total,totalQuantity]);
 
-    const fetchCurrentUser = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/sessions/current', {
-                method: 'GET',
-                credentials: 'include', // MUY IMPORTANTE para enviar cookies
-            });
-            const data = await response.json();
-            if(data.error === 'jwt must be provided') { 
-                navigate('/')
-            } else {
-                const user = data.data
-                if(user) {
-                    setUser(user)
-                    fetchCartByUserId(user._id);
-                }
-                //setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-
     useEffect(() => {
         fetchCurrentUser()
         fetchDeliveryForm();
         fetchStoreSettings();
         fetchSellerAddresses();
     }, []);
+
+    useEffect(() => {
+        if (user?.isLoggedIn) {
+            fetchCartByUserId(user._id)
+        }
+    }, [user]);
 
     const handleSelectSellerAddressChange = (event) => {
         setSelectedSellerAddress(event.target.value);

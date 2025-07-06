@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 
 import { useUnsavedChangesPrompt } from '../hooks/useUnsavedChangesPrompt';
-//import { useBlockNavigation } from '../hooks/useBlockNavigation';
 import isEqual from 'lodash.isequal';
 import {IsLoggedContext} from '../context/IsLoggedContext';
 
@@ -18,8 +17,6 @@ const CPanel = () => {
     const [deletingIdAddress, setDeletingIdAddress] = useState(null);
     const [creatingCoupon, setCreatingCoupon] = useState(false);
     const [deletingIdCoupon, setDeletingIdCoupon] = useState(null);
-    // const [user, setUser] = useState(undefined);
-    // const isLoadingAuth = user === undefined;
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [admins, setAdmins] = useState([]);
     const [adminsEdited, setAdminsEdited] = useState([]);

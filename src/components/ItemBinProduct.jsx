@@ -1,11 +1,12 @@
 import React, {useState} from 'react'
-import UpdateProductModal from './UpdateProductModal'
+import ItemBinProductModal from './ItemBinProductModal'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 
 const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelectedProducts}) => {
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
+    const [showItemBinProductModal, setShowItemBinProductModal] = useState(false);
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -106,12 +107,26 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
                     <div className="binContainer__productsTable__itemContainer__item__description">{capitalizeFirstLetter(product.description)}</div>
                 </div>
 
-                <div className="binContainer__productsTable__itemContainer__item">
-                    <div className="binContainer__productsTable__itemContainer__item__label">$ {product.price}</div>
+                <div className="cPanelProductsContainer__productsTable__itemContainer__item">
+                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
+                        {
+                            product.variantes && product.variantes.length != 0 ?
+                            <div onClick={() => setShowItemBinProductModal(true)} style={{cursor:'pointer'}}>Ver precios</div>
+                            :
+                            <div>$ {product.price}</div>    
+                        }
+                    </div>
                 </div>
 
-                <div className="binContainer__productsTable__itemContainer__item">
-                    <div className="binContainer__productsTable__itemContainer__item__label">{product.stock}</div>
+                <div className="cPanelProductsContainer__productsTable__itemContainer__item">
+                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
+                        {
+                            product.variantes && product.variantes.length != 0 ?
+                            <div onClick={() => setShowItemBinProductModal(true)} style={{cursor:'pointer'}}>Ver stock</div>
+                            :
+                            product.stock 
+                        }
+                    </div>
                 </div>
 
                 <div className="binContainer__productsTable__itemContainer__item">
@@ -155,6 +170,13 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
 
             </div>
 
+            {
+                showItemBinProductModal &&
+                <ItemBinProductModal
+                product={product}
+                setShowItemBinProductModal={setShowItemBinProductModal}
+                />
+            }
         </>
     )
 

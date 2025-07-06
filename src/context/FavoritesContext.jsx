@@ -128,10 +128,6 @@ export const FavoritesProvider = ({ children }) => {
         }
     }, [user?._id, loadingUser]);
 
-
-    useEffect(() => {
-        console.log('⭐ FAVORITOS ACTUALIZADOS:', favorites);
-    }, [favorites]);
     return (
         <FavoritesContext.Provider value={{ favorites,isLoadingFavorites, addToFavorites, removeFromFavorites, fetchContextFavorites,clearAllFavorites }}>
             {children}

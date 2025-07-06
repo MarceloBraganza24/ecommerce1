@@ -14,8 +14,6 @@ const Bin = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    // const [user, setUser] = useState(undefined);
-    // const isLoadingAuth = user === undefined;
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
@@ -556,6 +554,10 @@ const Bin = () => {
                         </>
                     }
 
+                </div>
+
+                <div className="binContainer__separator">
+                    <div className="binContainer__separator__prop"></div>
                 </div>
 
                 <div className="binContainer__subTitle">
