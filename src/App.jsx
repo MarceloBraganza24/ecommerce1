@@ -28,6 +28,8 @@ import { CPanelProductsContext } from './context/CPanelProductsContext';
 import { CPanelSalesContext } from './context/CPanelSalesContext';
 import GlobalContexts from './context/GlobalContexts.jsx';
 import Favorites from './components/Favorites.jsx';
+import SendMailPass from './components/SendMailPass.jsx';
+import ResetPass from './components/ResetPass.jsx';
 
 
 function App() {
@@ -106,6 +108,8 @@ function App() {
                         <Route exact path="/myPurchases" element={<MyPurchases/>}/>
                         <Route exact path="/bin" element={<Bin/>}/>
                         <Route exact path="/favorites" element={<Favorites/>}/>
+                        <Route exact path="/sendMail" element={<SendMailPass/>}/>
+                        <Route exact path="/resetPass" element={<ResetPass/>}/>
 
                     </Routes>
 

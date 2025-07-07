@@ -8,7 +8,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import { toast } from 'react-toastify';
 import { useFavorites } from '../context/FavoritesContext';
 
-const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,id,stock,images,title,description,price,userCart}) => {
+const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,variantes,id,stock,images,title,description,price,userCart}) => {
     const [loading, setLoading] = useState(null);
     const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
     const [loadingFavorite, setLoadingFavorite] = useState(false);
@@ -96,14 +96,22 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,id,stock,i
                 </div>
 
                 <div className="itemProduct__priceContainer" onClick={handleLinkToItemDetail}>
-                    <div className="itemProduct__priceContainer__prop">$ {price}</div>
+                    {
+                        variantes.length > 0 ?
+                        <div className="itemProduct__priceContainer__propLabel">
+                            Ver precios  
+                        </div>
+                        :
+                        <div className="itemProduct__priceContainer__prop">
+                            {price} 
+                        </div>
+                    }
                 </div>
 
                 <div className='itemProduct__btnContainer'>
 
                     <button 
                         onClick={handleLinkToItemDetail} 
-                        //disabled={loading === 'addToCartAndSave'} 
                         className='itemProduct__btnContainer__btn'
                     >
                         Ver detalle

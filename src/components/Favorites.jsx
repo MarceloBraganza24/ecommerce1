@@ -360,7 +360,7 @@ const Favorites = () => {
             <div className='favoritesContiner'>
                 {isLoadingAuth ? (
                     <div className="favoritesContiner__isLoadingLabel">
-                        {/* Cargando sesión &nbsp;&nbsp;*/}<Spinner />
+                        <Spinner />
                     </div>
                 ) : !user ? (
                     <div className="favoritesContiner__isLoadingLabel">
@@ -400,6 +400,7 @@ const Favorites = () => {
                                             title={product.title}
                                             description={product.description}
                                             price={product.price}
+                                            variantes={product.variantes}
                                             userCart={userCart}
                                         />
                                     ))}

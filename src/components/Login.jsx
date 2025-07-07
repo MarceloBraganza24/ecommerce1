@@ -154,6 +154,9 @@ const Login = () => {
                             <Link to={"/signIn"} className='loginContainer__formContainer__form__btn__prop'>
                                 Registrarse
                             </Link>
+                            <Link to={"/sendMail"} className='loginContainer__formContainer__form__forgotPass'>
+                                ¿Olvidaste tu contraseña? Has click aquí
+                            </Link>
                         </div>
 
                     </div>

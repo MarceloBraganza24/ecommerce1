@@ -395,19 +395,22 @@ const Home = () => {
                     <div className="catalogContainer__gridCategoriesProducts__productsContainer">
 
                         <div className="catalogContainer__gridCategoriesProducts__productsContainer__productsList">
-                            {products.map((product) => (
-                                <ItemProduct
-                                user_id={user?._id} 
-                                fetchCartByUserId={fetchCartByUserId}
-                                id={product._id}
-                                stock={product.stock}
-                                images={product.images}
-                                title={product.title}
-                                description={product.description}
-                                price={product.price}
-                                userCart={userCart}
-                                />
-                            ))}
+                            {
+                                products.map((product) => (
+                                    <ItemProduct
+                                    user_id={user?._id} 
+                                    fetchCartByUserId={fetchCartByUserId}
+                                    id={product._id}
+                                    stock={product.stock}
+                                    images={product.images}
+                                    title={product.title}
+                                    description={product.description}
+                                    price={product.price}
+                                    variantes={product.variantes}
+                                    userCart={userCart}
+                                    />
+                                ))
+                            }
                             <div className='cPanelProductsContainer__btnsPagesContainer'>
                                 <button className='cPanelProductsContainer__btnsPagesContainer__btn'
                                     disabled={!pageInfo.hasPrevPage}

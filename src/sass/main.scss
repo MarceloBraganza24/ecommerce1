@@ -127,7 +127,7 @@ h2 {
                 top: 100%;
                 left: 0;
                 background-color: whitesmoke;
-                width: 500px; // ⬅️ más ancho que el input
+                width: 350px; // ⬅️ más ancho que el input
                 max-height: 300px;
                 overflow-y: auto;
                 z-index: 1000;
@@ -1692,12 +1692,14 @@ h2 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
             align-self: center;
+            gap: 2vh;
         }
     }
     &__isLoadingLabel {
         width: 100%;
         height: 60vh;
         @include disFC();
+        font-size: 20px;
     }
     &__nonProductsYet {
         width: 100%;
@@ -3845,10 +3847,14 @@ h2 {
     }
     &__priceContainer {
         width: 100%;
+        height: 30px;
         @include disFC();
         padding: 1vh 0vh;
         &__prop {
             font-size: 25px;
+        }
+        &__propLabel {
+            font-size: 20px;
         }
     }
     &__btnContainer {
@@ -4257,7 +4263,7 @@ h2 {
         width: 100%;
         @include disFC();
         &__prop {
-            font-size: 30px;
+            font-size: 25px;
             color: black;
         }
     }
@@ -4268,6 +4274,9 @@ h2 {
             font-size: 30px;
             text-decoration: none;
             color: black;
+            &:hover {
+                text-decoration: underline;
+            }
         }
     }
 }
@@ -4934,6 +4943,242 @@ h2 {
         }
     }
 }
+.resetPassContainer {
+    background-color: var(--primary-color);
+    width: 100%;
+    height: 100%;
+    @include disFC();
+    position: fixed;
+    color: var(--secondary-text-color);
+    &__linkExpiredContaienr {
+        background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+        width: 35%;
+        height: auto;
+        padding: 5vh 4vh;
+        border-radius: 5vh;
+        &__phrase {
+            width: 100%;
+            height: auto;
+            @include disFC();
+            padding-top: 2vh;
+            &__title {
+                font-size: 60px;
+                letter-spacing: 1vh;
+            }
+            &__ask {
+                font-size: 25px;
+                text-align: center;
+            }
+        }
+        &__label {
+            @include disFC();
+            &__prop {
+                font-size: 25px;
+                padding: 1vh 0vh;
+            }
+        }
+        &__link {
+            font-size: 20px;
+            @include disFC();
+            padding: 1vh 0vh;
+            color: var(--secondary-text-color);
+        }
+
+    }
+    &__credentials {
+        background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+        width: 35%;
+        height: auto;
+        padding: 5vh 4vh;
+        border-radius: 5vh;
+        &__phrase {
+            width: 100%;
+            height: auto;
+            @include disFC();
+            padding-top: 2vh;
+            &__title {
+                font-size: 60px;
+                letter-spacing: 1vh;
+            }
+            &__ask {
+                font-size: 25px;
+                text-align: center;
+            }
+        }
+        &__form {
+            width: 100%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+            padding-top: 2vh;
+            &__label-input {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5vh;
+                &__passwordValidation {
+                    width: 50%;
+                    font-size: 14px;
+                }
+                &__passwordStrengthBar {
+                    width: 60%;
+                }
+                &__label {
+                    font-size: 22px;
+                }
+                &__input {
+                    width: 100%;
+                    display: flex;
+                    gap: 1vh;
+                    &__prop {
+                        width: 60%;
+                        height: 30px;
+                        padding-left: 1vh;
+                        border-radius: 1vh;
+                    }
+                    &__toggleBtn {
+                        background-color: black;
+                        border-radius: 50%;
+                        padding: 0vh 0.5vh;
+                        font-size: 18px;
+                        cursor: pointer;
+                    }
+                }
+            }
+            &__btn {
+                width: 100%;
+                height: auto;
+                @include disFC();
+                text-decoration: none;
+                padding-top: 2vh;
+                &__prop {
+                    //background-color: black;
+                    width: 60%;
+                    height: 35px;
+                    font-size: 16px;
+                    @include disFC();
+                    //color: #d2b569;
+                    border-radius: 0.5vh;
+                    @include btn();
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+.confirmationResetPassModalContainer {
+    background-color: black;
+    width: 50%;
+    height: auto;
+    @include disFC();
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 0.5vh solid white;
+    border-radius: 2vh;
+    padding: 1vh 2vh 3vh 2vh;
+    z-index: 2;
+    gap: 1vh;
+    &__ask {
+        display: block;
+        font-size: 25px;
+        color: white;
+    }
+    &__askMobile {
+        display: none;
+    }
+    &__btnsContainer {
+        width: 100%;
+        height: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 1vh;
+        &__btns {
+            width: 100%;
+            height: auto;
+            @include disFC();
+            &__prop {
+                width: 85%;
+            }
+        }
+    }
+}
+.sendMailContainer {
+    background-color: var(--primary-color);
+    width: 100%;
+    height: 100%;
+    @include disFC();
+    position: fixed;
+    color: var(--secondary-text-color);
+    &__credentials {
+        background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+        width: 35%;
+        height: auto;
+        padding: 8vh 4vh;
+        border-radius: 5vh;
+        box-shadow: 4px 4px 10px black, -4px -4px 10px black;
+        &__phrase {
+            width: 100%;
+            height: auto;
+            @include disFC();
+            &__title {
+                font-size: 60px;
+                letter-spacing: 1vh;
+            }
+            &__h2 {
+                font-size: 25px;
+                padding: 2vh 2vh;
+                text-align: center;
+            }
+        }
+        &__form {
+            width: 100%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+            &__label-input {
+                display: flex;
+                flex-direction: column;
+                padding-bottom: 2vh;
+                &__label {
+                    padding-bottom: 0.5vh;
+                    font-size: 22px;
+                }
+                &__input {
+                    width: 100%;
+                    &__prop {
+                        background-color: whitesmoke;
+                        width: 60%;
+                        height: 30px;
+                        padding-left: 1vh;
+                        border-radius: 1vh;
+                    }
+                }
+            }
+            &__btn {
+                width: 100%;
+                height: auto;
+                @include disFC();
+                //padding-top: 2vh;
+                &__prop {
+                    width: 50%;
+                    //height: 30px;
+                    font-size: 20px;
+                    border-radius: 0.5vh;
+                    cursor: pointer;
+                    text-decoration: none;
+                    @include disFC();
+                    padding: 1vh 0vh;
+                    @include btn;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
 .loginContainer {
     width: 100%;
     height: 100vh;
@@ -4962,6 +5207,10 @@ h2 {
                 &__prop {
                     font-size: 30px;
                 }
+            }
+            &__forgotPass {
+                font-size: 16px;
+                color: var(--secondary-text-color);
             }
             &__input {
                 width: 100%;

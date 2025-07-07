@@ -423,6 +423,7 @@ const CategoryContainer = () => {
                                         title={product.title}
                                         description={product.description}
                                         price={product.price}
+                                        variantes={product.variantes}
                                         userCart={userCart}
                                         />
                                     ))}

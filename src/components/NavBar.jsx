@@ -209,8 +209,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                                                 <div className='header__gridUp__inputSearch__productsListContainer__productItem__titleContainer__descriptionEllipsis__item'>{capitalizeFirstLetter(product.description)}</div>
                                             </div>
                                         </div>
-                                        {/* <span className='header__gridUp__inputSearch__productsListContainer__productItem__price'>${product.price}</span>
-                                        <span className='header__gridUp__inputSearch__productsListContainer__productItem__stock'>{product.stock ?? 'N/A'}u.</span> */}
                                     </div>
                                 ))}
                             </div>
