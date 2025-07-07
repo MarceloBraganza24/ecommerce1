@@ -6,10 +6,16 @@ import Footer from './Footer';
 import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { useFavorites } from '../context/FavoritesContext';
 import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 
 const ItemDetailContainer = () => {
+    const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+    const [loadingFavorite, setLoadingFavorite] = useState(false);
+    const [favoriteInitialized, setFavoriteInitialized] = useState(false);
+    const [localFavorite, setLocalFavorite] = useState(false);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    //console.log(user)
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -45,6 +51,16 @@ const ItemDetailContainer = () => {
             [key]: value
         }));
     };
+
+    useEffect(() => {
+        if (user && favorites.length > 0) {
+            const isFavorite = favorites.some(fav => String(fav._id) === String(id));
+            setLocalFavorite(isFavorite);
+            setFavoriteInitialized(true);
+        } else if (user && favorites.length === 0) {
+            setLocalFavorite(false);
+        }
+    }, [favorites, id, user]);
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -351,6 +367,23 @@ const ItemDetailContainer = () => {
         fetchProductById();
     }, [id]);
 
+    const toggleFavorite = async () => {
+        setLoadingFavorite(true);
+        try {
+            if (localFavorite) {
+                await removeFromFavorites(user._id, id);
+                setLocalFavorite(false);
+            } else {
+                await addToFavorites(user._id, id);
+                setLocalFavorite(true);
+            }
+        } catch (err) {
+            console.error("Error al actualizar favoritos", err);
+        } finally {
+            setLoadingFavorite(false);
+        }
+    };
+
     return (
 
         <>
@@ -428,10 +461,50 @@ const ItemDetailContainer = () => {
 
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer'>
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer__state'>{capitalizeFirstLetter(`${productById?.state}`)}</div>
-                                            {
+                                            {/* {
                                                 productById?.number_sales > 0 &&
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer__salesQuantity'>+{productById?.number_sales} Vendidos</div>
-                                            }
+                                            } */}
+                                            {productById?.number_sales > 10 && (
+                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer__salesQuantity'>
+                                                    {productById.number_sales > 500
+                                                        ? '+500 Vendidos'
+                                                        : productById.number_sales > 400
+                                                        ? '+400 Vendidos'
+                                                        :productById.number_sales > 300
+                                                        ? '+300 Vendidos'
+                                                        : productById.number_sales > 200
+                                                        ? '+200 Vendidos'
+                                                        : productById.number_sales > 100
+                                                        ? '+100 Vendidos'
+                                                        : productById.number_sales > 75
+                                                        ? '+75 Vendidos'
+                                                        : productById.number_sales > 50
+                                                        ? '+50 Vendidos'
+                                                        : productById.number_sales > 25
+                                                        ? '+25 Vendidos'
+                                                        : '+10 Vendidos'}
+                                                </div>
+                                            )}
+                                            
+                                            {user && favoriteInitialized ? (
+                                                <button
+                                                    onClick={toggleFavorite}
+                                                    className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon"
+                                                    disabled={loadingFavorite}
+                                                >
+                                                    {loadingFavorite ? (
+                                                        <span className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteSpinner">
+                                                            <Spinner />
+                                                        </span>
+                                                    ) : (
+                                                        <span className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon">
+                                                            {localFavorite ? "💖" : "🤍"}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            ) : null}
+                                            
                                         </div>
 
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__title'>

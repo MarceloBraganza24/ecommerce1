@@ -5,6 +5,7 @@ import Spinner from './Spinner';
 
 const Login = () => {
     const navigate = useNavigate();
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [credentials, setCredentials] = useState({
@@ -141,12 +142,32 @@ const Login = () => {
                             <div className='loginContainer__formContainer__form__title__prop'>Inicio de sesión</div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__input'>
-                            <input className='loginContainer__formContainer__form__input__prop' type="text" value={credentials.email} onChange={handleChange} placeholder='Email' name="email" id="" />
+                        <div className='loginContainer__formContainer__form__inputContainer'>
+                            <div className='loginContainer__formContainer__form__inputContainer__input'>
+                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.email} onChange={handleChange} placeholder='Email' name="email" id="" />
+                            </div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__input'>
-                            <input className='loginContainer__formContainer__form__input__prop' type="password" value={credentials.password} onChange={handleChange} placeholder='Contraseña' name="password" id="" />
+                        <div className='loginContainer__formContainer__form__inputPassContainer'>
+                            <div className='loginContainer__formContainer__form__inputPassContainer__inputPass'>
+                                <input
+                                    className='loginContainer__formContainer__form__inputPassContainer__inputPass__prop'
+                                    type={passwordVisible ? 'text' : 'password'}
+                                    placeholder='Contraseña'
+                                    name="password"
+                                    value={credentials.password}
+                                    onChange={handleChange}
+                                    />
+                            </div>
+                            <div className='loginContainer__formContainer__form__inputPassContainer__inputPassEye'>
+                                <button
+                                    type="button"
+                                    onClick={() => setPasswordVisible(!passwordVisible)}
+                                    className='loginContainer__formContainer__form__inputPassContainer__inputPassEye__propEye'
+                                    >
+                                    {passwordVisible ? '👁️' : '👁️'}
+                                </button>
+                            </div>
                         </div>
 
                         <div className='loginContainer__formContainer__form__btn'>

@@ -26,7 +26,7 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,variantes,
         window.location.href = `/item/${id}`
     };
 
-    const isFavorite = favorites?.some(fav => fav._id === id);
+    //const isFavorite = favorites?.some(fav => fav._id === id);
 
     const toggleFavorite = async () => {
         setLoadingFavorite(true);

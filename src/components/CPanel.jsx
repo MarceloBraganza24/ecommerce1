@@ -10,6 +10,7 @@ import isEqual from 'lodash.isequal';
 import {IsLoggedContext} from '../context/IsLoggedContext';
 
 const CPanel = () => {
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [creatingCategory, setCreatingCategory] = useState(false);
     const [deletingIdCategory, setDeletingIdCategory] = useState(null);
@@ -2268,9 +2269,25 @@ const CPanel = () => {
                             <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="email" value={userCredentials.email} onChange={handleUserCredentialsChange} placeholder='Email' name="email" id="" />
                         </div>
 
-                        <div className='cPanelContainer__userRegisterContainer__form__input'>
-                            <div className='cPanelContainer__userRegisterContainer__form__input__label'>Contraseña:</div>
-                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="password" value={userCredentials.password} onChange={handleUserCredentialsChange} placeholder='Contraseña' name="password" id="" />
+                        <div className='cPanelContainer__userRegisterContainer__form__inputPass'>
+                            <div className='cPanelContainer__userRegisterContainer__form__inputPass__label'>Contraseña:</div>
+                            {/* <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="password" value={userCredentials.password} onChange={handleUserCredentialsChange} placeholder='Contraseña' name="password" id="" /> */}
+
+                            <input
+                                className='cPanelContainer__userRegisterContainer__form__inputPass__prop'
+                                type={passwordVisible ? 'text' : 'password'}
+                                placeholder='Contraseña'
+                                name="password"
+                                value={userCredentials.password}
+                                onChange={handleUserCredentialsChange}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setPasswordVisible(!passwordVisible)}
+                                className='cPanelContainer__userRegisterContainer__form__inputPass__propEye'
+                            >
+                                {passwordVisible ? '👁️' : '👁️'}
+                            </button>
                         </div>
 
                         <div className='cPanelContainer__userRegisterContainer__form__select'>

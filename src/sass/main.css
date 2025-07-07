@@ -1335,7 +1335,7 @@ h2 {
 }
 .cPanelContainer__userRegisterContainer__form__input__prop {
   background-color: white;
-  width: 100%;
+  width: 250px;
   height: 25px;
   text-align: center;
   border-radius: 0.5vh;
@@ -1344,6 +1344,34 @@ h2 {
   border: 0.3vh solid black;
 }
 .cPanelContainer__userRegisterContainer__form__input__label {
+  width: 150px;
+  font-size: 18px;
+}
+.cPanelContainer__userRegisterContainer__form__inputPass {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr 0.5fr;
+  align-items: center;
+}
+.cPanelContainer__userRegisterContainer__form__inputPass__prop {
+  background-color: white;
+  width: 250px;
+  height: 25px;
+  text-align: center;
+  border-radius: 0.5vh;
+  font-size: 16px;
+  color: black;
+}
+.cPanelContainer__userRegisterContainer__form__inputPass__propEye {
+  width: 35px;
+  margin-left: 1vh;
+  background-color: black;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+}
+.cPanelContainer__userRegisterContainer__form__inputPass__label {
+  width: 150px;
   font-size: 18px;
 }
 .cPanelContainer__userRegisterContainer__form__select {
@@ -1353,7 +1381,7 @@ h2 {
   grid-template-columns: 1fr 2fr;
 }
 .cPanelContainer__userRegisterContainer__form__select__selectContainer {
-  width: 100%;
+  width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1369,6 +1397,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .cPanelContainer__userRegisterContainer__form__select__label {
+  width: 150px;
   font-size: 18px;
 }
 .cPanelContainer__userRegisterContainer__form__btn {
@@ -4486,7 +4515,8 @@ h2 {
 }
 .itemDetailContainer__itemDetail__infoContainer__info__stateContainer {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 8fr 1fr;
   align-items: center;
 }
 .itemDetailContainer__itemDetail__infoContainer__info__stateContainer__state {
@@ -4497,6 +4527,21 @@ h2 {
 .itemDetailContainer__itemDetail__infoContainer__info__stateContainer__salesQuantity {
   padding-left: 2vh;
   font-size: 16px;
+}
+.itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteSpinner {
+  font-size: 20px; /* Cambia a lo que necesites: 16px, 32px, 2rem, etc */
+  grid-column: 3/4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon {
+  background-color: black;
+  border-radius: 50%;
+  grid-column: 3/4;
+  padding: 0.5vh 0.5vh 0.8vh 0.5vh;
+  font-size: 16px; /* Cambia a lo que necesites: 16px, 32px, 2rem, etc */
+  cursor: pointer;
 }
 .itemDetailContainer__itemDetail__infoContainer__info__title {
   width: 100%;
@@ -5603,6 +5648,7 @@ h2 {
   font-size: 16px;
   border: 0.3vh solid black;
   padding: 1vh;
+  resize: none;
   color: black;
 }
 .contactContainer__formMap__formContainer__form__prop__btn {
@@ -5724,7 +5770,7 @@ h2 {
 }
 .resetPassContainer__credentials {
   background-color: rgba(183, 183, 183, 0.85);
-  width: 35%;
+  width: 30%;
   height: auto;
   padding: 5vh 4vh;
   border-radius: 5vh;
@@ -5774,7 +5820,7 @@ h2 {
   gap: 1vh;
 }
 .resetPassContainer__credentials__form__label-input__input__prop {
-  width: 60%;
+  width: 90%;
   height: 30px;
   padding-left: 1vh;
   border-radius: 1vh;
@@ -5868,9 +5914,9 @@ h2 {
 }
 .sendMailContainer__credentials {
   background-color: rgba(183, 183, 183, 0.85);
-  width: 35%;
+  width: 30%;
   height: auto;
-  padding: 8vh 4vh;
+  padding: 6vh 4vh;
   border-radius: 5vh;
   box-shadow: 4px 4px 10px black, -4px -4px 10px black;
 }
@@ -5882,11 +5928,11 @@ h2 {
   align-items: center;
 }
 .sendMailContainer__credentials__phrase__title {
-  font-size: 60px;
+  font-size: 50px;
   letter-spacing: 1vh;
 }
 .sendMailContainer__credentials__phrase__h2 {
-  font-size: 25px;
+  font-size: 20px;
   padding: 2vh 2vh;
   text-align: center;
 }
@@ -5911,10 +5957,11 @@ h2 {
 }
 .sendMailContainer__credentials__form__label-input__input__prop {
   background-color: whitesmoke;
-  width: 60%;
-  height: 30px;
+  width: 100%;
+  height: 35px;
   padding-left: 1vh;
   border-radius: 1vh;
+  font-size: 18px;
 }
 .sendMailContainer__credentials__form__btn {
   width: 100%;
@@ -5924,7 +5971,7 @@ h2 {
   align-items: center;
 }
 .sendMailContainer__credentials__form__btn__prop {
-  width: 50%;
+  width: 60%;
   font-size: 20px;
   border-radius: 0.5vh;
   cursor: pointer;
@@ -5932,6 +5979,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 0.3vh solid black;
   padding: 1vh 0vh;
   background-color: var(--primary-color);
   color: var(--primary-text-color);
@@ -5959,12 +6007,12 @@ h2 {
   background-color: rgba(183, 183, 183, 0.85);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  width: 65%;
+  width: 75%;
   display: flex;
   flex-direction: column;
   gap: 2vh;
   margin-left: 10vh;
-  padding: 8vh 4vh;
+  padding: 8vh 1vh;
   border-radius: 2vh;
   box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.4);
 }
@@ -5982,11 +6030,40 @@ h2 {
   font-size: 16px;
   color: var(--secondary-text-color);
 }
-.loginContainer__formContainer__form__input {
+.loginContainer__formContainer__form__inputContainer {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 8fr 1fr;
 }
-.loginContainer__formContainer__form__input__prop {
+.loginContainer__formContainer__form__inputContainer__input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 2/3;
+}
+.loginContainer__formContainer__form__inputContainer__input__prop {
+  background-color: white;
+  width: 100%;
+  height: 20px;
+  border-radius: 1vh;
+  font-size: 16px;
+  padding: 1vh;
+  color: black;
+  grid-column: 2/3;
+  border: 0.3vh solid black;
+}
+.loginContainer__formContainer__form__inputPassContainer {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 8fr 1fr;
+}
+.loginContainer__formContainer__form__inputPassContainer__inputPass {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 2/3;
+}
+.loginContainer__formContainer__form__inputPassContainer__inputPass__prop {
   background-color: white;
   width: 100%;
   height: 20px;
@@ -5995,6 +6072,19 @@ h2 {
   padding: 1vh;
   color: black;
   border: 0.3vh solid black;
+}
+.loginContainer__formContainer__form__inputPassContainer__inputPassEye {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  grid-column: 3/4;
+}
+.loginContainer__formContainer__form__inputPassContainer__inputPassEye__propEye {
+  width: 30px;
+  background-color: black;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
 }
 .loginContainer__formContainer__form__btn {
   width: 100%;
