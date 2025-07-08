@@ -1474,6 +1474,46 @@ h2 {
   justify-items: center;
   padding-top: 2vh;
 }
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer {
+  background-color: whitesmoke;
+  padding: 2vh 5vh 2vh 2vh;
+  margin: 2vh 0vh 0vh 15vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1vh;
+}
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title {
+  font-size: 16px;
+  padding-bottom: 1vh;
+}
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 1vh;
+  gap: 1vh;
+}
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__label {
+  font-size: 16px;
+  font-weight: bold;
+}
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer {
+  display: flex;
+  gap: 1vh;
+}
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* &__prop {
+      width: 60px;
+  }  */
+}
+.categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
 .categoryContainer__grid__categoriesListContainer__categoriesList {
   background-color: whitesmoke;
   padding: 2vh 5vh 2vh 2vh;
@@ -1497,6 +1537,10 @@ h2 {
   margin: 5vh 0vh 0vh 10vh;
   padding: 2vh 2vh 2vh 2vh;
   border-radius: 0.5vh;
+}
+.categoryContainer__grid__categoriesListContainer__pricesRangeContainer__title {
+  font-size: 16px;
+  padding-bottom: 1vh;
 }
 .categoryContainer__grid__categoriesListContainer__sortSelectContainer {
   background-color: whitesmoke;
