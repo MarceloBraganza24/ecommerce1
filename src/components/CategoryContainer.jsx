@@ -78,7 +78,12 @@ const CategoryContainer = () => {
         setSelectedDynamicFilters({});
         setSortOrder('desc');
         setPriceRange({ min: 0, max: 100000 });
-        fetchAvailableFilters(category); // << Asegurate de llamarla acá
+    }, [category]);
+
+    useEffect(() => {
+        if (category) {
+            fetchAvailableFilters(category);
+        }
     }, [category]);
 
     useEffect(() => {
@@ -120,7 +125,7 @@ const CategoryContainer = () => {
         try {
             const res = await fetch(`http://localhost:8081/api/products/availableFilters?category=${category}`);
             const data = await res.json();
-            console.log(data.data)
+            //console.log(data.data)
             if (res.ok) {
                 setAllCategoryFilters(data.data);
             }
@@ -351,10 +356,8 @@ const CategoryContainer = () => {
     useEffect(() => {
         fetchCurrentUser();
         fetchCategories();
-        fetchProducts();
         fetchSellerAddresses();
         fetchDeliveryForm();
-        fetchAvailableFilters();
         fetchStoreSettings();
     }, []);
 
@@ -442,30 +445,6 @@ const CategoryContainer = () => {
                             </select>
                         </div>
 
-                        {Object.entries(dynamicFilters).length > 0 && (
-                            <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
-                                <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>Filtrar por atributos</label>
-                                {Object.entries(dynamicFilters).map(([filterName, values]) => (
-                                    <div key={filterName} className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer'>
-                                        <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__label'>{capitalizeFirstLetter(filterName)}</div>
-                                        {values.map(value => (
-                                            <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer' key={value}>
-                                                <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox'>
-                                                    <input
-                                                    //className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox__prop'
-                                                    type="checkbox"
-                                                    id={`${filterName}-${value}`}
-                                                    checked={selectedDynamicFilters[filterName]?.includes(value) || false}
-                                                    onChange={() => handleDynamicFilterChange(filterName, value)}
-                                                    />
-                                                </div>
-                                                <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label' htmlFor={`${filterName}-${value}`}>{capitalizeFirstLetter(value)}</label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                         {/* {Object.entries(allCategoryFilters).length > 0 && (
                             <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
                                 <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>Filtrar por atributos</label>
@@ -501,6 +480,90 @@ const CategoryContainer = () => {
                                 ))}
                             </div>
                         )} */}
+                        {/* {Object.entries(allCategoryFilters).length > 0 && (
+                        <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
+                            <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>
+                            Filtrar por atributos
+                            </label>
+
+                            {Object.entries(allCategoryFilters).map(([filterName, valuesObj]) => (
+                            <div
+                                key={filterName}
+                                className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer'
+                            >
+                                <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__label'>
+                                {capitalizeFirstLetter(filterName)}
+                                </div>
+
+                                {Object.entries(valuesObj).map(([value, stock]) => (
+                                <div
+                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer'
+                                    key={value}
+                                >
+                                    <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox'>
+                                    <input
+                                        type="checkbox"
+                                        id={`${filterName}-${value}`}
+                                        checked={selectedDynamicFilters[filterName]?.includes(value) || false}
+                                        onChange={() => handleDynamicFilterChange(filterName, value)}
+                                        disabled={stock === 0} // opcional: deshabilitar si no hay stock
+                                    />
+                                    </div>
+                                    <label
+                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label'
+                                    htmlFor={`${filterName}-${value}`}
+                                    >
+                                    {capitalizeFirstLetter(value)} ({stock})
+                                    </label>
+                                </div>
+                                ))}
+                            </div>
+                            ))}
+                        </div>
+                        )} */}
+                        {Object.entries(allCategoryFilters).length > 0 && (
+                        <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
+                            <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>
+                            Filtrar por atributos
+                            </label>
+
+                            {Object.entries(allCategoryFilters).map(([filterName, valuesObj]) => (
+                            <div
+                                key={filterName}
+                                className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer'
+                            >
+                                <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__label'>
+                                {capitalizeFirstLetter(filterName)}
+                                </div>
+
+                                {Object.entries(valuesObj).map(([value, count]) => (
+                                <div
+                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer'
+                                    key={value}
+                                >
+                                    <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox'>
+                                    <input
+                                        type="checkbox"
+                                        id={`${filterName}-${value}`}
+                                        checked={selectedDynamicFilters[filterName]?.includes(value) || false}
+                                        onChange={() => handleDynamicFilterChange(filterName, value)}
+                                        disabled={count === 0} // opcional: deshabilitar si no hay productos con ese filtro
+                                    />
+                                    </div>
+                                    <label
+                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label'
+                                    htmlFor={`${filterName}-${value}`}
+                                    >
+                                    {capitalizeFirstLetter(value)} ({count})
+                                    </label>
+                                </div>
+                                ))}
+                            </div>
+                            ))}
+                        </div>
+                        )}
+
+
 
 
 

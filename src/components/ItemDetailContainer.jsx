@@ -45,6 +45,12 @@ const ItemDetailContainer = () => {
     const [zoomActive, setZoomActive] = useState(false);
     const [zoomPosition, setZoomPosition] = useState({ x: "50%", y: "50%" });
 
+    const allOptionsSelected = productById?.camposExtras &&
+        Object.keys(productById.camposExtras).every((campo) => {
+            const selected = selectedOptions[campo];
+            return selected && selected !== campo; // ⚠️ ignorar si value === key
+        });
+
     const handleSelectChange = (key, value) => {
         setSelectedOptions((prev) => ({
             ...prev,
@@ -68,7 +74,7 @@ const ItemDetailContainer = () => {
         }
     }, [user]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (productById?.variantes?.length && selectedOptions) {
             const varianteSeleccionada = productById.variantes.find(vari => {
                 return Object.entries(selectedOptions).every(([key, val]) => vari.campos[key] === val);
@@ -78,10 +84,42 @@ const ItemDetailContainer = () => {
                 setSelectedVariant(varianteSeleccionada);
                 setStockDisponible(varianteSeleccionada.stock);
             } else {
+                setSelectedVariant(null); 
                 setStockDisponible(0); // combinación no válida
             }
         }
+    }, [selectedOptions, productById]); */
+    useEffect(() => {
+        if (
+            productById?.variantes?.length &&
+            selectedOptions &&
+            Object.keys(productById.camposExtras || {}).every(
+            (key) => selectedOptions[key] && selectedOptions[key] !== ''
+            )
+        ) {
+            const varianteSeleccionada = productById.variantes.find(vari =>
+            Object.entries(selectedOptions).every(([key, val]) => vari.campos[key] === val)
+            );
+
+            if (varianteSeleccionada) {
+            setSelectedVariant(varianteSeleccionada);
+            setStockDisponible(varianteSeleccionada.stock);
+            } else {
+            setSelectedVariant(null);
+            setStockDisponible(0);
+            }
+        } else {
+            // No todos los selects fueron elegidos todavía
+            setSelectedVariant(null);
+            setStockDisponible(0);
+        }
     }, [selectedOptions, productById]);
+
+
+    useEffect(() => {
+        setSelectedOptions({});
+        setSelectedVariant(null);
+    }, [productById?._id]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -461,10 +499,6 @@ const ItemDetailContainer = () => {
 
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer'>
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer__state'>{capitalizeFirstLetter(`${productById?.state}`)}</div>
-                                            {/* {
-                                                productById?.number_sales > 0 &&
-                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer__salesQuantity'>+{productById?.number_sales} Vendidos</div>
-                                            } */}
                                             {productById?.number_sales > 10 && (
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stateContainer__salesQuantity'>
                                                     {productById.number_sales > 500
@@ -516,25 +550,29 @@ const ItemDetailContainer = () => {
                                         </div>
 
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
-                                            {
-                                                (productById?.variantes?.length > 0
-                                                    ? stockDisponible
-                                                    : productById.stock) >= 1
-                                                ? (
-                                                    <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
-                                                        Stock disponible
-                                                    </div>
+                                            {allOptionsSelected ? (
+                                                selectedVariant && selectedVariant.stock > 0 ? (
+                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                    Stock disponible
+                                                </div>
                                                 ) : (
-                                                    <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
-                                                        Sin stock
-                                                    </div>
+                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                    Sin stock
+                                                </div>
                                                 )
-                                            }
+                                            ) : (
+                                                null
+                                            )}
                                         </div>
+
 
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>
-                                                $ {selectedVariant?.price ?? productById?.price}
+                                            {!allOptionsSelected
+                                                ? 'Elija una variante'
+                                                : selectedVariant
+                                                ? `$ ${selectedVariant.price}`
+                                                : 'Elija otra variante'}
                                             </div>
                                         </div>
 
@@ -558,6 +596,7 @@ const ItemDetailContainer = () => {
                                                     value={selectedOptions[key] || ''} // valor seleccionado o vacío
                                                     onChange={(e) => handleSelectChange(key, e.target.value)}
                                                     >
+                                                    <option value={key}>{key}</option>
                                                     {opciones.map((opcion, i) => (
                                                         <option key={i} value={opcion}>
                                                         {capitalizeFirstLetter(opcion)}

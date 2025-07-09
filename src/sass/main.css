@@ -1504,9 +1504,6 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* &__prop {
-      width: 60px;
-  }  */
 }
 .categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label {
   display: flex;
