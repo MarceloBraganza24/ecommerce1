@@ -22,7 +22,7 @@ export const FavoritesProvider = ({ children }) => {
         } catch (err) {
             console.error("Error al obtener favoritos:", err);
         } finally {
-            setIsLoadingFavorites(false);
+            setIsLoadingFavorites(false); // ✅ marcamos como cargado
         }
     };
 

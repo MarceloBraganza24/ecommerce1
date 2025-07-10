@@ -364,7 +364,7 @@ const Favorites = () => {
                     </div>
                 ) : !user ? (
                     <div className="favoritesContiner__isLoadingLabel">
-                        Debes iniciar sesión para ver los favoritos
+                        Debes iniciar sesión para ver tus favoritos
                     </div>
                 ) : isLoadingFavorites ? (
                     <div className="favoritesContiner__isLoadingLabel">
@@ -391,7 +391,6 @@ const Favorites = () => {
                                     {favorites.map((product) => (
                                         <ItemProduct
                                             key={product._id}
-                                            user_id={user._id}
                                             fetchContextFavorites={fetchContextFavorites}
                                             fetchCartByUserId={fetchCartByUserId}
                                             id={product._id}
@@ -402,6 +401,7 @@ const Favorites = () => {
                                             price={product.price}
                                             variantes={product.variantes}
                                             userCart={userCart}
+                                            user={user}
                                         />
                                     ))}
                                 </div>

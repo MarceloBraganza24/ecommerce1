@@ -8,15 +8,37 @@ import { Navigation, Pagination } from "swiper/modules";
 import { toast } from 'react-toastify';
 import { useFavorites } from '../context/FavoritesContext';
 
-const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,variantes,id,stock,images,title,description,price,userCart}) => {
-    const [loading, setLoading] = useState(null);
-    const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
+const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,stock,images,title,description,price,userCart}) => {
+    const { favorites, addToFavorites,isLoadingFavorites, removeFromFavorites } = useFavorites();
     const [loadingFavorite, setLoadingFavorite] = useState(false);
     const [localFavorite, setLocalFavorite] = useState(false);
+    const [favoriteInitialized, setFavoriteInitialized] = useState(false);
 
-    useEffect(() => {
+    /* useEffect(() => {
         setLocalFavorite(favorites?.some(fav => fav._id === id));
-    }, [favorites, id]);
+    }, [favorites, id]); */
+
+    /* useEffect(() => {
+        if (!isLoadingFavorites || !user) return;
+
+        const isFavorite = favorites?.some(fav => fav._id === id);
+        setLocalFavorite(isFavorite);
+        setFavoriteInitialized(true);
+    }, [isLoadingFavorites, favorites, id, user]); */
+    /* useEffect(() => {
+        if (!isLoadingFavorites && user) {
+            const isFavorite = favorites?.some(fav => fav._id === id);
+            setLocalFavorite(isFavorite);
+            setFavoriteInitialized(true);
+        }
+    }, [isLoadingFavorites, favorites, id, user]); */
+    useEffect(() => {
+        if (!isLoadingFavorites) {
+            const isFavorite = user && favorites?.some(fav => fav._id === id);
+            setLocalFavorite(isFavorite);
+            setFavoriteInitialized(true); // ✅ SIEMPRE se inicializa
+        }
+    }, [isLoadingFavorites, favorites, id, user]);
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -26,16 +48,28 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,variantes,
         window.location.href = `/item/${id}`
     };
 
-    //const isFavorite = favorites?.some(fav => fav._id === id);
-
     const toggleFavorite = async () => {
+        if(!user) {
+            toast('Debes iniciar sesión para guardar favoritos!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return
+        }
         setLoadingFavorite(true);
         try {
             if (localFavorite) {
-                await removeFromFavorites(user_id, id);
+                await removeFromFavorites(user._id, id);
                 setLocalFavorite(false);
             } else {
-                await addToFavorites(user_id, id);
+                await addToFavorites(user._id, id);
                 setLocalFavorite(true);
             }
         } catch (err) {
@@ -53,19 +87,35 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,variantes,
 
                 <div className="itemProduct__imgContainer">
 
-                    {user_id && (
+                    {/* {!favoriteInitialized ? (
+                        <span className="itemProduct__imgContainer__favoriteSpinner">
+                            <Spinner />
+                        </span>
+                    ) : (
                         <button onClick={toggleFavorite} className="itemProduct__imgContainer__favoriteBtn" disabled={loadingFavorite}>
                             {loadingFavorite ? (
                                 <span className="itemProduct__imgContainer__favoriteSpinner">
-                                    <Spinner/>
-                                </span> // Podés poner un ícono mejor si querés
+                                    <Spinner />
+                                </span>
                             ) : (
                                 <span className="itemProduct__imgContainer__favoriteIcon">
                                     {localFavorite ? "💖" : "🤍"}
                                 </span>
                             )}
                         </button>
+                    )} */}
+                    {favoriteInitialized && (
+                    <button 
+                        onClick={toggleFavorite} 
+                        className="itemProduct__imgContainer__favoriteBtn" 
+                        disabled={loadingFavorite}
+                    >
+                        <span className="itemProduct__imgContainer__favoriteIcon">
+                        {localFavorite ? "💖" : "🤍"}
+                        </span>
+                    </button>
                     )}
+
 
                     <Swiper
                         navigation
@@ -103,7 +153,7 @@ const ItemProduct = ({user_id,fetchContextFavorites,fetchCartByUserId,variantes,
                         </div>
                         :
                         <div className="itemProduct__priceContainer__prop">
-                            {price} 
+                            ${price} 
                         </div>
                     }
                 </div>

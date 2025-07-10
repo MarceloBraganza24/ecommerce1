@@ -23,6 +23,7 @@ const ItemDetailContainer = () => {
     const [userCart, setUserCart] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+    const [isLoadingProductById, setIsLoadingProductById] = useState(true);
     const {id} = useParams()
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
@@ -74,21 +75,6 @@ const ItemDetailContainer = () => {
         }
     }, [user]);
 
-    /* useEffect(() => {
-        if (productById?.variantes?.length && selectedOptions) {
-            const varianteSeleccionada = productById.variantes.find(vari => {
-                return Object.entries(selectedOptions).every(([key, val]) => vari.campos[key] === val);
-            });
-
-            if (varianteSeleccionada) {
-                setSelectedVariant(varianteSeleccionada);
-                setStockDisponible(varianteSeleccionada.stock);
-            } else {
-                setSelectedVariant(null); 
-                setStockDisponible(0); // combinación no válida
-            }
-        }
-    }, [selectedOptions, productById]); */
     useEffect(() => {
         if (
             productById?.variantes?.length &&
@@ -288,7 +274,7 @@ const ItemDetailContainer = () => {
         } catch (error) {
             console.error('Error al obtener datos:', error);
         } finally {
-            setIsLoadingProducts(false);  
+            setIsLoadingProductById(false);  
         }
     };
 
@@ -406,6 +392,20 @@ const ItemDetailContainer = () => {
     }, [id]);
 
     const toggleFavorite = async () => {
+        if(!user) {
+            toast('Debes iniciar sesión para guardar favoritos!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return
+        }
         setLoadingFavorite(true);
         try {
             if (localFavorite) {
@@ -457,7 +457,7 @@ const ItemDetailContainer = () => {
 
                         {
                         
-                            isLoadingProducts ? 
+                            isLoadingProductById ? 
                             <>
                                 <div className="itemDetailContainer__itemDetail__loadingProducts">
                                     Cargando producto&nbsp;&nbsp;<Spinner/>
@@ -521,23 +521,17 @@ const ItemDetailContainer = () => {
                                                 </div>
                                             )}
                                             
-                                            {user && favoriteInitialized ? (
-                                                <button
-                                                    onClick={toggleFavorite}
-                                                    className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon"
-                                                    disabled={loadingFavorite}
-                                                >
-                                                    {loadingFavorite ? (
-                                                        <span className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteSpinner">
-                                                            <Spinner />
-                                                        </span>
-                                                    ) : (
-                                                        <span className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon">
-                                                            {localFavorite ? "💖" : "🤍"}
-                                                        </span>
-                                                    )}
-                                                </button>
-                                            ) : null}
+                                            {favoriteInitialized && (
+                                            <button
+                                                onClick={toggleFavorite}
+                                                className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon"
+                                                disabled={loadingFavorite}
+                                            >
+                                                <span className="itemDetailContainer__itemDetail__infoContainer__info__stateContainer__favoriteIcon">
+                                                {localFavorite ? "💖" : "🤍"}
+                                                </span>
+                                            </button>
+                                            )}
                                             
                                         </div>
 
@@ -549,32 +543,48 @@ const ItemDetailContainer = () => {
                                             <div className='itemDetailContainer__itemDetail__infoContainer__info__description__prop'>{capitalizeFirstLetter(`${productById?.description}`)}</div>
                                         </div>
 
+                                        {/* === STOCK === */}
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
-                                            {allOptionsSelected ? (
-                                                selectedVariant && selectedVariant.stock > 0 ? (
+                                        {productById?.variantes?.length > 0 ? (
+                                            allOptionsSelected ? (
+                                            selectedVariant && selectedVariant.stock > 0 ? (
                                                 <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
-                                                    Stock disponible
+                                                Stock disponible
                                                 </div>
-                                                ) : (
-                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
-                                                    Sin stock
-                                                </div>
-                                                )
                                             ) : (
-                                                null
-                                            )}
+                                                <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                Sin stock
+                                                </div>
+                                            )
+                                            ) : null
+                                        ) : (
+                                            productById.stock > 0 ? (
+                                            <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                Stock disponible
+                                            </div>
+                                            ) : (
+                                            <div className='itemDetailContainer__itemDetail__infoContainer__info__stock__label'>
+                                                Sin stock
+                                            </div>
+                                            )
+                                        )}
                                         </div>
 
-
+                                        {/* === PRICE === */}
                                         <div className='itemDetailContainer__itemDetail__infoContainer__info__price'>
-                                            <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>
-                                            {!allOptionsSelected
+                                        <div className='itemDetailContainer__itemDetail__infoContainer__info__price__prop'>
+                                            {productById?.variantes?.length > 0 ? (
+                                            !allOptionsSelected
                                                 ? 'Elija una variante'
                                                 : selectedVariant
                                                 ? `$ ${selectedVariant.price}`
-                                                : 'Elija otra variante'}
-                                            </div>
+                                                : 'Elija otra variante'
+                                            ) : (
+                                            `$ ${productById.price}`
+                                            )}
                                         </div>
+                                        </div>
+
 
                                         {
                                             productById?.camposExtras &&

@@ -398,7 +398,7 @@ const Home = () => {
                             {
                                 products.map((product) => (
                                     <ItemProduct
-                                    user_id={user?._id} 
+                                    user={user} 
                                     fetchCartByUserId={fetchCartByUserId}
                                     id={product._id}
                                     stock={product.stock}

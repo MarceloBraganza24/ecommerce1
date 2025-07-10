@@ -445,82 +445,6 @@ const CategoryContainer = () => {
                             </select>
                         </div>
 
-                        {/* {Object.entries(allCategoryFilters).length > 0 && (
-                            <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
-                                <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>Filtrar por atributos</label>
-
-                                {Object.entries(allCategoryFilters).map(([filterName, values]) => (
-                                    <div key={filterName} className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer'>
-                                        <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__label'>
-                                            {capitalizeFirstLetter(filterName)}
-                                        </div>
-
-                                        {values.map(value => (
-                                            <div
-                                                className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer'
-                                                key={value}
-                                            >
-                                                <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox'>
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`${filterName}-${value}`}
-                                                        checked={selectedDynamicFilters[filterName]?.includes(value) || false}
-                                                        onChange={() => handleDynamicFilterChange(filterName, value)}
-                                                    />
-                                                </div>
-                                                <label
-                                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label'
-                                                    htmlFor={`${filterName}-${value}`}
-                                                >
-                                                    {capitalizeFirstLetter(value)}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        )} */}
-                        {/* {Object.entries(allCategoryFilters).length > 0 && (
-                        <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
-                            <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>
-                            Filtrar por atributos
-                            </label>
-
-                            {Object.entries(allCategoryFilters).map(([filterName, valuesObj]) => (
-                            <div
-                                key={filterName}
-                                className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer'
-                            >
-                                <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__label'>
-                                {capitalizeFirstLetter(filterName)}
-                                </div>
-
-                                {Object.entries(valuesObj).map(([value, stock]) => (
-                                <div
-                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer'
-                                    key={value}
-                                >
-                                    <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__checkBox'>
-                                    <input
-                                        type="checkbox"
-                                        id={`${filterName}-${value}`}
-                                        checked={selectedDynamicFilters[filterName]?.includes(value) || false}
-                                        onChange={() => handleDynamicFilterChange(filterName, value)}
-                                        disabled={stock === 0} // opcional: deshabilitar si no hay stock
-                                    />
-                                    </div>
-                                    <label
-                                    className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__labelCheckBoxContainer__checkBoxLabelContainer__label'
-                                    htmlFor={`${filterName}-${value}`}
-                                    >
-                                    {capitalizeFirstLetter(value)} ({stock})
-                                    </label>
-                                </div>
-                                ))}
-                            </div>
-                            ))}
-                        </div>
-                        )} */}
                         {Object.entries(allCategoryFilters).length > 0 && (
                         <div className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer'>
                             <label className='categoryContainer__grid__categoriesListContainer__dynamicFiltersContainer__title'>
@@ -563,10 +487,6 @@ const CategoryContainer = () => {
                         </div>
                         )}
 
-
-
-
-
                     </div>
                                 
                     {
@@ -587,7 +507,6 @@ const CategoryContainer = () => {
                                     {products.map((product) => (
                                         <ItemProduct
                                         key={product._id}
-                                        user_id={user?._id}
                                         fetchCartByUserId={fetchCartByUserId}
                                         id={product._id}
                                         stock={product.stock}
@@ -597,6 +516,7 @@ const CategoryContainer = () => {
                                         price={product.price}
                                         variantes={product.variantes}
                                         userCart={userCart}
+                                        user={user}
                                         />
                                     ))}
                                     <div className='cPanelProductsContainer__btnsPagesContainer'>
