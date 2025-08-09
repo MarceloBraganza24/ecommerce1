@@ -554,7 +554,7 @@ const DeliveryForm = () => {
                 isLoading={isLoading}
                 isLoadingAuth={isLoadingAuth}
                 user={user}
-                setUser={setUser}
+                //setUser={setUser}
                 setSelectedAddress={setSelectedAddress}
                 isLoggedIn={user?.isLoggedIn || false}
                 role={user?.role || null}
@@ -585,7 +585,7 @@ const DeliveryForm = () => {
                     <div className="deliveryFormContainer__deliveryForm__existingAddresses">
                         <h2 className='deliveryFormContainer__deliveryForm__existingAddresses__title'>Domicilios</h2>
                         {
-                            isLoading ? 
+                            isLoadingDeliveryForm ? 
                             <>
                                 <div className="deliveryFormContainer__deliveryForm__existingAddresses__loadingAddresses">
                                     Cargando domicilios&nbsp;&nbsp;<Spinner/>

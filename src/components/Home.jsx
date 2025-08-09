@@ -13,9 +13,10 @@ import { Navigation, Pagination,Autoplay  } from "swiper/modules";
 import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Home = () => {
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
@@ -338,7 +339,7 @@ const Home = () => {
             primaryColor={storeSettings?.primaryColor || ""}
             />
             
-            <div className="homeContainer" /* style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.homeImage || ''})`}} */>
+            <div className="homeContainer">
                 <div className="homeContainer__img">
                     <img className="homeContainer__img__prop" src={`http://localhost:8081/${storeSettings?.siteImages?.homeImage}`} alt="" />
                 </div>
@@ -384,7 +385,7 @@ const Home = () => {
                                     to={`/category/${category.name.toLowerCase()}`}
                                     className='catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory'
                                 >
-                                    - {category.name.toUpperCase()}
+                                    - <span className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory__label">{category.name.toUpperCase()}</span>
                                 </Link>
                                 ))
                             }

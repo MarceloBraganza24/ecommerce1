@@ -8,6 +8,7 @@ import Spinner from './Spinner';
 const SignIn = () => {
     const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [loadingBtnSignin, setLoadingBtnSignin] = useState(false);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [credentials, setCredentials] = useState({
@@ -15,6 +16,13 @@ const SignIn = () => {
         last_name: '',
         email: '',
         password: '',
+    });
+    const [passwordValidation, setPasswordValidation] = useState({
+        length: false,
+        lowercase: false,
+        uppercase: false,
+        number: false,
+        specialChar: false
     });
 
     const fetchStoreSettings = async () => {
@@ -51,6 +59,19 @@ const SignIn = () => {
           return; // No actualiza el estado si el valor tiene caracteres no permitidos
         }
         setCredentials({ ...credentials, [name]: value });
+        setPasswordValidation({
+            length: value.length >= 8,
+            lowercase: /[a-z]/.test(value),
+            uppercase: /[A-Z]/.test(value),
+            number: /[0-9]/.test(value),
+            specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value)
+        });
+    };
+
+    const getPasswordStrength = () => {
+        const values = Object.values(passwordValidation);
+        const score = values.filter(Boolean).length;
+        return score; // 0 a 5
     };
 
     const validateForm = () => {
@@ -86,6 +107,7 @@ const SignIn = () => {
         e.preventDefault();
         if (!validateForm()) return;
         try {
+            setLoadingBtnSignin(true);
             const response = await fetch(`http://localhost:8081/api/sessions/signIn`, {
                 method: 'POST',         
                 headers: {
@@ -126,15 +148,16 @@ const SignIn = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnSignin(false);
             }
         } catch (error) {
             console.error('Error:', error);
+            setLoadingBtnSignin(false);
         }
     };
 
     useEffect(() => {
         fetchStoreSettings()
-        //window.scrollTo(0, 0);
     }, []);
 
     if (isLoadingStoreSettings) {
@@ -159,8 +182,6 @@ const SignIn = () => {
                             <div className='loginContainer__formContainer__form__title__prop'>Registro de usuario</div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__input'>
-                        </div>
                         <div className='loginContainer__formContainer__form__inputContainer'>
                             <div className='loginContainer__formContainer__form__inputContainer__input'>
                                 <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.first_name} onChange={handleChange} placeholder='Nombre' name="first_name" id="" />
@@ -200,12 +221,60 @@ const SignIn = () => {
                                 </button>
                             </div>
                         </div>
-                        {/* <div className='loginContainer__formContainer__form__input'>
-                            <input className='loginContainer__formContainer__form__input__prop' type="password" value={credentials.password} onChange={handleChange} placeholder='Contraseña' name="password" id="" />
-                        </div> */}
+
+                        {
+                            credentials.password &&
+                            <>
+                                <div className='loginContainer__formContainer__form__passwordValidation'>
+                                    <p style={{ color: passwordValidation.length ? 'green' : 'red' }}>
+                                        • Al menos 8 caracteres
+                                    </p>
+                                    <p style={{ color: passwordValidation.lowercase ? 'green' : 'red' }}>
+                                        • Una letra minúscula
+                                    </p>
+                                    <p style={{ color: passwordValidation.uppercase ? 'green' : 'red' }}>
+                                        • Una letra mayúscula
+                                    </p>
+                                    <p style={{ color: passwordValidation.number ? 'green' : 'red' }}>
+                                        • Un número
+                                    </p>
+                                    <p style={{ color: passwordValidation.specialChar ? 'green' : 'red' }}>
+                                        • Un carácter especial (!@#$%)
+                                    </p>
+                                </div>
+                                <div className="loginContainer__formContainer__form__passwordStrengthBar" style={{ height: '6px', backgroundColor: '#ccc', borderRadius: '4px' }}>
+                                    <div
+                                        style={{
+                                            width: `${getPasswordStrength() * 20}%`,
+                                            height: '100%',
+                                            backgroundColor:
+                                            getPasswordStrength() <= 2 ? 'red' :
+                                            getPasswordStrength() === 3 ? 'orange' :
+                                            getPasswordStrength() === 4 ? 'yellowgreen' :
+                                            'green',
+                                            transition: 'width 0.3s ease'
+                                        }}
+                                        />
+                                </div>
+                            </>
+                        }
 
                         <div className='loginContainer__formContainer__form__btn'>
-                            <button onClick={handleSubmit} className='loginContainer__formContainer__form__btn__prop'>Registrarse</button>
+                            {loadingBtnSignin ? (
+                                <button
+                                disabled
+                                className='loginContainer__formContainer__form__btn__prop'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleSubmit}
+                                className='loginContainer__formContainer__form__btn__prop'
+                                >
+                                Registrarse
+                                </button>
+                            )}
                             <Link to={"/logIn"} className='loginContainer__formContainer__form__btn__prop'>
                                 Iniciar sesión
                             </Link>

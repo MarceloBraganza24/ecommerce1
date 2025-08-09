@@ -10,6 +10,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
     const [quantity, setQuantity] = useState(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [showCategories, setShowCategories] = useState(false);
+    const [loadingBtnLogOut, setLoadingBtnLogOut] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -125,16 +126,50 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
     }, []);
 
     const handleBtnLogOut = async () => {
-        const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
-            method: 'POST',         
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include', // 👈 Esto es clave
-        })
-        const data = await response.json();
-        if(response.ok) {
-            toast('Gracias por visitar nuestra página', {
+        try {
+            setLoadingBtnLogOut(true);
+            const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
+                method: 'POST',         
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include', // 👈 Esto es clave
+            })
+            const data = await response.json();
+            if(response.ok) {
+                toast('Gracias por visitar nuestra página', {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setUser&&setUser(null)
+                setSelectedAddress&&setSelectedAddress(null)
+                setTimeout(() => {
+                    navigate('/')
+                    window.location.reload()
+                }, 2000);
+            } else {
+                toast('Se ha producido un error al salir, intente nuevamente!', {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setLoadingBtnLogOut(false);
+            }
+        } catch (error) {
+            toast('Error en la conexión!', {
                 position: "top-right",
                 autoClose: 1500,
                 hideProgressBar: false,
@@ -145,12 +180,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                 theme: "dark",
                 className: "custom-toast",
             });
-            setUser&&setUser(null)
-            setSelectedAddress&&setSelectedAddress(null)
-            setTimeout(() => {
-                navigate('/')
-                window.location.reload()
-            }, 2000);
+            setLoadingBtnLogOut(false);
         }
     }
 
@@ -250,7 +280,21 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                                         </div>
                                         )}
                                     </div>
-                                        <div onClick={handleBtnLogOut} className='header__gridUp__links__itemLogOut'>SALIR</div>
+                                    {loadingBtnLogOut ? (
+                                        <div
+                                        disabled
+                                        className='header__gridUp__links__itemLogOut'
+                                        >
+                                        <Spinner/>
+                                        </div>
+                                    ) : (
+                                        <div
+                                        onClick={handleBtnLogOut}
+                                        className='header__gridUp__links__itemLogOut'
+                                        >
+                                        SALIR
+                                        </div>
+                                    )}
                                 </>
                             :
                                 <>

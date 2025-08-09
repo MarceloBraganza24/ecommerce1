@@ -2,10 +2,13 @@ import {useEffect,useState,useContext} from 'react'
 import { Link,useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [loadingBtnLogin, setLoadingBtnLogin] = useState(false);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [credentials, setCredentials] = useState({
@@ -71,7 +74,8 @@ const Login = () => {
         if (!validateForm()) return;
     
         try {
-            const response = await fetch(`http://localhost:8081/api/sessions/login`, {
+            setLoadingBtnLogin(true);
+            /* const response = await fetch(`http://localhost:8081/api/sessions/login`, {
                 method: 'POST',         
                 credentials: 'include', // 👈 necesario para recibir cookies
                 headers: {
@@ -82,8 +86,11 @@ const Login = () => {
                     password: credentials.password,
                 })
             })
-            const data = await response.json();
-            if (response.ok) {
+            const data = await response.json(); */
+
+            
+            const success = await login(credentials.email, credentials.password);
+            if (success) {
                 navigate("/");
                 toast('Bienvenido, has iniciado sesion con éxito!', {
                     position: "top-right",
@@ -96,8 +103,7 @@ const Login = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-            }
-            if(data.error === 'incorrect credentials') {
+            } else {
                 toast('Alguno de los datos ingresados es incorrecto. Inténtalo nuevamente!', {
                     position: "top-right",
                     autoClose: 2500,
@@ -109,9 +115,11 @@ const Login = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnLogin(true);
             }
         } catch (error) {
-          console.error('Error:', error);
+            console.error('Error:', error);
+            setLoadingBtnLogin(true);
         }
     };
 
@@ -171,7 +179,22 @@ const Login = () => {
                         </div>
 
                         <div className='loginContainer__formContainer__form__btn'>
-                            <button onClick={handleSubmit} className='loginContainer__formContainer__form__btn__prop'>Iniciar sesión</button>
+
+                            {loadingBtnLogin ? (
+                                <button
+                                disabled
+                                className='loginContainer__formContainer__form__btn__prop'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleSubmit}
+                                className='loginContainer__formContainer__form__btn__prop'
+                                >
+                                Iniciar sesión
+                                </button>
+                            )}
                             <Link to={"/signIn"} className='loginContainer__formContainer__form__btn__prop'>
                                 Registrarse
                             </Link>

@@ -417,11 +417,20 @@ const CategoryContainer = () => {
                         
                         <div className='categoryContainer__grid__categoriesListContainer__categoriesList'>
                             <div className='categoryContainer__grid__categoriesListContainer__categoriesList__label'>Categorías</div>
-                            {
+                            {/* {
                                 categories.map(category => (
                                     <Link className='categoryContainer__grid__categoriesListContainer__categoriesList__category' to={`/category/${category.name}`}>
                                         - {capitalizeFirstLetter(category.name)}
                                     </Link>
+                                ))
+                            } */}
+                            {
+                                categories.map(category => (
+                                    <>
+                                    <Link className='categoryContainer__grid__categoriesListContainer__categoriesList__category' to={`/category/${category.name}`}>
+                                        - <span className='categoryContainer__grid__categoriesListContainer__categoriesList__category__label'>{capitalizeFirstLetter(category.name)}</span>
+                                    </Link>
+                                    </>
                                 ))
                             }
                         </div>

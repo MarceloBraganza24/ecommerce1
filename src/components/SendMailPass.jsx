@@ -138,7 +138,6 @@ const SendMailPass = () => {
                             </div>
                         </div> 
                         <div className='sendMailContainer__credentials__form__btn'>
-                            {/* <button className='sendMailContainer__credentials__form__btn__prop' onClick={handleBtnRecieveLink}>Recibir link</button> */}
                             {loadingBtnRecieveLink ? (
                                 <button
                                 disabled
@@ -166,9 +165,6 @@ const SendMailPass = () => {
                             </Link>     
                         </div> 
                     </div>
-                    {/* <div className='sendMailContainer__credentials__form__btn'>
-                        {showSpinner&&<Spinner/>}
-                    </div>   */}
                 </div>
             </div>
         </>

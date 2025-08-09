@@ -8,17 +8,22 @@ import Spinner from './Spinner';
 import { useUnsavedChangesPrompt } from '../hooks/useUnsavedChangesPrompt';
 import isEqual from 'lodash.isequal';
 import {IsLoggedContext} from '../context/IsLoggedContext';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const CPanel = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [loadingBtnUserRegister, setLoadingBtnUserRegister] = useState(false);
+    const [loadingBtnDeleteAdmin, setLoadingBtnDeleteAdmin] = useState(null);
+    const [loadingBtnUpdateAdmin, setLoadingBtnUpdateAdmin] = useState(null);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [creatingCategory, setCreatingCategory] = useState(false);
+    const [loadingBtnSubmitConfigSite, setLoadingBtnSubmitConfigSite] = useState(false);
     const [deletingIdCategory, setDeletingIdCategory] = useState(null);
     const [creatingAddress, setCreatingAddress] = useState(false);
     const [deletingIdAddress, setDeletingIdAddress] = useState(null);
     const [creatingCoupon, setCreatingCoupon] = useState(false);
     const [deletingIdCoupon, setDeletingIdCoupon] = useState(null);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [admins, setAdmins] = useState([]);
     const [adminsEdited, setAdminsEdited] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -94,6 +99,7 @@ const CPanel = () => {
         e.preventDefault();
         if (!validateUserRegisterForm()) return;
         try {
+            setLoadingBtnUserRegister(true);
             const response = await fetch(`http://localhost:8081/api/sessions/signInAdmin`, {
                 method: 'POST',         
                 headers: {
@@ -121,6 +127,7 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnUserRegister(false);
             } else if (response.ok) {
                 toast('Has registrado un usuario exitosamente!', {
                     position: "top-right",
@@ -141,6 +148,7 @@ const CPanel = () => {
                     role: 'user',
                 });
                 fetchAdmins()
+                setLoadingBtnUserRegister(false);
             } else {
                 toast('Ha ocurrido un error, intente nuevamente!', {
                     position: "top-right",
@@ -153,6 +161,7 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnUserRegister(false);
             }
             
         } catch (error) {
@@ -168,6 +177,7 @@ const CPanel = () => {
                 theme: "dark",
                 className: "custom-toast",
             });
+            setLoadingBtnUserRegister(false);
         }
     };
 
@@ -1280,6 +1290,7 @@ const CPanel = () => {
         });
 
         try {
+            setLoadingBtnSubmitConfigSite(true);
             const response = await fetch('http://localhost:8081/api/settings', {
                 method: 'PUT',
                 body: formData
@@ -1302,6 +1313,7 @@ const CPanel = () => {
                 setConfigurationSiteformData(configData);
                 setInitialColorSelect(colorSelectFormData);
                 setInitialSiteImages(siteImages);
+                setLoadingBtnSubmitConfigSite(false);
                 //console.log('Resultado:', result);
             } else {
                 toast('ha ocurrido un error al guardar, intente nuevamente', {
@@ -1315,9 +1327,11 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnSubmitConfigSite(false);
             }
         } catch (error) {
             console.error('Error al enviar la configuración:', error);
+            setLoadingBtnSubmitConfigSite(false);
         }
     };
 
@@ -1368,6 +1382,7 @@ const CPanel = () => {
     const handleSaveAdmin = async (index) => {
         const adminToSave = adminsEdited[index];
         try {
+            setLoadingBtnUpdateAdmin(adminToSave._id);
             const response = await fetch(`http://localhost:8081/api/users/${adminToSave._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -1401,7 +1416,7 @@ const CPanel = () => {
                 updatedAdminsEdited[index] = { ...adminToSave }; // resetear adminsEdited
                 setAdminsEdited(updatedAdminsEdited);
                 fetchAdmins()
-
+                setLoadingBtnUpdateAdmin(null);
             } else {
                 toast('Error al guardar cambios', {
                     position: "top-right",
@@ -1414,6 +1429,7 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnUpdateAdmin(null);
             }
         } catch (error) {
             toast('Error en la conexión', {
@@ -1427,6 +1443,7 @@ const CPanel = () => {
                 theme: "dark",
                 className: "custom-toast",
             });
+            setLoadingBtnUpdateAdmin(null);
         }
     };
 
@@ -1436,6 +1453,7 @@ const CPanel = () => {
         if (!window.confirm(`¿Eliminar al usuario ${adminToDelete.first_name} ${adminToDelete.last_name}?`)) return;
 
         try {
+            setLoadingBtnDeleteAdmin(adminToDelete._id);
             const response = await fetch(`http://localhost:8081/api/users/delete-one/${adminToDelete._id}`, {
                 method: 'DELETE',
             });
@@ -1456,6 +1474,7 @@ const CPanel = () => {
                 setAdmins(updatedAdmins);
                 setAdminsEdited(updatedAdminsEdited);
                 fetchAdmins()
+                setLoadingBtnDeleteAdmin(null);
             } else {
                 toast('Error al eliminar usuario', {
                     position: "top-right",
@@ -1468,6 +1487,7 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoadingBtnDeleteAdmin(null);
             }
         } catch (error) {
             toast('Error en la conexión', {
@@ -1481,6 +1501,7 @@ const CPanel = () => {
                 theme: "dark",
                 className: "custom-toast",
             });
+            setLoadingBtnDeleteAdmin(null);
         }
     };
 
@@ -1958,7 +1979,21 @@ const CPanel = () => {
 
 
                         <div className='cPanelContainer__siteConfiguration__form__btnContainer'>
-                            <button onClick={handleSubmitConfigSite} className='cPanelContainer__siteConfiguration__form__btnContainer__btn'>Guardar configuración</button>
+                            {loadingBtnSubmitConfigSite ? (
+                                <button
+                                disabled
+                                className='cPanelContainer__siteConfiguration__form__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleSubmitConfigSite}
+                                className='cPanelContainer__siteConfiguration__form__btnContainer__btn'
+                                >
+                                Guardar configuración
+                                </button>
+                            )}
                         </div>
 
                     </div>
@@ -2228,19 +2263,36 @@ const CPanel = () => {
                                 </div>
                             </div>
                             <div className='cPanelContainer__adminsList__item__btns'>
-                                <button
+                                {loadingBtnUpdateAdmin == admin._id ? (
+                                    <button
+                                    disabled
                                     className='cPanelContainer__adminsList__item__btns__btn'
+                                    >
+                                    <Spinner/>
+                                    </button>
+                                ) : (
+                                    <button
                                     onClick={() => handleSaveAdmin(index)}
-                                    disabled={!isChanged(index)}
-                                >
-                                    Actualizar
-                                </button>
-                                <button
                                     className='cPanelContainer__adminsList__item__btns__btn'
+                                    >
+                                    Actualizar
+                                    </button>
+                                )}
+                                {loadingBtnDeleteAdmin == admin._id ? (
+                                    <button
+                                    disabled
+                                    className='cPanelContainer__adminsList__item__btns__btn'
+                                    >
+                                    <Spinner/>
+                                    </button>
+                                ) : (
+                                    <button
                                     onClick={() => handleDeleteAdmin(index)}
+                                    className='cPanelContainer__adminsList__item__btns__btn'
                                     >
                                     Borrar
-                                </button>
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -2271,7 +2323,6 @@ const CPanel = () => {
 
                         <div className='cPanelContainer__userRegisterContainer__form__inputPass'>
                             <div className='cPanelContainer__userRegisterContainer__form__inputPass__label'>Contraseña:</div>
-                            {/* <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="password" value={userCredentials.password} onChange={handleUserCredentialsChange} placeholder='Contraseña' name="password" id="" /> */}
 
                             <input
                                 className='cPanelContainer__userRegisterContainer__form__inputPass__prop'
@@ -2307,7 +2358,21 @@ const CPanel = () => {
                         </div>
 
                         <div className='cPanelContainer__userRegisterContainer__form__btn'>
-                            <button onClick={handleUserRegisterSubmit} className='cPanelContainer__userRegisterContainer__form__btn__prop'>Registrar usuario</button>
+                            {loadingBtnUserRegister ? (
+                                <button
+                                disabled
+                                className='cPanelContainer__userRegisterContainer__form__btn__prop'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleUserRegisterSubmit}
+                                className='cPanelContainer__userRegisterContainer__form__btn__prop'
+                                >
+                                Registrar usuario
+                                </button>
+                            )}
                         </div>
 
                     </div>

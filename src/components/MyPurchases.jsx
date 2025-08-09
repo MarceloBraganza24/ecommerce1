@@ -360,8 +360,8 @@ const MyPurchases = () => {
                                                     ticket={ticket}
                                                     fechaHora={`${formattedDate} ${formattedTime}`}
                                                     fetchTickets={fetchTickets}
-                                                    email={user.email}
-                                                    role={user.role}
+                                                    email={user?.email}
+                                                    role={user?.role}
                                                 />
                                             </div>
                                         );

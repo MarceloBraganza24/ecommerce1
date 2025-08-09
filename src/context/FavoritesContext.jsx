@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { IsLoggedContext } from './IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export const FavoritesContext = createContext();
 
@@ -8,7 +9,7 @@ export const useFavorites = () => useContext(FavoritesContext);
 
 export const FavoritesProvider = ({ children }) => {
     const [favorites, setFavorites] = useState([]);
-    const { user,loadingUser } = useContext(IsLoggedContext);
+    const { user,loadingUser } = useAuth();
     const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
 
     const fetchContextFavorites = async () => {

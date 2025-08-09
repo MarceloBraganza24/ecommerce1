@@ -13,6 +13,7 @@ const ItemDetailContainer = () => {
     const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
     const [loadingFavorite, setLoadingFavorite] = useState(false);
     const [favoriteInitialized, setFavoriteInitialized] = useState(false);
+    const [loadingVariant, setLoadingVariant] = useState(false);
     const [localFavorite, setLocalFavorite] = useState(false);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
     //console.log(user)
@@ -28,6 +29,7 @@ const ItemDetailContainer = () => {
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState({});
+    console.log(selectedVariant)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -68,6 +70,13 @@ const ItemDetailContainer = () => {
             setLocalFavorite(false);
         }
     }, [favorites, id, user]);
+    
+    useEffect(() => {
+        setLoadingVariant(true)
+        setTimeout(() => {
+            setLoadingVariant(false)
+        }, 500);
+    }, [selectedVariant,selectedOptions]);
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -619,6 +628,7 @@ const ItemDetailContainer = () => {
                                         }
 
                                         <ItemCount
+                                        loadingVariant={loadingVariant} 
                                         user_id={user?._id} 
                                         roleUser={user?.role} 
                                         id={productById?._id}

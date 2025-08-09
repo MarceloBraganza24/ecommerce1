@@ -7,23 +7,26 @@ import { ShoppingCartContext } from "./ShoppingCartContext";
 import { ThemeProvider } from "./ThemeProviderContext";
 import { IsLoggedInContext } from "./IsLoggedContext";
 import { FavoritesProvider } from "./FavoritesContext";
+import { AuthProvider } from './AuthContext.jsx';
 
 
 const GlobalContexts = ({ children }) => {
     return (
-        <IsLoggedInContext>
-            <FavoritesProvider>
-                <CPanelProductsContext>
-                    <CPanelSalesContext>
-                        <ShoppingCartContext>
-                            <ThemeProvider>
-                                    {children}
-                            </ThemeProvider>
-                        </ShoppingCartContext>
-                    </CPanelSalesContext>
-                </CPanelProductsContext>
-            </FavoritesProvider>
-        </IsLoggedInContext>
+        <AuthProvider>
+            <IsLoggedInContext>
+                <FavoritesProvider>
+                    <CPanelProductsContext>
+                        <CPanelSalesContext>
+                            <ShoppingCartContext>
+                                <ThemeProvider>
+                                        {children}
+                                </ThemeProvider>
+                            </ShoppingCartContext>
+                        </CPanelSalesContext>
+                    </CPanelProductsContext>
+                </FavoritesProvider>
+            </IsLoggedInContext>
+        </AuthProvider>
     );
 };
 

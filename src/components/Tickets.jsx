@@ -194,7 +194,7 @@ const Tickets = () => {
             const ticketsAll = await response.json();
             console.log(ticketsAll.data)
             if (response.ok) {
-                setTotalTickets(ticketsAll.data.totalDocs)
+                setTotalTickets(ticketsAll.data.totalTickets)
                 setTickets(ticketsAll.data.docs)
                 setPageInfo({
                     page: ticketsAll.data.page,
@@ -464,7 +464,7 @@ const Tickets = () => {
                     !isLoadingTickets &&
                     ticketsOrdenados.length != 0 ?
                     <div className='cPanelSalesContainer__quantitySales'>
-                        <div className='cPanelSalesContainer__quantitySales__prop'>Cantidad de ventas: {ticketsOrdenados.length}</div>        
+                        <div className='cPanelSalesContainer__quantitySales__prop'>Cantidad de ventas: {ticketsOrdenados.length} de {totalTickets}</div>        
                     </div>
                     :
                     <div className='cPanelSalesContainer__quantitySales'>

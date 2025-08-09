@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import Spinner from './Spinner';
 
-const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
+const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
     //console.log(stock)
 
     const normalizeCampos = (campos) => {
@@ -310,7 +310,15 @@ const ItemCount = ({selectedVariant,variantes,user_id,roleUser,id,images,title,d
                     )} Disponibles)
             </div> */}
             <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
-                ({stockVariante >= 10 ? '+10' : stockVariante} Disponibles)
+                {
+                    loadingVariant ?
+                    <Spinner/>
+                    :
+                    stockVariante >= 10 ?
+                    '(+10 Disponibles)'
+                    :
+                    `(${stockVariante} Disponibles)`
+                }
             </div>
             {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockDisponible < 10 ? stockDisponible : '+10'} Disponibles)</div> */}
 

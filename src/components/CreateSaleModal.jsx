@@ -170,6 +170,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                 body: JSON.stringify(newTicket)
             })
             const data = await response.json();
+            console.log(data)
             if (response.ok) {
                 toast('Has registrado la venta con éxito!', {
                     position: "top-right",
@@ -187,6 +188,18 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                     setAddedProducts([])
                     fetchTickets(1, "", "", selectedDate);
                 }, 2500);
+            } else if(data.error) {
+                toast('Variante no encontrada para el producto seleccionado', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
             } else {
                 toast('Ha ocurrido un error, intente nuevamente!', {
                     position: "top-right",

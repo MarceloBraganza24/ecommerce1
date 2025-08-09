@@ -811,7 +811,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                     </div>
                     
                     <div className='createProductModalContainer__createProductModal__propsContainer__btnContainer'>
-                        <button /* disabled={loading} */ onClick={handleSubmit} className='createProductModalContainer__createProductModal__propsContainer__btnContainer__btn'>
+                        <button disabled={loading} onClick={handleSubmit} className='createProductModalContainer__createProductModal__propsContainer__btnContainer__btn'>
                             {loading ? (
                                 <>
                                     Guardando <Spinner />

@@ -389,16 +389,18 @@ h2 {
   bottom: 16vh;
   right: 3vh;
   z-index: 5;
-  background-color: #0e3061;
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
   padding: 0.5vh 2vh 1.5vh 2vh;
   border-radius: 50%;
   font-size: 30px;
   transition: transform 0.3s ease;
+  border: 0.3vh solid var(--primary-text-color);
 }
 .btnGoUp:hover {
-  transform: scale(1.2);
+  transform: scale(1.12);
+  color: var(--secondary-color);
+  border: 0.3vh solid var(--secondary-color);
   cursor: pointer;
 }
 
@@ -585,8 +587,7 @@ h2 {
   cursor: pointer;
 }
 .cPanelContainer__siteConfiguration__form__socialNetworks__grid__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__siteConfiguration__form__socialNetworks__btnAddSocialNetworkContianer__btn {
   background-color: var(--primary-color);
@@ -596,8 +597,7 @@ h2 {
   cursor: pointer;
 }
 .cPanelContainer__siteConfiguration__form__socialNetworks__btnAddSocialNetworkContianer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__siteConfiguration__form__images {
   display: flex;
@@ -709,8 +709,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__gridPhone__inputBtn__btnDeletePhone:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__siteConfiguration__form__gridColor {
   display: flex;
@@ -780,8 +779,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__gridColor__inputBtn__btnDeletePhone:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__siteConfiguration__form__gridImages {
   display: grid;
@@ -832,8 +830,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__gridImages__preview__imgBtn__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__siteConfiguration__form__aboutText {
   display: flex;
@@ -894,8 +891,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__existingCategories {
   background-color: white;
@@ -955,8 +951,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__existingCategories__itemCategory__category__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__newCategoryForm {
   width: 100%;
@@ -1004,8 +999,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__newCategoryForm__form__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__existingSellerAddresses {
   background-color: white;
@@ -1063,8 +1057,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__createNewSellerAddress {
   display: flex;
@@ -1110,8 +1103,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__createNewSellerAddress__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__existingCoupons {
   background-color: white;
@@ -1195,8 +1187,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__existingCoupons__itemCoupons__coupons__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__createNewCoupons {
   display: flex;
@@ -1243,8 +1234,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__createNewCoupons__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__adminsList {
   background-color: white;
@@ -1292,13 +1282,15 @@ h2 {
 .cPanelContainer__adminsList__item__btns__btn {
   background-color: var(--primary-color);
   color: var(--primary-text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0.5vh 2vh;
   border-radius: 0.5vh;
   cursor: pointer;
 }
 .cPanelContainer__adminsList__item__btns__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelContainer__userRegisterContainer {
   background-color: white;
@@ -1413,6 +1405,9 @@ h2 {
   width: 60%;
   padding: 1vh 0vh;
   font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 0.5vh;
   text-decoration: none;
   text-align: center;
@@ -1422,8 +1417,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__userRegisterContainer__form__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .homeContainer {
@@ -1454,7 +1448,7 @@ h2 {
 }
 
 .rc-slider-handle {
-  border: 2px solid var(--secondary-color);
+  border: 1px solid var(--primary-color);
   background-color: var(--primary-color);
   width: 18px;
   height: 18px;
@@ -1529,6 +1523,9 @@ h2 {
   text-decoration: none;
   color: black;
 }
+.categoryContainer__grid__categoriesListContainer__categoriesList__category__label:hover {
+  text-decoration: underline;
+}
 .categoryContainer__grid__categoriesListContainer__pricesRangeContainer {
   background-color: whitesmoke;
   margin: 5vh 0vh 0vh 10vh;
@@ -1554,6 +1551,12 @@ h2 {
   border: 0.3vh solid black;
   border-radius: 0.3vh;
   text-align: center;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+}
+.categoryContainer__grid__categoriesListContainer__sortSelectContainer__select:hover {
+  color: var(--secondary-color);
 }
 .categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option {
   font-size: 18px;
@@ -1676,8 +1679,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .binContainer__massDeleteBtnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .binContainer__headerTableContainer {
   width: 100%;
@@ -1765,8 +1767,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .binContainer__productsTable__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .binContainer__headerSalesTableContainer {
   width: 100%;
@@ -1898,6 +1899,9 @@ h2 {
 .binContainer__salesTable__itemContainer__btnsContainer__btn {
   width: 90%;
   padding: 0.5vh 1vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 0.5vh;
   text-align: center;
   cursor: pointer;
@@ -1905,8 +1909,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .binContainer__salesTable__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .binContainer__salesTable__isLoadingLabel {
   display: flex;
@@ -1954,8 +1957,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .favoritesContiner__gridContainer__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .favoritesContiner__gridContainer__grid {
   width: 60%;
@@ -2030,8 +2032,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__inputSearchProduct__selectContainer__select:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelProductsContainer__inputSearchProduct__selectContainer__select:hover {
   cursor: pointer;
@@ -2073,8 +2074,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__btnCreateProduct__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelProductsContainer__quantityProducts {
   width: 100%;
@@ -2102,8 +2102,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelProductsContainer__formUpdatePrices {
   background-color: whitesmoke;
@@ -2164,8 +2163,7 @@ h2 {
   cursor: pointer;
 }
 .cPanelProductsContainer__formUpdatePrices__btnSubmitContainer__btnSubmit:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelProductsContainer__headerTableContainer {
   background-color: whitesmoke;
@@ -2243,8 +2241,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelProductsContainer__btnsPagesContainer {
   width: 100%;
@@ -2263,8 +2260,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__btnsPagesContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .cPanelSalesContainer {
@@ -2308,8 +2304,7 @@ h2 {
   font-size: 16px;
 }
 .cPanelSalesContainer__inputSearchSale__selectContainer__select:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelSalesContainer__inputSearchSale__inputContainer {
   display: flex;
@@ -2350,8 +2345,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .cPanelSalesContainer__btnCreateSale__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelSalesContainer__dateFilter {
   display: flex;
@@ -2375,8 +2369,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelSalesContainer__dateFilter__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelSalesContainer__dateFilter__date {
   font-size: 20px;
@@ -2416,8 +2409,7 @@ h2 {
   margin-left: 4vh;
 }
 .cPanelSalesContainer__btnDeleteSelected__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelSalesContainer__headerTableCPanelSalesContainer {
   width: 100%;
@@ -2564,8 +2556,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelSalesContainer__salesTable__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cPanelSalesContainer__salesTable__isLoadingLabel {
   display: flex;
@@ -2596,8 +2587,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .cPanelSalesContainer__btnsPagesContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .myPurchasesContainer {
@@ -2800,14 +2790,12 @@ h2 {
   color: var(--primary-text-color);
 }
 .myPurchasesContainer__purchasesTable__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .myPurchasesContainer__purchasesTable__isLoadingLabel {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   padding-top: 2vh;
 }
 .myPurchasesContainer__purchasesTable__isLoadingLabel__label {
@@ -2836,8 +2824,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .myPurchasesContainer__btnsPagesContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .updateProductModalContainer {
@@ -3225,8 +3212,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__select:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__select:hover {
   cursor: pointer;
@@ -3330,8 +3316,7 @@ h2 {
   cursor: pointer;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label {
   text-align: center;
@@ -3386,8 +3371,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__itemGrid {
   width: 100%;
@@ -3461,8 +3445,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__inputCouponContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btn {
   width: 100%;
@@ -3487,8 +3470,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btnContainer {
   display: flex;
@@ -3504,8 +3486,7 @@ h2 {
   cursor: pointer;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__btnAddSelected {
   display: flex;
@@ -3519,8 +3500,7 @@ h2 {
   cursor: pointer;
 }
 .createSaleModalContainer__createSaleModal__btnAddSelected__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__headerTableContainer {
   background-color: whitesmoke;
@@ -3634,8 +3614,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createSaleModalContainer__createSaleModal__btnsPagesContainer {
   width: 100%;
@@ -3654,8 +3633,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__btnsPagesContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .createProductModalContainer {
@@ -4036,8 +4014,7 @@ h2 {
   border-radius: 0.5vh;
 }
 .createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .createProductModalContainer__createProductModal__propsContainer__btnContainer {
   width: 85%;
@@ -4098,11 +4075,11 @@ h2 {
   position: relative;
 }
 .catalogContainer__gridCategoriesProducts__categoriesContainer__categories {
-  width: 95%;
+  width: 100%;
   background-color: #c8c7c7;
   display: flex;
   flex-direction: column;
-  gap: 0.5vh;
+  gap: 0.7vh;
   padding: 4vh 0vh;
   border-radius: 1vh;
   position: sticky;
@@ -4117,6 +4094,9 @@ h2 {
   text-decoration: none;
   color: black;
   padding-left: 2vh;
+}
+.catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory__label:hover {
+  text-decoration: underline;
 }
 .catalogContainer__gridCategoriesProducts__productsContainer {
   width: 100%;
@@ -4164,8 +4144,7 @@ h2 {
   font-size: 16px;
 }
 .catalogContainer__inputSearchProduct__inputContainer__selectContainer__select:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .catalogContainer__inputSearchProduct__inputContainer__input {
   width: 100%;
@@ -4362,6 +4341,7 @@ h2 {
 }
 .itemProduct:hover {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.03);
 }
 .itemProduct__imgContainer {
   width: 100%;
@@ -4377,7 +4357,7 @@ h2 {
   right: 4px;
   top: 4px;
 }
-.itemProduct__imgContainer__favoriteIcon {
+.itemProduct__imgContainer__favoriteIcon__prop {
   background-color: black;
   border-radius: 50%;
   padding: 0.5vh 0.5vh 0.8vh 0.5vh;
@@ -4391,7 +4371,7 @@ h2 {
 }
 .itemProduct__imgContainer__img {
   width: 100%;
-  height: 250px;
+  height: 200px;
   -o-object-fit: cover;
      object-fit: cover;
   display: block;
@@ -4468,8 +4448,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemProduct__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .itemDetailContainer {
@@ -4664,8 +4643,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__count__availability {
   font-size: 16px;
@@ -4695,8 +4673,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__btnAddToCart__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__btnAddToCart__propCart {
   width: 60%;
@@ -4711,8 +4688,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__btnAddToCart__propCart:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .cartContainer {
@@ -4797,8 +4773,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cartContainer__cart__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cartContainer__accountSummaryContainer {
   width: 90%;
@@ -4901,8 +4876,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .cartContainer__accountSummaryContainer__accountSummary__inputCouponContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .cartContainer__accountSummaryContainer__accountSummary__btn {
   width: 100%;
@@ -4927,8 +4901,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .cartContainer__accountSummaryContainer__accountSummary__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .noProductsContainer {
@@ -5060,8 +5033,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemCart__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .shippingContainer {
@@ -5176,8 +5148,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .shippingContainer__deliveryMethodContainer__btnContinue__propRedirectBtn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .shippingContainer__deliveryMethodContainer__btnContinue__prop {
   width: 20%;
@@ -5191,8 +5162,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .shippingContainer__deliveryMethodContainer__btnContinue__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .shippingContainer__accountSummaryContainer {
   width: 100%;
@@ -5285,8 +5255,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .shippingContainer__accountSummaryContainer__accountSummary__inputCouponContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .shippingContainer__accountSummaryContainer__accountSummary__itemGrid {
   width: 90%;
@@ -5358,8 +5327,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .deliveryAddressContainer__btnEdit:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .deliveryAddressContainer__btnEdit:hover {
   border: 0.3vh solid black;
@@ -5462,8 +5430,7 @@ h2 {
   font-size: 14px;
 }
 .deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .deliveryFormContainer__deliveryForm__labelInputLoadStreet {
   width: 100%;
@@ -5569,8 +5536,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .deliveryFormContainer__deliveryForm__btnContainer__btn:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .aboutContainer {
@@ -5708,8 +5674,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .contactContainer__formMap__formContainer__form__prop__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .contactContainer__formMap__spinnerContainer {
   width: 100%;
@@ -5753,10 +5718,10 @@ h2 {
   text-align: center;
   background-color: var(--primary-color);
   color: var(--primary-text-color);
+  cursor: pointer;
 }
 .contactContainer__formMap__mapContainer__map__select:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .resetPassContainer {
@@ -5895,8 +5860,7 @@ h2 {
   cursor: pointer;
 }
 .resetPassContainer__credentials__form__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .confirmationResetPassModalContainer {
@@ -6027,8 +5991,7 @@ h2 {
   text-align: center;
 }
 .sendMailContainer__credentials__form__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .loginContainer {
@@ -6053,7 +6016,7 @@ h2 {
   flex-direction: column;
   gap: 2vh;
   margin-left: 10vh;
-  padding: 8vh 1vh;
+  padding: 6vh 1vh;
   border-radius: 2vh;
   box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.4);
 }
@@ -6062,7 +6025,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-bottom: 4vh;
+  padding-bottom: 2vh;
 }
 .loginContainer__formContainer__form__title__prop {
   font-size: 30px;
@@ -6127,6 +6090,17 @@ h2 {
   font-size: 16px;
   cursor: pointer;
 }
+.loginContainer__formContainer__form__passwordValidation {
+  width: 70%;
+  font-size: 14px;
+  display: flex;
+  align-self: center;
+  flex-direction: column;
+}
+.loginContainer__formContainer__form__passwordStrengthBar {
+  width: 70%;
+  align-self: center;
+}
 .loginContainer__formContainer__form__btn {
   width: 100%;
   display: flex;
@@ -6138,6 +6112,9 @@ h2 {
 }
 .loginContainer__formContainer__form__btn__prop {
   width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 1vh 0vh;
   font-size: 16px;
   border-radius: 0.5vh;
@@ -6149,8 +6126,7 @@ h2 {
   color: var(--primary-text-color);
 }
 .loginContainer__formContainer__form__btn__prop:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 .loginContainer__logoContainer {
   background-color: var(--primary-color);
@@ -6539,8 +6515,7 @@ h2 {
   border: 0.3vh solid black;
 }
 .logOutContainer__label:hover {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text-color);
+  color: var(--secondary-color);
 }
 
 .headerPurchase {
