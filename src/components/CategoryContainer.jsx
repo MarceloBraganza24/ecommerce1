@@ -9,13 +9,13 @@ import Spinner from './Spinner';
 
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
 
 const CategoryContainer = () => {
     const [dynamicFilters, setDynamicFilters] = useState({}); // { talle: ["38", "40"], Material: ["jean", "cargo"] }
     const [selectedDynamicFilters, setSelectedDynamicFilters] = useState({}); // { talle: ["38"], Material: ["cargo"] }
     const [allCategoryFilters, setAllCategoryFilters] = useState({});
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
@@ -359,6 +359,7 @@ const CategoryContainer = () => {
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
+        window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

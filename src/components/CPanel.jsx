@@ -9,8 +9,29 @@ import { useUnsavedChangesPrompt } from '../hooks/useUnsavedChangesPrompt';
 import isEqual from 'lodash.isequal';
 import {IsLoggedContext} from '../context/IsLoggedContext';
 import { useAuth } from '../context/AuthContext.jsx';
+import ConfirmationDeleteCPanelProductModal from './ConfirmationDeleteCPanelProductModal.jsx';
+import ConfirmationDeleteCPanelCategoryModal from './ConfirmationDeleteCPanelCategoryModal.jsx';
+import ConfirmationDeleteCPanelSellerAddressModal from './ConfirmationDeleteCPanelSellerAddressModal.jsx';
+import ConfirmationDeleteCPanelCouponModal from './ConfirmationDeleteCPanelCouponModal.jsx';
+import ConfirmationDeleteCPanelUserModal from './ConfirmationDeleteCPanelUserModal.jsx';
 
 const CPanel = () => {
+    const [categoryId, setCategoryId] = useState('');
+    const [showConfirmationDeleteCPanelCategoryModal, setShowConfirmationDeleteCPanelCategoryModal] = useState(false);
+    const [textConfirmationDeleteCPanelCategoryModal, setTextConfirmationDeleteCPanelCategoryModal] = useState('');
+
+    const [sellerAddressId, setSellerAddressId] = useState('');
+    const [showConfirmationDeleteCPanelSellerAddressModal, setShowConfirmationDeleteCPanelSellerAddressModal] = useState(false);
+    const [textConfirmationDeleteCPanelSellerAddressModal, setTextConfirmationDeleteCPanelSellerAddressModal] = useState('');
+
+    const [couponId, setCouponId] = useState('');
+    const [showConfirmationDeleteCPanelCouponModal, setShowConfirmationDeleteCPanelCouponModal] = useState(false);
+    const [textConfirmationDeleteCPanelCouponModal, setTextConfirmationDeleteCPanelCouponModal] = useState('');
+
+    const [userId, setUserId] = useState('');
+    const [showConfirmationDeleteCPanelUserModal, setShowConfirmationDeleteCPanelUserModal] = useState(false);
+    const [textConfirmationDeleteCPanelUserModal, setTextConfirmationDeleteCPanelUserModal] = useState('');
+
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [loadingBtnUserRegister, setLoadingBtnUserRegister] = useState(false);
     const [loadingBtnDeleteAdmin, setLoadingBtnDeleteAdmin] = useState(null);
@@ -47,6 +68,13 @@ const CPanel = () => {
         password: '',
         role: 'user',
     });
+    const [passwordValidation, setPasswordValidation] = useState({
+        length: false,
+        lowercase: false,
+        uppercase: false,
+        number: false,
+        specialChar: false
+    });
     const navigate = useNavigate();
 
     const SERVER_URL = "http://localhost:8081/";
@@ -64,6 +92,19 @@ const CPanel = () => {
           return; // No actualiza el estado si el valor tiene caracteres no permitidos
         }
         setUserCredentials({ ...userCredentials, [name]: value });
+        setPasswordValidation({
+            length: value.length >= 8,
+            lowercase: /[a-z]/.test(value),
+            uppercase: /[A-Z]/.test(value),
+            number: /[0-9]/.test(value),
+            specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value)
+        });
+    };
+
+    const getPasswordStrength = () => {
+        const values = Object.values(passwordValidation);
+        const score = values.filter(Boolean).length;
+        return score; // 0 a 5
     };
 
     const validateUserRegisterForm = () => {
@@ -370,160 +411,22 @@ const CPanel = () => {
         }
     };
 
-    const handleDeleteCategory = async (categoryId) => {
-        try {
-            setDeletingIdCategory(categoryId);
-            const response = await fetch(`http://localhost:8081/api/categories/${categoryId}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                toast('Categoría eliminada', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchCategories();
-            } else {
-                toast('Error al eliminar la categoría', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setDeletingIdCategory(null);
-        }
+    const handleDeleteCategory = async (categoryId,categoryName) => {
+        setCategoryId(categoryId)
+        setTextConfirmationDeleteCPanelCategoryModal(`la categoría "${capitalizeFirstLetter(categoryName)}"`)
+        setShowConfirmationDeleteCPanelCategoryModal(true);
     };
 
-    const handleDeleteSellerAddress = async (sellerAddressId) => {
-        try {
-            setDeletingIdAddress(sellerAddressId)
-            const response = await fetch(`http://localhost:8081/api/sellerAddresses/${sellerAddressId}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                toast('Domicilio eliminado', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchSellerAddresses();
-            } else {
-                toast('Error al eliminar la domicilio', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setDeletingIdAddress(false)
-        }
+    const handleDeleteSellerAddress = async (sellerAddressId,street,street_number,locality,province) => {
+        setSellerAddressId(sellerAddressId)
+        setTextConfirmationDeleteCPanelSellerAddressModal(`la dirección "${capitalizeFirstLetter(street)} ${capitalizeFirstLetter(street_number)}, ${capitalizeFirstLetter(locality)}, ${capitalizeFirstLetter(province)}"`)
+        setShowConfirmationDeleteCPanelSellerAddressModal(true);
     };
 
-    const handleDeleteCoupons = async (couponId) => {
-        try {
-            setDeletingIdCoupon(couponId)
-            const response = await fetch(`http://localhost:8081/api/coupons/${couponId}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                toast('Cupón eliminado', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchCoupons();
-            } else {
-                toast('Error al eliminar el cupón', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setDeletingIdCoupon(null)
-        }
+    const handleDeleteCoupons = async (couponId,code) => {
+        setCouponId(couponId)
+        setTextConfirmationDeleteCPanelCouponModal(`el cupón "${code}"`)
+        setShowConfirmationDeleteCPanelCouponModal(true);
     }; 
 
     const handleSubmitCategory = async () => {
@@ -891,7 +794,6 @@ const CPanel = () => {
             if(data.error === 'jwt must be provided') { 
                 setIsLoading(false)
                 navigate('/')
-                setUser(null)
             } else if(response.ok) {
                 setAdmins(data.data)
                 setAdminsEdited(data.data.map(admin => ({ ...admin })));
@@ -908,6 +810,7 @@ const CPanel = () => {
         fetchStoreSettings();
         fetchSellerAddresses();
         fetchCoupons();
+        window.scrollTo(0, 0);
     }, []);
 
     const [siteImages, setSiteImages] = useState({
@@ -1447,63 +1350,12 @@ const CPanel = () => {
         }
     };
 
-    // Borrar usuario
     const handleDeleteAdmin = async (index) => {
         const adminToDelete = adminsEdited[index];
-        if (!window.confirm(`¿Eliminar al usuario ${adminToDelete.first_name} ${adminToDelete.last_name}?`)) return;
-
-        try {
-            setLoadingBtnDeleteAdmin(adminToDelete._id);
-            const response = await fetch(`http://localhost:8081/api/users/delete-one/${adminToDelete._id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                toast('Has eliminado el usuario con éxito', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                const updatedAdmins = admins.filter(a => a._id !== adminToDelete._id);
-                const updatedAdminsEdited = adminsEdited.filter(a => a._id !== adminToDelete._id);
-                setAdmins(updatedAdmins);
-                setAdminsEdited(updatedAdminsEdited);
-                fetchAdmins()
-                setLoadingBtnDeleteAdmin(null);
-            } else {
-                toast('Error al eliminar usuario', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setLoadingBtnDeleteAdmin(null);
-            }
-        } catch (error) {
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            setLoadingBtnDeleteAdmin(null);
-        }
-    };
+        setUserId(adminToDelete._id)
+        setTextConfirmationDeleteCPanelUserModal(`el usuario con email "${adminToDelete.email}"`)
+        setShowConfirmationDeleteCPanelUserModal(true);
+    }; 
 
     const ColorInput = ({
         label,
@@ -2023,7 +1875,7 @@ const CPanel = () => {
                                                 <span className='cPanelContainer__existingCategories__itemCategory__category__name'>{capitalizeFirstLetter(category.name)}</span>
                                                 <button
                                                     className='cPanelContainer__existingCategories__itemCategory__category__btn'
-                                                    onClick={() => handleDeleteCategory(category._id)}
+                                                    onClick={() => handleDeleteCategory(category._id,category.name)}
                                                     disabled={deletingIdCategory === category._id}
                                                     >
                                                     {deletingIdCategory === category._id ? <Spinner/> : 'Eliminar'}
@@ -2082,7 +1934,7 @@ const CPanel = () => {
                                                 <span className='cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress__address'>{capitalizeFirstLetter(item.street)} {capitalizeFirstLetter(item.street_number)}, {capitalizeFirstLetter(item.locality)}, {item.province}</span>
                                                 <button
                                                     className='cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress__btn'
-                                                    onClick={() => handleDeleteSellerAddress(item._id)}
+                                                    onClick={() => handleDeleteSellerAddress(item._id,item.street,item.street_number,item.locality,item.province)}
                                                     disabled={deletingIdAddress == item._id}
                                                     >
                                                     {deletingIdAddress == item._id ? <Spinner/> : 'Eliminar'}
@@ -2161,7 +2013,7 @@ const CPanel = () => {
                                                 </span>
                                                 <button
                                                     className='cPanelContainer__existingCoupons__itemCoupons__coupons__btn'
-                                                    onClick={() => handleDeleteCoupons(item._id)}
+                                                    onClick={() => handleDeleteCoupons(item._id,item.code)}
                                                     disabled={deletingIdCoupon == item._id}
                                                     >
                                                     {deletingIdCoupon == item._id ? <Spinner/> : 'Eliminar'}
@@ -2341,6 +2193,43 @@ const CPanel = () => {
                             </button>
                         </div>
 
+                        {
+                            userCredentials.password &&
+                            <>
+                                <div className='loginContainer__formContainer__form__passwordValidation'>
+                                    <p style={{ color: passwordValidation.length ? 'green' : 'red' }}>
+                                        • Al menos 8 caracteres
+                                    </p>
+                                    <p style={{ color: passwordValidation.lowercase ? 'green' : 'red' }}>
+                                        • Una letra minúscula
+                                    </p>
+                                    <p style={{ color: passwordValidation.uppercase ? 'green' : 'red' }}>
+                                        • Una letra mayúscula
+                                    </p>
+                                    <p style={{ color: passwordValidation.number ? 'green' : 'red' }}>
+                                        • Un número
+                                    </p>
+                                    <p style={{ color: passwordValidation.specialChar ? 'green' : 'red' }}>
+                                        • Un carácter especial (!@#$%)
+                                    </p>
+                                </div>
+                                <div className="loginContainer__formContainer__form__passwordStrengthBar" style={{ height: '6px', backgroundColor: '#ccc', borderRadius: '4px' }}>
+                                    <div
+                                        style={{
+                                            width: `${getPasswordStrength() * 20}%`,
+                                            height: '100%',
+                                            backgroundColor:
+                                            getPasswordStrength() <= 2 ? 'red' :
+                                            getPasswordStrength() === 3 ? 'orange' :
+                                            getPasswordStrength() === 4 ? 'yellowgreen' :
+                                            'green',
+                                            transition: 'width 0.3s ease'
+                                        }}
+                                        />
+                                </div>
+                            </>
+                        }
+
                         <div className='cPanelContainer__userRegisterContainer__form__select'>
                             <div className='cPanelContainer__userRegisterContainer__form__select__label'>Rol:</div>
                             <div className='cPanelContainer__userRegisterContainer__form__select__selectContainer'>
@@ -2380,6 +2269,48 @@ const CPanel = () => {
                 </div>
 
             </div>
+
+            {
+                showConfirmationDeleteCPanelCategoryModal &&
+                <ConfirmationDeleteCPanelCategoryModal
+                text={textConfirmationDeleteCPanelCategoryModal}
+                setShowConfirmationDeleteCPanelCategoryModal={setShowConfirmationDeleteCPanelCategoryModal}
+                categoryId={categoryId}
+                fetchCategories={fetchCategories}
+                />
+            }
+
+            {
+                showConfirmationDeleteCPanelSellerAddressModal &&
+                <ConfirmationDeleteCPanelSellerAddressModal
+                text={textConfirmationDeleteCPanelSellerAddressModal}
+                setShowConfirmationDeleteCPanelSellerAddressModal={setShowConfirmationDeleteCPanelSellerAddressModal}
+                sellerAddressId={sellerAddressId}
+                fetchSellerAddresses={fetchSellerAddresses}
+                />
+            }
+
+            {
+                showConfirmationDeleteCPanelCouponModal &&
+                <ConfirmationDeleteCPanelCouponModal
+                text={textConfirmationDeleteCPanelCouponModal}
+                setShowConfirmationDeleteCPanelCouponModal={setShowConfirmationDeleteCPanelCouponModal}
+                couponId={couponId}
+                fetchCoupons={fetchCoupons}
+                />
+            }
+
+            {
+                showConfirmationDeleteCPanelUserModal &&
+                <ConfirmationDeleteCPanelUserModal
+                text={textConfirmationDeleteCPanelUserModal}
+                setShowConfirmationDeleteCPanelUserModal={setShowConfirmationDeleteCPanelUserModal}
+                userId={userId}
+                fetchAdmins={fetchAdmins}
+                setAdmins={setAdmins}
+                setAdminsEdited={setAdminsEdited}
+                />
+            }
 
         </>
 

@@ -6,10 +6,11 @@ import CreateProductModal from './CreateProductModal';
 import {IsLoggedContext} from '../context/IsLoggedContext';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
+import { useAuth } from '../context/AuthContext';
 
 const CPanelProducts = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
@@ -242,6 +243,7 @@ const CPanelProducts = () => {
         fetchProducts(1, inputFilteredProducts, selectedField);
         fetchStoreSettings();
         fetchCategories();
+        window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

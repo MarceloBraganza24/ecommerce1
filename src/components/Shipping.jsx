@@ -2,12 +2,12 @@ import {useState,useContext,useEffect} from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
-import {IsLoggedContext} from '../context/IsLoggedContext';
+import { useAuth } from '../context/AuthContext';
 
 const Shipping = () => {
     const [loadingCheckOut, setLoadingCheckOut] = useState(false);
     const [showLabelAddCoupon, setShowLabelAddCoupon] = useState(true);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [showInputCouponContainer, setShowInputCouponContainer] = useState(false);
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
     const [showLabelValidatedCoupon, setShowLabelValidatedCoupon] = useState(false);

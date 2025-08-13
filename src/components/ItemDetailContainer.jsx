@@ -7,7 +7,7 @@ import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useFavorites } from '../context/FavoritesContext';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
 
 const ItemDetailContainer = () => {
     const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
@@ -15,8 +15,7 @@ const ItemDetailContainer = () => {
     const [favoriteInitialized, setFavoriteInitialized] = useState(false);
     const [loadingVariant, setLoadingVariant] = useState(false);
     const [localFavorite, setLocalFavorite] = useState(false);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
-    //console.log(user)
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -29,7 +28,6 @@ const ItemDetailContainer = () => {
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState({});
-    console.log(selectedVariant)
     const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);

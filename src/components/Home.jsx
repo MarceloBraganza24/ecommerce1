@@ -13,7 +13,7 @@ import { Navigation, Pagination,Autoplay  } from "swiper/modules";
 import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
@@ -278,6 +278,7 @@ const Home = () => {
         fetchProducts();
         fetchStoreSettings();
         fetchSellerAddresses();
+        window.scrollTo(0, 0);
         const toggleVisibility = () => {
             if (window.scrollY > 300) {
               setIsVisible(true);

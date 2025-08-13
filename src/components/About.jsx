@@ -2,11 +2,12 @@ import {useEffect,useState,useContext} from 'react'
 import NavBar from './NavBar'
 import Footer from './Footer'
 import { toast } from 'react-toastify';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
+import { fetchWithAuth } from './FetchWithAuth.jsx';
 
 
 const About = () => {
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const {user,fetchCurrentUser,loadingUser: isLoadingAuth} = useAuth(); // Usás el token desde el contexto
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -188,7 +189,7 @@ const About = () => {
         fetchCategories();
         fetchStoreSettings();
         fetchSellerAddresses();
-        //window.scrollTo(0, 0);
+        window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

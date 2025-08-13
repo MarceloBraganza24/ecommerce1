@@ -1,39 +1,16 @@
 import React, {useState} from 'react'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import ConfirmationDeleteAdminTicketModal from './ConfirmationDeleteAdminTicketModal';
 
 const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
     const [loading, setLoading] = useState(false);
+    const [showConfirmationDeleteAdminTicketModal, setShowConfirmationDeleteAdminTicketModal] = useState(false);
+    const [textConfirmationDeleteModal, setTextConfirmationDeleteAdminTicketModal] = useState('');
 
     const handleBtnDeleteTicket = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`http://localhost:8081/api/tickets/${ticket._id}/soft-delete`, {
-                method: 'PUT',  // Usamos PUT o PATCH para actualizar, no DELETE
-            });
-
-            if (res.ok) {
-                toast('Has eliminado el ticket con éxito (soft delete)', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchTickets(1, "", "", selectedDate);
-                setSelectedTickets([])
-            } else {
-                toast('No se ha podido borrar el ticket, intente nuevamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setLoading(false);
-        }
+        setTextConfirmationDeleteAdminTicketModal(`la venta con\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setShowConfirmationDeleteAdminTicketModal(true);
     };
 
     const handleBtnHiddenProduct = async () => {
@@ -305,6 +282,18 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                     </div>
 
                 </div>
+            }
+
+            {
+                showConfirmationDeleteAdminTicketModal &&
+                <ConfirmationDeleteAdminTicketModal
+                text={textConfirmationDeleteModal}
+                ticketId={ticket._id}
+                setShowConfirmationDeleteAdminTicketModal={setShowConfirmationDeleteAdminTicketModal}
+                fetchTickets={fetchTickets}
+                selectedDate={selectedDate}
+                setSelectedTickets={setSelectedTickets}
+                />
             }
             
         </>

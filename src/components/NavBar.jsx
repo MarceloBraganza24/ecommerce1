@@ -3,9 +3,12 @@ import { Link, useLocation,useNavigate } from 'react-router-dom'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 import SmartLink from './SmartLink';
+import { fetchWithAuth } from '../components/FetchWithAuth';
+import { useAuth } from '../context/AuthContext';
 
 const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,products,cartIcon,hexToRgba,primaryColor,userCart,logo_store,storeName,isLoggedIn,categories,isLoading,role,first_name,cookieValue,fetchUser,setShowLogOutContainer,showLogOutContainer}) => {
     const location = useLocation();
+    const { logout,loadingFetchLogOut } = useAuth();
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(null);
     const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -125,7 +128,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
         } 
     }, []);
 
-    const handleBtnLogOut = async () => {
+    /* const handleBtnLogOut = async () => {
         try {
             setLoadingBtnLogOut(true);
             const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
@@ -182,8 +185,51 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
             });
             setLoadingBtnLogOut(false);
         }
-    }
+    } */
+    /* const handleBtnLogOut = async () => {
+        try {
+            setLoadingFetchLogOut(true);
+            const response = await fetchWithAuth('/api/sessions/logout', {
+                method: 'POST',
+            });
 
+            if (response) {
+                toast('Gracias por visitar nuestra página', {
+                    position: "top-right",
+                    autoClose: 1500,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                localStorage.removeItem("token");
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+        } catch (error) {
+            toast('Ha ocurrido un error al intentar salir! Intente nuevamente', {
+                position: "top-right",
+                autoClose: 1500,
+                theme: "dark",
+                className: "custom-toast",
+            });
+        } 
+    } */
+   const handleBtnLogOut = async () => {
+        const success = await logout();
+        if (success) {
+            navigate("/");
+            toast('Gracias por visitar nuestra página', {
+                position: "top-right",
+                autoClose: 1500,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            /* setTimeout(() => {
+                window.location.href = '/';
+            }, 2000); */
+        }
+    }
+    
     return (
 
         <>
@@ -280,7 +326,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                                         </div>
                                         )}
                                     </div>
-                                    {loadingBtnLogOut ? (
+                                    {loadingFetchLogOut ? (
                                         <div
                                         disabled
                                         className='header__gridUp__links__itemLogOut'

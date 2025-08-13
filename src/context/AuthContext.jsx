@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { fetchWithAuth } from '../components/FetchWithAuth';
 
 const AuthContext = createContext();
 
@@ -6,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingFetchLogOut, setLoadingFetchLogOut] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -30,10 +32,64 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  /* const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
+  }; */
+  /* const logout = async () => {
+    try {
+      setLoadingFetchLogOut(true);
+      const response = await fetchWithAuth('/api/sessions/logout', {
+          method: 'POST',
+      });
+
+      if (response) {
+          toast('Gracias por visitar nuestra página', {
+              position: "top-right",
+              autoClose: 1500,
+              theme: "dark",
+              className: "custom-toast",
+          });
+          localStorage.removeItem("token");
+          setTimeout(() => {
+              window.location.href = '/';
+          }, 2000);
+      }
+    } catch (error) {
+        toast('Ha ocurrido un error al intentar salir! Intente nuevamente', {
+            position: "top-right",
+            autoClose: 1500,
+            theme: "dark",
+            className: "custom-toast",
+        });
+    } 
+  }; */
+  const logout = async () => {
+    try {
+      setLoadingFetchLogOut(true);
+      const response = await fetchWithAuth('/api/sessions/logout', {
+          method: 'POST',
+      });
+      
+      if (response) {
+        localStorage.removeItem("token");
+        setToken(null);
+        setUser(null);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+        toast('Ha ocurrido un error al intentar salir! Intente nuevamente', {
+            position: "top-right",
+            autoClose: 1500,
+            theme: "dark",
+            className: "custom-toast",
+        });
+    } finally {
+      setLoadingFetchLogOut(false);
+    }
   };
 
   const fetchCurrentUser = async () => {
@@ -50,13 +106,12 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       if (response.ok) {
         setUser(data.data);
-        setLoadingUser(false);
       } else {
         logout();
-        setLoadingUser(false);
       }
     } catch (error) {
       logout();
+    } finally {
       setLoadingUser(false);
     }
   };
@@ -66,7 +121,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <AuthContext.Provider value={{ user, token,loadingUser, setToken, login, logout, fetchCurrentUser }}>
+    <AuthContext.Provider value={{ user, token, loadingUser, loadingFetchLogOut, setToken, login, logout, fetchCurrentUser }}>
       {children}
     </AuthContext.Provider>
   );

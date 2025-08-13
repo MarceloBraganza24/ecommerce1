@@ -3,14 +3,14 @@ import NavBar from './NavBar'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import ItemTicket from './ItemTicket';
-import {IsLoggedContext} from '../context/IsLoggedContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const MyPurchases = () => {
     const navigate = useNavigate();
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [isLoading, setIsLoading] = useState(true);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);

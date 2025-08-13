@@ -2,47 +2,21 @@ import React, {useState} from 'react'
 import UpdateProductModal from './UpdateProductModal'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import ConfirmationDeleteCPanelProductModal from './ConfirmationDeleteCPanelProductModal';
 
 const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selectedField,categories,selectedProducts,setSelectedProducts,toggleSelectProduct}) => {
-    //console.log(product)
-    const [loading, setLoading] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showConfirmationDeleteCPanelProductModal, setShowConfirmationDeleteCPanelProductModal] = useState(false);
+    const [textConfirmationDeleteModal, setTextConfirmationDeleteCPanelProductModal] = useState('');
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
     const handleBtnDeleteProduct = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`http://localhost:8081/api/products/${product._id}/soft-delete`, {
-                method: 'PUT',  // Usamos PUT o PATCH para actualizar, no DELETE
-            });
-
-            if (res.ok) {
-                toast('Has eliminado el producto con éxito (soft delete)', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchProducts(); // recarga los productos visibles
-                setSelectedProducts([])
-            } else {
-                toast('No se ha podido borrar el producto, intente nuevamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setLoading(false);
-        }
+        setTextConfirmationDeleteCPanelProductModal(`el producto "${capitalizeFirstLetter(product.title)} ${capitalizeFirstLetter(product.description)}"`)
+        setShowConfirmationDeleteCPanelProductModal(true);
     };
-
 
     return (
         <>
@@ -97,23 +71,12 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
 
                 <div className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer'>
                     <button onClick={() => setShowUpdateModal(true)} className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn'>Editar</button>
-
-                    {loading ? (
-                        <button
-                        disabled
-                        className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn'
-                        >
-                        <Spinner/>
-                        </button>
-                    ) : (
-                        <button
-                        onClick={handleBtnDeleteProduct}
-                        className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn'
-                        >
-                        Borrar
-                        </button>
-                    )}
-
+                    <button
+                    onClick={handleBtnDeleteProduct}
+                    className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn'
+                    >
+                    Borrar
+                    </button>
                 </div>
 
             </div>
@@ -127,6 +90,16 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
                 selectedField={selectedField}
                 setShowUpdateModal={setShowUpdateModal}
                 categories={categories}
+                />
+            }
+            {
+                showConfirmationDeleteCPanelProductModal &&
+                <ConfirmationDeleteCPanelProductModal
+                text={textConfirmationDeleteModal}
+                productId={product._id}
+                setShowConfirmationDeleteCPanelProductModal={setShowConfirmationDeleteCPanelProductModal}
+                fetchProducts={fetchProducts}
+                setSelectedProducts={setSelectedProducts}
                 />
             }
         </>

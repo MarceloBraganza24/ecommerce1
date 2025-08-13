@@ -9,12 +9,12 @@ import Spinner from './Spinner';
 import { useFavorites } from '../context/FavoritesContext';
 
 import Slider from 'rc-slider';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import 'rc-slider/assets/index.css';
+import { useAuth } from '../context/AuthContext';
 
 const Favorites = () => {
     const firstRender = useRef(true);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [loadingClearAll, setLoadingClearAll] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
@@ -312,6 +312,7 @@ const Favorites = () => {
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
+        window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

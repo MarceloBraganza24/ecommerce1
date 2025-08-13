@@ -3,10 +3,10 @@ import NavBar from './NavBar'
 import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
 
 const Contact = () => {
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -213,6 +213,7 @@ const Contact = () => {
         fetchSellerAddresses();
         fetchStoreSettings();
         fetchCategories();
+        window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

@@ -5,7 +5,7 @@ import Spinner from './Spinner';
 import ItemTicket from './ItemTicket';
 import { useNavigate } from 'react-router-dom';
 import CreateSaleModal from './CreateSaleModal';
-import {IsLoggedContext} from '../context/IsLoggedContext';
+import { useAuth } from '../context/AuthContext';
 
 const Tickets = () => {
     const [selectedTickets, setSelectedTickets] = useState([]);
@@ -42,7 +42,7 @@ const Tickets = () => {
 
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -289,6 +289,7 @@ const Tickets = () => {
         fetchStoreSettings();
         fetchCategories();
         fetchProducts();
+        window.scrollTo(0, 0);
     }, []);
 
     const handleInputFilteredSales = (e) => {

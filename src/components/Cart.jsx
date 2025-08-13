@@ -8,11 +8,11 @@ import DeliveryAddress from './DeliveryAddress';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import SmartLink from './SmartLink';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
 
 const Cart = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const navigate = useNavigate();
@@ -285,6 +285,7 @@ const Cart = () => {
         fetchSellerAddresses();
         fetchDeliveryForm();
         fetchStoreSettings();
+        window.scrollTo(0, 0);
     }, []);
 
     function hexToRgba(hex, opacity) {

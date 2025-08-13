@@ -6,11 +6,11 @@ import DeliveryAddress from './DeliveryAddress'
 import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
 
 const DeliveryForm = () => {
     const navigate = useNavigate();
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [loadingDeleteId, setLoadingDeleteId] = useState(null);
     const [loadingSaveDeliveryForm, setLoadingSaveDeliveryForm] = useState(false);
@@ -444,6 +444,7 @@ const DeliveryForm = () => {
         fetchCategories();
         fetchStoreSettings();
         fetchDeliveryForm();
+        window.scrollTo(0, 0);
     }, []);
 
     const handleInputChange = (e) => {

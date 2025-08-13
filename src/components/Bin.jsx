@@ -5,7 +5,7 @@ import ItemBinProduct from "./ItemBinProduct";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import ItemBinTicket from "./ItemBinTicket";
-import {IsLoggedContext} from '../context/IsLoggedContext';
+import { useAuth } from '../context/AuthContext';
 
 const Bin = () => {
     const [selectedTickets, setSelectedTickets] = useState([]);
@@ -14,7 +14,7 @@ const Bin = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useContext(IsLoggedContext);
+    const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -230,6 +230,7 @@ const Bin = () => {
         fetchDeletedProducts();
         fetchDeletedTickets();
         fetchStoreSettings();
+        window.scrollTo(0, 0);
     }, []);
 
     const handleMassDeleteTickets = async () => {
