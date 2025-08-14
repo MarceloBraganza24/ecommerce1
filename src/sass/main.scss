@@ -29,6 +29,18 @@ h2 {
         color: var(--secondary-color);
     }
 }
+.btn-expired-modal {
+    @include disFC();
+    gap: 1vh;
+    padding-top: 1vh;
+    &__btn {
+        width: 40%;
+        border-radius: 0.5vh;
+        cursor: pointer;
+        @include btn();
+        padding: 0.5vh 2vh;
+    }
+}
 .modal-content {
   background-color: #fff;
   padding: 2rem;

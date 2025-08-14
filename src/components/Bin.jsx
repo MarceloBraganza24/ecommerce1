@@ -8,6 +8,10 @@ import ItemBinTicket from "./ItemBinTicket";
 import { useAuth } from '../context/AuthContext';
 
 const Bin = () => {
+    const [showConfirmationDeleteAllProductsSelectedModal, setShowConfirmationDeleteAllProductsSelectedModal] = useState(false);
+    const [showConfirmationDeleteAllTicketsSelectedModal, setShowConfirmationDeleteAllTicketsSelectedModal] = useState(false);
+    const [showConfirmationRestoreAllProductsSelectedModal, setShowConfirmationRestoreAllProductsSelectedModal] = useState(false);
+    const [showConfirmationRestoreAllTicketsSelectedModal, setShowConfirmationRestoreAllTicketsSelectedModal] = useState(false);
     const [selectedTickets, setSelectedTickets] = useState([]);
     const [selectAllTickets, setSelectAllTickets] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -234,64 +238,47 @@ const Bin = () => {
     }, []);
 
     const handleMassDeleteTickets = async () => {
-        const confirm = window.confirm('¿Estás seguro que querés eliminar los tickets seleccionados permanentemente?');
-        if (!confirm) return;
-
-        try {
-            const res = await fetch('http://localhost:8081/api/tickets/mass-delete-permanent', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedTickets })
-            });
-
-            const data = await res.json();
-            if (res.ok) {
-                setSelectedTickets([]);
-                fetchDeletedTickets()
-                toast('Tickets eliminados de manera permanente con éxito', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            } 
-        } catch (error) {
-            console.error(error);
-            toast('Error al eliminar tickets', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
+        setShowConfirmationDeleteAllTicketsSelectedModal(true);
     };
 
     const handleMassRestoreTickets = async () => {
-        const confirm = window.confirm('¿Estás seguro que querés restaurar los tickets seleccionados?');
-        if (!confirm) return;
+        setShowConfirmationRestoreAllTicketsSelectedModal(true);
+    };
 
-        try {
-            const res = await fetch('http://localhost:8081/api/tickets/mass-restore', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedTickets })
-            });
+    const ConfirmationDeleteAllProductsSelected = () => {
+        const [loading, setLoading] = useState(false);
 
-            const data = await res.json();
-            if (res.ok) {
-                setSelectedTickets([]);
-                fetchDeletedTickets()
-                toast('Tickets restaurados correctamente', {
+        const handleMassDelete = async () => {
+
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/products/mass-delete-permanent', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedProducts })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedProducts([]);
+                    fetchDeletedProducts()
+                    toast('Productos eliminados de manera permanente con éxito', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setLoading(false);
+                    setShowConfirmationDeleteAllProductsSelectedModal(false);
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al eliminar productos', {
                     position: "top-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -302,39 +289,88 @@ const Bin = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-            } 
-        } catch (error) {
-            console.error(error);
-            toast('Error al restaurar tickets', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
-    };
+                setLoading(false);
+            }
+        };
 
-    const handleMassDelete = async () => {
-        const confirm = window.confirm('¿Estás seguro que querés eliminar los productos seleccionados?');
-        if (!confirm) return;
+        return (
+            
+            <>
 
-        try {
-            const res = await fetch('http://localhost:8081/api/products/mass-delete-permanent', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedProducts })
-            });
+                <div className='confirmationDeleteModalContainer'>
 
-            const data = await res.json();
-            if (res.ok) {
-                setSelectedProducts([]);
-                fetchDeletedProducts()
-                toast('Productos eliminados de manera permanente con éxito', {
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationDeleteAllProductsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar permanentemente todos los productos({selectedProducts.length}) seleccionados?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassDelete}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationDeleteAllProductsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+
+    const ConfirmationDeleteAllTicketsSelected = () => {
+        const [loading, setLoading] = useState(false);
+
+        const handleMassDeleteTickets = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/tickets/mass-delete-permanent', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedTickets })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedTickets([]);
+                    fetchDeletedTickets()
+                    toast('Tickets eliminados de manera permanente con éxito', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setLoading(false);
+                    setShowConfirmationDeleteAllTicketsSelectedModal(false);
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al eliminar tickets', {
                     position: "top-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -345,64 +381,246 @@ const Bin = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-            } 
-        } catch (error) {
-            console.error(error);
-            toast('Error al eliminar productos', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar permanentemente todas las ventas({selectedTickets.length}) seleccionadas?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassDeleteTickets}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+
+    const handleMassDelete = () => {
+        setShowConfirmationDeleteAllProductsSelectedModal(true);
     };
+
+    const ConfirmationRestoreAllTicketsSelected = () => {
+        const [loading, setLoading] = useState(false);
+
+        const handleMassRestoreTickets = async () => {
+
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/tickets/mass-restore', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedTickets })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedTickets([]);
+                    fetchDeletedTickets()
+                    toast('Tickets restaurados correctamente', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setLoading(true);
+                    setShowConfirmationRestoreAllTicketsSelectedModal(false);
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al restaurar tickets', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setLoading(true);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationRestoreAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas restaurar todas las ventas({selectedTickets.length}) seleccionadas?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassRestoreTickets}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationRestoreAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+
+    const ConfirmationRestoreAllProductsSelected = () => {
+        const [loading, setLoading] = useState(false);
+
+        const handleMassRestore = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/products/mass-restore', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedProducts })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedProducts([]);
+                    fetchDeletedProducts()
+                    toast('Productos restaurados correctamente', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setLoading(false);
+                    setShowConfirmationRestoreAllProductsSelectedModal(false);
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al restaurar productos', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationRestoreAllProductsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas restaurar todos los productos({selectedProducts.length}) seleccionados?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassRestore}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationRestoreAllProductsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
 
     const handleMassRestore = async () => {
-        const confirm = window.confirm('¿Estás seguro que querés restaurar los productos seleccionados?');
-        if (!confirm) return;
-
-        try {
-            const res = await fetch('http://localhost:8081/api/products/mass-restore', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedProducts })
-            });
-
-            const data = await res.json();
-            if (res.ok) {
-                setSelectedProducts([]);
-                fetchDeletedProducts()
-                toast('Productos restaurados correctamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            } 
-        } catch (error) {
-            console.error(error);
-            toast('Error al restaurar productos', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
+        setShowConfirmationRestoreAllProductsSelectedModal(true);
     };
 
     const handleSelectAll = (checked) => {
@@ -665,6 +883,22 @@ const Bin = () => {
                 </div>
 
             </div>
+            {
+                showConfirmationDeleteAllProductsSelectedModal &&
+                <ConfirmationDeleteAllProductsSelected/>
+            }
+            {
+                showConfirmationDeleteAllTicketsSelectedModal &&
+                <ConfirmationDeleteAllTicketsSelected/>
+            }
+            {
+                showConfirmationRestoreAllProductsSelectedModal &&
+                <ConfirmationRestoreAllProductsSelected/>
+            }
+            {
+                showConfirmationRestoreAllTicketsSelectedModal &&
+                <ConfirmationRestoreAllTicketsSelected/>
+            }
 
         </>
 

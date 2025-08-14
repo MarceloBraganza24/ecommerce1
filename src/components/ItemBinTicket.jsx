@@ -2,73 +2,28 @@ import React, {useState} from 'react'
 import UpdateProductModal from './UpdateProductModal'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import ConfirmationRestoreItemBinTicketModal from './ConfirmationRestoreItemBinTicketModal';
+import ConfirmationPermanentDeleteItemBinTicketModal from './ConfirmationPermanentDeleteItemBinTicketModal';
 
 const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
 
+    const [showConfirmationRestoreItemBinTicketModal, setShowConfirmationRestoreItemBinTicketModal] = useState(false);
+    const [textConfirmationRestoreItemBinModal, setTextConfirmationRestoreItemBinTicketModal] = useState(''); 
+    
+    const [showConfirmationPermanentDeleteItemBinTicketModal, setShowConfirmationPermanentDeleteItemBinTicketModal] = useState(false);
+    const [textConfirmationPermanentDeleteItemBinTicketModal, setTextConfirmationPermanentDeleteItemBinTicketModal] = useState('');
+
     const handleBtnDeleteTicket = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`http://localhost:8081/api/tickets/${ticket._id}`, {
-                method: 'DELETE'
-            });
-            if (res.ok) {
-                toast('Has eliminado el ticket con éxito', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchDeletedTickets();
-                setSelectedTickets([])
-            } else {
-                toast('No se ha podido borrar el ticket, intente nuevamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setLoading(false);
-        }
-        
+        setTextConfirmationPermanentDeleteItemBinTicketModal(`la venta con\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setShowConfirmationPermanentDeleteItemBinTicketModal(true);
     };
 
     const handleBtnRestoreTicket = async () => {
-        try {
-            setLoadingBtnRestore(true);
-            const res = await fetch(`http://localhost:8081/api/tickets/${ticket._id}/restore`, {
-                method: 'PUT',
-            });
-
-            if (res.ok) {
-                toast('Ticket restaurado correctamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchDeletedTickets(); // Recargá los productos para ver el cambio
-                setSelectedTickets([])
-            } else {
-                toast('No se pudo restaurar el ticket', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error al restaurar el ticket:', error);
-        }finally {
-            setLoadingBtnRestore(false);
-        }
+        setTextConfirmationRestoreItemBinTicketModal(`la venta con\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setShowConfirmationRestoreItemBinTicketModal(true);
     };
-
 
     return (
         <>
@@ -207,6 +162,26 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                 </div>
 
             </div>
+            {
+                showConfirmationRestoreItemBinTicketModal &&
+                <ConfirmationRestoreItemBinTicketModal
+                text={textConfirmationRestoreItemBinModal}
+                ticketId={ticket._id}
+                setShowConfirmationRestoreItemBinTicketModal={setShowConfirmationRestoreItemBinTicketModal}
+                fetchDeletedTickets={fetchDeletedTickets}
+                setSelectedTickets={setSelectedTickets}
+                />
+            }
+            {
+                showConfirmationPermanentDeleteItemBinTicketModal &&
+                <ConfirmationPermanentDeleteItemBinTicketModal
+                text={textConfirmationPermanentDeleteItemBinTicketModal}
+                ticketId={ticket._id}
+                setShowConfirmationPermanentDeleteItemBinTicketModal={setShowConfirmationPermanentDeleteItemBinTicketModal}
+                fetchDeletedTickets={fetchDeletedTickets}
+                setSelectedTickets={setSelectedTickets}
+                />
+            }
 
         </>
     )

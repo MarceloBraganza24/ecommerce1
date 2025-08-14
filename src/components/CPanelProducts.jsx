@@ -9,6 +9,7 @@ import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 
 const CPanelProducts = () => {
+    const [showConfirmationDeleteAllProductsSelectedModal, setShowConfirmationDeleteAllProductsSelectedModal] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
@@ -421,7 +422,103 @@ const CPanelProducts = () => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
-    const handleMassDelete = async () => {
+    const ConfirmationDeleteAllProductsSelected = () => {
+        const [loading, setLoading] = useState(false);
+
+        const handleMassDelete = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/products/mass-delete', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedProducts })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedProducts([]);
+                    fetchProducts(1, inputFilteredProducts, selectedField);
+                    toast('Productos eliminados correctamente', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setLoading(false);
+                    setShowConfirmationDeleteAllProductsSelectedModal(false);
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al eliminar productos', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationDeleteAllProductsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar todos los productos({selectedProducts.length}) seleccionados?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassDelete}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationDeleteAllProductsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+
+    const handleMassDelete = () => {
+        setShowConfirmationDeleteAllProductsSelectedModal(true);
+    };
+
+    /* const handleMassDelete = async () => {
         const confirm = window.confirm('¿Estás seguro que querés eliminar los productos seleccionados?');
         if (!confirm) return;
 
@@ -462,7 +559,7 @@ const CPanelProducts = () => {
                 className: "custom-toast",
             });
         }
-    };
+    }; */
 
     const handleSelectAll = (checked) => {
         setSelectAll(checked);
@@ -690,6 +787,10 @@ const CPanelProducts = () => {
                 categories={categories}
                 fetchProducts={fetchProducts}
                 setShowCreateProductModal={setShowCreateProductModal}/>      
+            }
+            {
+                showConfirmationDeleteAllProductsSelectedModal &&
+                <ConfirmationDeleteAllProductsSelected/>
             }
         
         </>

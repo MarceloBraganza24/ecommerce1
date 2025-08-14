@@ -8,6 +8,7 @@ import CreateSaleModal from './CreateSaleModal';
 import { useAuth } from '../context/AuthContext';
 
 const Tickets = () => {
+    const [showConfirmationDeleteAllTicketsSelectedModal, setShowConfirmationDeleteAllTicketsSelectedModal] = useState(false);
     const [selectedTickets, setSelectedTickets] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [createSaleModal, setCreateSaleModal] = useState(false);
@@ -333,22 +334,39 @@ const Tickets = () => {
         }
     };
 
-    const handleMassDelete = async () => {
-        const confirm = window.confirm('¿Estás seguro que querés eliminar los tickets seleccionados?');
-        if (!confirm) return;
+    const ConfirmationDeleteAllTicketsSelected = () => {
+        const [loading, setLoading] = useState(false);
 
-        try {
-            const res = await fetch('http://localhost:8081/api/tickets/mass-delete', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedTickets })
-            });
+        const handleMassDelete = async () => {
 
-            const data = await res.json();
-            if (res.ok) {
-                setSelectedTickets([]);
-                fetchTickets(1,inputFilteredTickets, selectedField, selectedDate)
-                toast('Tickets eliminados correctamente', {
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/tickets/mass-delete', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedTickets })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedTickets([]);
+                    fetchTickets(1,inputFilteredTickets, selectedField, selectedDate)
+                    toast('Tickets eliminados correctamente', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setShowConfirmationDeleteAllTicketsSelectedModal(false)
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al eliminar tickets', {
                     position: "top-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -359,21 +377,58 @@ const Tickets = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-            } 
-        } catch (error) {
-            console.error(error);
-            toast('Error al eliminar tickets', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar todas las ventas({selectedTickets.length}) seleccionadas?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassDelete}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+    
+    const handleMassDelete = () => {
+        setShowConfirmationDeleteAllTicketsSelectedModal(true);
     };
 
     const handleSelectAll = (checked) => {
@@ -462,8 +517,7 @@ const Tickets = () => {
                 </div>
 
                 {
-                    !isLoadingTickets &&
-                    ticketsOrdenados.length != 0 ?
+                    !isLoadingTickets ?
                     <div className='cPanelSalesContainer__quantitySales'>
                         <div className='cPanelSalesContainer__quantitySales__prop'>Cantidad de ventas: {ticketsOrdenados.length} de {totalTickets}</div>        
                     </div>
@@ -627,6 +681,10 @@ const Tickets = () => {
                 pageInfoProducts={pageInfoProducts}
                 />
                 
+            }
+            {
+                showConfirmationDeleteAllTicketsSelectedModal &&
+                <ConfirmationDeleteAllTicketsSelected/>
             }
 
         </>

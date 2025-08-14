@@ -2,77 +2,33 @@ import React, {useState} from 'react'
 import ItemBinProductModal from './ItemBinProductModal'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
+import ConfirmationRestoreItemBinProductModal from './ConfirmationRestoreItemBinProductModal';
+import ConfirmationPermanentDeleteItemBinProductModal from './ConfirmationPermanentDeleteItemBinProductModal';
 
 const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelectedProducts}) => {
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
     const [showItemBinProductModal, setShowItemBinProductModal] = useState(false);
 
+    
+    const [showConfirmationRestoreItemBinProductModal, setShowConfirmationRestoreItemBinProductModal] = useState(false);
+    const [textConfirmationRestoreItemBinModal, setTextConfirmationRestoreItemBinProductModal] = useState('');
+
+    const [showConfirmationPermanentDeleteItemBinProductModal, setShowConfirmationPermanentDeleteItemBinProductModal] = useState(false);
+    const [textConfirmationPermanentDeleteItemBinProductModal, setTextConfirmationPermanentDeleteItemBinProductModal] = useState('');
+
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
     const handleBtnDeleteProduct = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`http://localhost:8081/api/products/${product._id}`, {
-                method: 'DELETE'
-            });
-            const result = await res.json();
-            console.log(result)
-            if (res.ok) {
-                toast('Has eliminado el producto con éxito', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchDeletedProducts();
-                setSelectedProducts([])
-            } else {
-                toast('No se ha podido borrar el producto, intente nuevamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            setLoading(false);
-        }
+        setTextConfirmationPermanentDeleteItemBinProductModal(`el producto "${capitalizeFirstLetter(product.title)} ${capitalizeFirstLetter(product.description)}"`)
+        setShowConfirmationPermanentDeleteItemBinProductModal(true);
     };
 
     const handleBtnRestoreProduct = async () => {
-        try {
-            setLoadingBtnRestore(true);
-            const res = await fetch(`http://localhost:8081/api/products/${product._id}/restore`, {
-                method: 'PUT',
-            });
-
-            if (res.ok) {
-                toast('Producto restaurado correctamente', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                fetchDeletedProducts(); // Recargá los productos para ver el cambio
-                setSelectedProducts([])
-            } else {
-                toast('No se pudo restaurar el producto', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error al restaurar el producto:', error);
-        }finally {
-            setLoadingBtnRestore(false);
-        }
+        setTextConfirmationRestoreItemBinProductModal(`el producto "${capitalizeFirstLetter(product.title)} ${capitalizeFirstLetter(product.description)}"`)
+        setShowConfirmationRestoreItemBinProductModal(true);
     };
 
 
@@ -175,6 +131,26 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
                 <ItemBinProductModal
                 product={product}
                 setShowItemBinProductModal={setShowItemBinProductModal}
+                />
+            }
+            {
+                showConfirmationRestoreItemBinProductModal &&
+                <ConfirmationRestoreItemBinProductModal
+                text={textConfirmationRestoreItemBinModal}
+                productId={product._id}
+                setShowConfirmationRestoreItemBinProductModal={setShowConfirmationRestoreItemBinProductModal}
+                fetchDeletedProducts={fetchDeletedProducts}
+                setSelectedProducts={setSelectedProducts}
+                />
+            }
+            {
+                showConfirmationPermanentDeleteItemBinProductModal &&
+                <ConfirmationPermanentDeleteItemBinProductModal
+                text={textConfirmationPermanentDeleteItemBinProductModal}
+                productId={product._id}
+                setShowConfirmationPermanentDeleteItemBinProductModal={setShowConfirmationPermanentDeleteItemBinProductModal}
+                fetchDeletedProducts={fetchDeletedProducts}
+                setSelectedProducts={setSelectedProducts}
                 />
             }
         </>

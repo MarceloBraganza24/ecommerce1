@@ -1601,7 +1601,7 @@ const CPanel = () => {
                                         name="phoneNumbers"
                                         value={phone.number}
                                         onChange={(e) => handlePhoneNumberChange(index, 'number', e.target.value)}
-                                        placeholder="Ej: +5491123456789"
+                                        placeholder="Ej: 5492926452596"
                                     />
 
                                     {configurationSiteformData.phoneNumbers.length > 1 && (

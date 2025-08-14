@@ -14,6 +14,25 @@ h2 {
   margin-bottom: 0;
 }
 
+.btn-expired-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1vh;
+  padding-top: 1vh;
+}
+.btn-expired-modal__btn {
+  width: 40%;
+  border-radius: 0.5vh;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  padding: 0.5vh 2vh;
+}
+.btn-expired-modal__btn:hover {
+  color: var(--secondary-color);
+}
+
 .modal-content {
   background-color: #fff;
   padding: 2rem;

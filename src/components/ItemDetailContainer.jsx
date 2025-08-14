@@ -24,7 +24,7 @@ const ItemDetailContainer = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [isLoadingProductById, setIsLoadingProductById] = useState(true);
-    const {id} = useParams()
+    const {id} = useParams();
     const [productById, setProductById] = useState({ images: [] });
     const [stockDisponible, setStockDisponible] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState({});
@@ -377,7 +377,7 @@ const ItemDetailContainer = () => {
     useEffect(() => {
         fetchCurrentUser();
         fetchCategories();
-        fetchProductById();
+        //fetchProductById();
         fetchProducts();
         fetchStoreSettings();
         fetchSellerAddresses();

@@ -38,6 +38,48 @@ function AppContent() {
   const logoutTimeoutRef = useRef(null);
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
+  const [storeSettings, setStoreSettings] = useState({});
+  const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState(false);
+
+  useEffect(() => {
+    if(storeSettings && storeSettings?.phoneNumbers) {
+      const phoneNumber = storeSettings.phoneNumbers.find(phoneNumber => phoneNumber.selected == true);
+      setPhoneNumber(phoneNumber.number)
+    }
+  }, [storeSettings]);
+
+  const fetchStoreSettings = async () => {
+    try {
+        setIsLoadingStoreSettings(true);
+        const response = await fetch('http://localhost:8081/api/settings');
+        const data = await response.json();
+        if (response.ok) {
+          setStoreSettings(data); 
+        } else {
+            toast('Error al cargar configuraciones', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+    } finally {
+        setIsLoadingStoreSettings(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchStoreSettings();
+  }, []);
 
   const parseJwt = (token) => {
     try {
@@ -129,6 +171,10 @@ function AppContent() {
     }
   };
 
+  const handleBtnWhatsAppIcon = () => {
+    window.open(`https://wa.me/${phoneNumber}`, "_blank");
+  }
+
   return (
     <>
       {showSessionModal && (
@@ -137,11 +183,17 @@ function AppContent() {
             <h2>Tu sesión está por expirar</h2>
             <p>¿Querés continuar con la sesión?</p>
             <p><strong>Se cerrará automáticamente en {logoutCountdown} segundos</strong></p>
-            <button onClick={handleExtendSession}>Continuar sesión</button>
-            <button onClick={handleLogout}>Cerrar sesión</button>
+            <div className='btn-expired-modal'>
+              <button className='btn-expired-modal__btn' onClick={handleExtendSession}>Continuar sesión</button>
+              <button className='btn-expired-modal__btn' onClick={handleLogout}>Cerrar sesión</button>
+            </div>
           </div>
         </div>
       )}
+
+      <a class="networksContainer">
+          <img onClick={handleBtnWhatsAppIcon} class="networksContainer__network" src="/src/assets/WhatsApp_icon.png" alt="WhatsApp"/>
+      </a>
 
       <Routes>
         
