@@ -2134,7 +2134,16 @@ h2 {
             @include btn();
         }
         &__date {
-            font-size: 20px;
+            width: 180px;
+            background-color: black;
+            border-radius: 0.5vh;
+            padding: 0.3vh 1vh;
+            font-size: 22px;
+            border: none;
+            color: white;
+            &::-webkit-calendar-picker-indicator {
+                filter: brightness(0) invert(1); // Esto lo hace blanco
+            }
         }
     }
     &__quantitySales {

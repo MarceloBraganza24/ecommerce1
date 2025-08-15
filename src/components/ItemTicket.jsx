@@ -9,7 +9,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
     const [textConfirmationDeleteModal, setTextConfirmationDeleteAdminTicketModal] = useState('');
 
     const handleBtnDeleteTicket = async () => {
-        setTextConfirmationDeleteAdminTicketModal(`la venta con\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setTextConfirmationDeleteAdminTicketModal(`la venta con los siguientes datos:\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
         setShowConfirmationDeleteAdminTicketModal(true);
     };
 

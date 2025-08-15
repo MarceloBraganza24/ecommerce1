@@ -16,12 +16,12 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
     const [textConfirmationPermanentDeleteItemBinTicketModal, setTextConfirmationPermanentDeleteItemBinTicketModal] = useState('');
 
     const handleBtnDeleteTicket = async () => {
-        setTextConfirmationPermanentDeleteItemBinTicketModal(`la venta con\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setTextConfirmationPermanentDeleteItemBinTicketModal(`la venta con los siguientes datos:\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
         setShowConfirmationPermanentDeleteItemBinTicketModal(true);
     };
 
     const handleBtnRestoreTicket = async () => {
-        setTextConfirmationRestoreItemBinTicketModal(`la venta con\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setTextConfirmationRestoreItemBinTicketModal(`la venta con los siguientes datos:\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
         setShowConfirmationRestoreItemBinTicketModal(true);
     };
 

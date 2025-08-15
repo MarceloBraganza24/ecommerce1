@@ -49,7 +49,7 @@ const ConfirmationRestoreItemBinProductModal = ({text,setShowConfirmationRestore
                 </div>
                 
                 <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas restaurar <br /> {text}?</div>
+                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas restaurar {text}?</div>
                 </div>
 
                 <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>

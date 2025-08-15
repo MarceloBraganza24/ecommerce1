@@ -14,7 +14,7 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
     };
 
     const handleBtnDeleteProduct = async () => {
-        setTextConfirmationDeleteCPanelProductModal(`el producto "${capitalizeFirstLetter(product.title)} ${capitalizeFirstLetter(product.description)}"`)
+        setTextConfirmationDeleteCPanelProductModal(`el siguiente producto:\n Título: ${capitalizeFirstLetter(product.title)}\n Descripción: ${capitalizeFirstLetter(product.description)}`)
         setShowConfirmationDeleteCPanelProductModal(true);
     };
 

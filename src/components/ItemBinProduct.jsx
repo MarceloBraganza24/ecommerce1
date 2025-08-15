@@ -22,12 +22,12 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
     };
 
     const handleBtnDeleteProduct = async () => {
-        setTextConfirmationPermanentDeleteItemBinProductModal(`el producto "${capitalizeFirstLetter(product.title)} ${capitalizeFirstLetter(product.description)}"`)
+        setTextConfirmationPermanentDeleteItemBinProductModal(`el siguiente producto:\n Título: ${capitalizeFirstLetter(product.title)}\n Descripción: ${capitalizeFirstLetter(product.description)}`)
         setShowConfirmationPermanentDeleteItemBinProductModal(true);
     };
 
     const handleBtnRestoreProduct = async () => {
-        setTextConfirmationRestoreItemBinProductModal(`el producto "${capitalizeFirstLetter(product.title)} ${capitalizeFirstLetter(product.description)}"`)
+        setTextConfirmationRestoreItemBinProductModal(`el siguiente producto:\n Título: ${capitalizeFirstLetter(product.title)}\n Descripción: ${capitalizeFirstLetter(product.description)}`)
         setShowConfirmationRestoreItemBinProductModal(true);
     };
 

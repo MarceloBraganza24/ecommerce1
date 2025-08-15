@@ -2415,7 +2415,16 @@ h2 {
   color: var(--secondary-color);
 }
 .cPanelSalesContainer__dateFilter__date {
-  font-size: 20px;
+  width: 180px;
+  background-color: black;
+  border-radius: 0.5vh;
+  padding: 0.3vh 1vh;
+  font-size: 22px;
+  border: none;
+  color: white;
+}
+.cPanelSalesContainer__dateFilter__date::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1);
 }
 .cPanelSalesContainer__quantitySales {
   width: 100%;

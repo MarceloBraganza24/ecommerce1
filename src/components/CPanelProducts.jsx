@@ -9,6 +9,8 @@ import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 
 const CPanelProducts = () => {
+    const [showConfirmationUpdatePricesModal, setShowConfirmationUpdatePricesModal] = useState(false);
+    const [showConfirmationRestoreOriginalPricesModal, setShowConfirmationRestoreOriginalPricesModal] = useState(false);
     const [showConfirmationDeleteAllProductsSelectedModal, setShowConfirmationDeleteAllProductsSelectedModal] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
@@ -267,9 +269,7 @@ const CPanelProducts = () => {
         );
     };
 
-    const handleSubmitUpdatedPrices = async (e) => {
-        e.preventDefault();
-
+    const handleSubmitUpdatedPrices = () => {
         if (selectedCategories.length === 0) {
             toast('Debes seleccionar al menos una categoría.', {
                 position: "top-right",
@@ -298,50 +298,7 @@ const CPanelProducts = () => {
             });
             return;
         }
-
-        const categoriasSeleccionadasNames = categories
-            .filter(cat => selectedCategories.includes(cat._id))
-            .map(cat => cat.name);
-
-        const response = await fetch('http://localhost:8081/api/products/update-prices-category', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                percentage: Number(percentage),
-                categories: categoriasSeleccionadasNames
-            })
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            toast('Has aplicado los cambios correctamente!', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            setPercentage('');
-            setSelectedCategories([]);
-            fetchProducts(1, inputFilteredProducts, selectedField)
-        } else {
-            toast('Ha ocurrido un error al aplicar los cambios, intente nuevamente!', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
+        setShowConfirmationUpdatePricesModal(true);
     };
 
     const handleRestorePricesByCategory = async () => {
@@ -359,64 +316,8 @@ const CPanelProducts = () => {
             });
             return;
         }
-
-        const categoriasSeleccionadasNames = categories
-            .filter(cat => selectedCategories.includes(cat._id))
-            .map(cat => cat.name);
-
-        try {
-            const response = await fetch('http://localhost:8081/api/products/restore-prices-category', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ categories: categoriasSeleccionadasNames })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                toast(`Restauración exitosa! Se actualizaron ${result.modifiedCount || 'los'} productos.`, {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setPercentage('');
-                setSelectedCategories([]);
-                fetchProducts(1, inputFilteredProducts, selectedField)
-            } else {
-                toast('Error al restaurar los precios.', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión al intentar restaurar precios.', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
+        setShowConfirmationRestoreOriginalPricesModal(true);
     };
-
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -514,26 +415,57 @@ const CPanelProducts = () => {
 
     }
 
-    const handleMassDelete = () => {
-        setShowConfirmationDeleteAllProductsSelectedModal(true);
-    };
+    const ConfirmationUpdatePricesModal = () => {
+        const [loading, setLoading] = useState(false);
 
-    /* const handleMassDelete = async () => {
-        const confirm = window.confirm('¿Estás seguro que querés eliminar los productos seleccionados?');
-        if (!confirm) return;
+        const categoriasSeleccionadasNames = categories
+            .filter(cat => selectedCategories.includes(cat._id))
+            .map(cat => cat.name);
+        const handleSubmitUpdatedPrices = async () => {
+            try {
+                const response = await fetch('http://localhost:8081/api/products/update-prices-category', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        percentage: Number(percentage),
+                        categories: categoriasSeleccionadasNames
+                    })
+                });
 
-        try {
-            const res = await fetch('http://localhost:8081/api/products/mass-delete', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: selectedProducts })
-            });
+                const result = await response.json();
 
-            const data = await res.json();
-            if (res.ok) {
-                setSelectedProducts([]);
-                fetchProducts(1, inputFilteredProducts, selectedField);
-                toast('Productos eliminados correctamente', {
+                if (response.ok) {
+                    toast('Has aplicado los cambios correctamente!', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setPercentage('');
+                    setSelectedCategories([]);
+                    fetchProducts(1, inputFilteredProducts, selectedField)
+                    setShowConfirmationUpdatePricesModal(false);
+                } else {
+                    toast('Ha ocurrido un error al aplicar los cambios, intente nuevamente!', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                toast('Error al eliminar productos', {
                     position: "top-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -544,22 +476,169 @@ const CPanelProducts = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-            } 
-        } catch (error) {
-            console.error(error);
-            toast('Error al eliminar productos', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
-    }; */
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationUpdatePricesModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas actualizar los precios({ percentage > 0 ? `+${percentage}` : `${percentage}` }%) <br /> de las siguientes categorías: ({categoriasSeleccionadasNames.join(', ')})?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleSubmitUpdatedPrices}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationUpdatePricesModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+
+    const ConfirmationRestoreOriginalPricesModal = () => {
+        const [loading, setLoading] = useState(false);
+
+        const categoriasSeleccionadasNames = categories
+            .filter(cat => selectedCategories.includes(cat._id))
+            .map(cat => cat.name);
+
+        const handleRestorePricesByCategory = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('http://localhost:8081/api/products/restore-prices-category', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categories: categoriasSeleccionadasNames })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    toast(`Restauración exitosa! Se actualizaron ${result.modifiedCount || 'los'} productos.`, {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setPercentage('');
+                    setSelectedCategories([]);
+                    fetchProducts(1, inputFilteredProducts, selectedField)
+                    setLoading(false);
+                    setShowConfirmationRestoreOriginalPricesModal(false);
+                } else {
+                    toast('Error al restaurar los precios.', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error(error);
+                toast('Error en la conexión al intentar restaurar precios.', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationRestoreOriginalPricesModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas restaurar los precios anteriores <br /> de las siguientes categorías: ({categoriasSeleccionadasNames.join(', ')})?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleRestorePricesByCategory}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationRestoreOriginalPricesModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
+
+    const handleMassDelete = () => {
+        setShowConfirmationDeleteAllProductsSelectedModal(true);
+    };
 
     const handleSelectAll = (checked) => {
         setSelectAll(checked);
@@ -635,7 +714,7 @@ const CPanelProducts = () => {
                     <button onClick={()=>setShowCreateProductModal(true)} className='cPanelProductsContainer__btnCreateProduct__btn'>Crear producto</button>
                 </div>
 
-                <form onSubmit={handleSubmitUpdatedPrices} className='cPanelProductsContainer__formUpdatePrices'>
+                <div className='cPanelProductsContainer__formUpdatePrices'>
                     <div className='cPanelProductsContainer__formUpdatePrices__title'>Actualizaciones de precios</div>
                     <div className='cPanelProductsContainer__formUpdatePrices__subTitle'>Seleccioná las categorías:</div>
                         <div className='cPanelProductsContainer__formUpdatePrices__categories'>
@@ -678,7 +757,7 @@ const CPanelProducts = () => {
                     </div>
 
                     <div className='cPanelProductsContainer__formUpdatePrices__btnSubmitContainer'>
-                        <button className='cPanelProductsContainer__formUpdatePrices__btnSubmitContainer__btnSubmit' type="submit">Actualizar precios</button>
+                        <button className='cPanelProductsContainer__formUpdatePrices__btnSubmitContainer__btnSubmit' onClick={handleSubmitUpdatedPrices}>Actualizar precios</button>
                         <button
                             className='cPanelProductsContainer__formUpdatePrices__btnSubmitContainer__btnSubmit'
                             type="button"
@@ -687,7 +766,7 @@ const CPanelProducts = () => {
                             Restaurar precios originales
                         </button>
                     </div>
-                </form>
+                </div>
 
                 <div className='cPanelProductsContainer__quantityProducts'>
                     <div className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer'>
@@ -791,6 +870,14 @@ const CPanelProducts = () => {
             {
                 showConfirmationDeleteAllProductsSelectedModal &&
                 <ConfirmationDeleteAllProductsSelected/>
+            }
+            {
+                showConfirmationUpdatePricesModal &&
+                <ConfirmationUpdatePricesModal/>
+            }
+            {
+                showConfirmationRestoreOriginalPricesModal &&
+                <ConfirmationRestoreOriginalPricesModal/>
             }
         
         </>

@@ -188,12 +188,14 @@ const Tickets = () => {
                 field,
             });
 
-            if (selectedDate) {
+            /* if (selectedDate) {
                 params.append("selectedDate", selectedDate.toISOString());
+            } */
+            if (selectedDate) {
+                params.append("selectedDate", formatDateToString(selectedDate));
             }
             const response = await fetch(`http://localhost:8081/api/tickets/byPage?${params.toString()}`);
             const ticketsAll = await response.json();
-            console.log(ticketsAll.data)
             if (response.ok) {
                 setTotalTickets(ticketsAll.data.totalTickets)
                 setTickets(ticketsAll.data.docs)
@@ -531,7 +533,19 @@ const Tickets = () => {
                     !isLoadingTickets &&
                     <div className="cPanelSalesContainer__dateFilter">
                         <button className='cPanelSalesContainer__dateFilter__btn' onClick={goToPreviousDay}>Anterior</button>
-                        <span className='cPanelSalesContainer__dateFilter__date'>{formatDateToString(selectedDate)}</span>
+
+                        <input
+                            type="date"
+                            className='cPanelSalesContainer__dateFilter__date'
+                            value={formatDateToString(selectedDate)}
+                            onChange={(e) => {
+                                setIsLoadingTickets(true);
+                                const [year, month, day] = e.target.value.split('-');
+                                const localDate = new Date(year, month - 1, day);
+                                setSelectedDate(localDate);
+                            }}
+                        />
+
                         <button className='cPanelSalesContainer__dateFilter__btn' onClick={goToNextDay}>Siguiente</button>
                     </div>
                 }
