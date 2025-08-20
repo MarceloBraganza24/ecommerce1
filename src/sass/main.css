@@ -1660,6 +1660,18 @@ h2 {
   flex-direction: column;
   padding: 30vh 0vh 8vh 0vh;
 }
+.binContainer__inputSearchDeletedProducts {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.binContainer__inputSearchDeletedProducts__input {
+  width: 30%;
+  text-align: center;
+  height: 30px;
+  border-radius: 0.5vh;
+  font-size: 16px;
+}
 .binContainer__separator {
   width: 100%;
   display: flex;

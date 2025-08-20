@@ -49,7 +49,7 @@ const ConfirmationPermanentDeleteItemBinTicketModal = ({text,setShowConfirmation
                 </div>
                 
                 <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar permanentemente <br /> {text}?</div>
+                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar permanentemente <br /> {text}?</div>
                 </div>
 
                 <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>

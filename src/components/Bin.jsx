@@ -29,6 +29,22 @@ const Bin = () => {
     const [products, setProducts] = useState([]);
     const [tickets, setTickets] = useState([]);
     const navigate = useNavigate();
+    const [productSearch, setProductSearch] = useState("");
+    const [ticketSearch, setTicketSearch] = useState("");
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            fetchDeletedProducts(productSearch);
+        }, 400); // espera 400ms después de que deja de escribir
+        return () => clearTimeout(timeoutId);
+    }, [productSearch]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            fetchDeletedTickets(ticketSearch);
+        }, 400); // espera 400ms después de que deja de escribir
+        return () => clearTimeout(timeoutId);
+    }, [ticketSearch]);
 
     function hexToRgba(hex, opacity) {
         const cleanHex = hex.replace('#', '');
@@ -51,9 +67,9 @@ const Bin = () => {
         return brightness > 128; // <-- usar el mismo umbral que en getContrastingTextColor
     }
 
-    const fetchDeletedProducts = async () => {
+    const fetchDeletedProducts = async (searchValue = "") => {
         try {
-            const response = await fetch('http://localhost:8081/api/products/deleted');
+            const response = await fetch(`http://localhost:8081/api/products/deleted?search=${encodeURIComponent(searchValue)}`);
             const data = await response.json();
             if (response.ok) {
                 setProducts(data.payload);
@@ -77,9 +93,9 @@ const Bin = () => {
         }
     };
 
-    const fetchDeletedTickets = async () => {
+    const fetchDeletedTickets = async (searchValue = "") => {
         try {
-            const response = await fetch('http://localhost:8081/api/tickets/deleted');
+            const response = await fetch(`http://localhost:8081/api/tickets/deleted?search=${encodeURIComponent(searchValue)}`);
             const data = await response.json();
             if (response.ok) {
                 setTickets(data.payload);
@@ -238,10 +254,38 @@ const Bin = () => {
     }, []);
 
     const handleMassDeleteTickets = async () => {
+        if(selectedTickets.length == 0) {
+            toast('Debes seleccionar alguna venta para eliminar permanentemente!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         setShowConfirmationDeleteAllTicketsSelectedModal(true);
     };
 
     const handleMassRestoreTickets = async () => {
+        if(selectedTickets.length == 0) {
+            toast('Debes seleccionar alguna venta para restaurar!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         setShowConfirmationRestoreAllTicketsSelectedModal(true);
     };
 
@@ -306,7 +350,7 @@ const Bin = () => {
                         </div>
                         
                         <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar permanentemente todos los productos({selectedProducts.length}) seleccionados?</div>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar permanentemente todos los productos({selectedProducts.length}) seleccionados?</div>
                         </div>
 
                         <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
@@ -398,7 +442,7 @@ const Bin = () => {
                         </div>
                         
                         <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar permanentemente todas las ventas({selectedTickets.length}) seleccionadas?</div>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar permanentemente todas las ventas({selectedTickets.length}) seleccionadas?</div>
                         </div>
 
                         <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
@@ -431,6 +475,20 @@ const Bin = () => {
     }
 
     const handleMassDelete = () => {
+        if(selectedProducts.length == 0) {
+            toast('Debes seleccionar algún producto para eliminar permanentemente!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         setShowConfirmationDeleteAllProductsSelectedModal(true);
     };
 
@@ -620,6 +678,20 @@ const Bin = () => {
     }
 
     const handleMassRestore = async () => {
+        if(selectedProducts.length == 0) {
+            toast('Debes seleccionar algún producto para restaurar!', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         setShowConfirmationRestoreAllProductsSelectedModal(true);
     };
 
@@ -691,6 +763,16 @@ const Bin = () => {
 
                 <div className="binContainer__subTitle">
                     <div className="binContainer__subTitle__prop">Productos eliminados:</div>
+                </div>
+
+                <div className="binContainer__inputSearchDeletedProducts">
+                    <input
+                        className="binContainer__inputSearchDeletedProducts__input"
+                        type="text"
+                        placeholder="Buscar productos..."
+                        value={productSearch}
+                        onChange={(e) => setProductSearch(e.target.value)}
+                    />
                 </div>
 
                 {
@@ -781,6 +863,16 @@ const Bin = () => {
 
                 <div className="binContainer__subTitle">
                     <div className="binContainer__subTitle__prop">Tickets eliminados:</div>
+                </div>
+
+                <div className="binContainer__inputSearchDeletedProducts">
+                    <input
+                        className="binContainer__inputSearchDeletedProducts__input"
+                        type="text"
+                        placeholder="Buscar ventas..."
+                        value={ticketSearch}
+                        onChange={(e) => setTicketSearch(e.target.value)}
+                    />
                 </div>
 
                 {

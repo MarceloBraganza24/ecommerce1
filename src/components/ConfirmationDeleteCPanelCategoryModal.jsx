@@ -70,7 +70,7 @@ const ConfirmationDeleteCPanelCategoryModal = ({text,setShowConfirmationDeleteCP
                 </div>
                 
                 <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar <br /> {text}?</div>
+                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar <br /> {text}?</div>
                 </div>
 
                 <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>

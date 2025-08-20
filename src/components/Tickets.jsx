@@ -71,6 +71,17 @@ const Tickets = () => {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (!user?.email) return; // aseguramos que haya usuario logueado
+
+        const delay = setTimeout(() => {
+            fetchTickets(1, inputFilteredTickets, selectedField, selectedDate);
+        }, 300); // debounce
+
+        return () => clearTimeout(delay);
+    }, [user?.email, inputFilteredTickets, selectedField, selectedDate]);
+
+
     function esColorClaro(hex) {
         if (!hex) return true;
 
@@ -90,9 +101,9 @@ const Tickets = () => {
         }
     }, [storeSettings]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         fetchTickets(1, "", "", selectedDate);
-    }, [selectedDate]); 
+    }, [selectedDate]);  */
 
     const goToPreviousDay = () => {
         setIsLoadingTickets(true);
@@ -117,11 +128,11 @@ const Tickets = () => {
 
     const ticketsOrdenados = [...tickets].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (user?.email) {
             fetchTickets(1, "", "", selectedDate);
         }
-    }, [user]);
+    }, [user]); */
 
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
@@ -187,10 +198,6 @@ const Tickets = () => {
                 search,
                 field,
             });
-
-            /* if (selectedDate) {
-                params.append("selectedDate", selectedDate.toISOString());
-            } */
             if (selectedDate) {
                 params.append("selectedDate", formatDateToString(selectedDate));
             }
@@ -460,13 +467,13 @@ const Tickets = () => {
         setCreateSaleModal(true)
     };
 
-    useEffect(() => {
+    /* useEffect(() => {
         const delay = setTimeout(() => {
             fetchTickets(1, inputFilteredTickets, selectedField, selectedDate);
         }, 300); // debounce
 
         return () => clearTimeout(delay);
-    }, [inputFilteredTickets, selectedField]);
+    }, [inputFilteredTickets, selectedField]); */
 
     return (
 

@@ -15,6 +15,16 @@ import ConfirmationDeleteCPanelSellerAddressModal from './ConfirmationDeleteCPan
 import ConfirmationDeleteCPanelCouponModal from './ConfirmationDeleteCPanelCouponModal.jsx';
 import ConfirmationDeleteCPanelUserModal from './ConfirmationDeleteCPanelUserModal.jsx';
 
+import CategoriesPage from './CategoriesPage.jsx';
+
+
+/* function buildCategoryTree(categories) {
+  const map = {}; const roots = [];
+  categories.forEach(cat => { cat.children = []; map[cat._id] = cat; });
+  categories.forEach(cat => cat.parent ? map[cat.parent]?.children.push(cat) : roots.push(cat));
+  return roots;
+} */
+
 const CPanel = () => {
     const [categoryId, setCategoryId] = useState('');
     const [showConfirmationDeleteCPanelCategoryModal, setShowConfirmationDeleteCPanelCategoryModal] = useState(false);
@@ -48,11 +58,16 @@ const CPanel = () => {
     const [admins, setAdmins] = useState([]);
     const [adminsEdited, setAdminsEdited] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [categoryName, setCategoryName] = useState('');
     const [codeCoupon, setCodeCoupon] = useState('');
     const [discount, setDiscount] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
+    const [categoryName, setCategoryName] = useState('');
+    const [parent, setParent] = useState("");
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [newRoot, setNewRoot] = useState("");
+    const [creatingRoot, setCreatingRoot] = useState(false);
+    //console.log(categories)
     const [userCart, setUserCart] = useState({});
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [coupons, setCoupons] = useState([]);
@@ -78,6 +93,29 @@ const CPanel = () => {
     const navigate = useNavigate();
 
     const SERVER_URL = "http://localhost:8081/";
+
+    /* const fetchCategories = async () => {
+        setLoading(true);
+        try { const data = await getCategories(); setCategories(data); }
+        finally { setLoading(false); }
+    }; */
+
+    //useEffect(() => { fetchCategories(); }, []);
+
+    /* const handleCreateRoot = async () => {
+        if (!newRoot) return alert("Ingresa un nombre");
+        setCreatingRoot(true);
+        try { await createCategory({ name: newRoot }); setNewRoot(""); fetchCategories(); }
+        finally { setCreatingRoot(false); }
+    };
+
+    const handleDragEnd = async ({ active, over }) => {
+        if (!over || active.id === over.id) return;
+        try { await updateCategory({ id: active.id, parent: over.id }); fetchCategories(); }
+        catch (err) { alert(err.message); }
+    }; */
+
+    //const tree = buildCategoryTree(categories);
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -335,7 +373,7 @@ const CPanel = () => {
         }
     };
 
-    const fetchCategories = async () => {
+    /* const fetchCategories = async () => {
         try {
             const response = await fetch('http://localhost:8081/api/categories');
             const data = await response.json();
@@ -371,7 +409,7 @@ const CPanel = () => {
         } finally {
             setLoadingCategories(false)
         }
-    };
+    }; */
 
     const fetchCoupons = async () => {
         try {
@@ -455,7 +493,7 @@ const CPanel = () => {
             return;
         }
 
-        try {
+        /* try {
             await new Promise(res => setTimeout(res, 500));
             const response = await fetch('http://localhost:8081/api/categories', {
                 method: 'POST',
@@ -491,6 +529,64 @@ const CPanel = () => {
                 fetchCategories()
             } 
         } catch (error) {
+            toast('Error en la conexión', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+        } finally {
+            setCreatingCategory(false);
+        } */
+        try {
+            const res = await fetch("http://localhost:8081/api/categories", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: categoryName,
+                    parent: parent || null, // null si es raíz
+                    //category_datetime: new Date().toISOString(),
+                    category_datetime
+                }),
+            });
+            const data = await res.json();
+            if(data.error === 'There is already a category with that name') {
+                toast('Ya existe una categoría con ese nombre!', {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            } else if (res.ok) {
+                toast('Categoría creada con éxito', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                setCategoryName("");
+                setParent("");
+                fetchCategories(); // refrescar lista
+            } else {
+                toast.error(data.message || "Error al crear categoría");
+            }
+        } catch (err) {
+            console.error(err);
             toast('Error en la conexión', {
                 position: "top-right",
                 autoClose: 2000,
@@ -806,7 +902,7 @@ const CPanel = () => {
     useEffect(() => {
         fetchCurrentUser();
         fetchAdmins();
-        fetchCategories();
+        //fetchCategories();
         fetchStoreSettings();
         fetchSellerAddresses();
         fetchCoupons();
@@ -1852,7 +1948,7 @@ const CPanel = () => {
 
                 </div>
 
-                {
+                {/* {
                     loadingCategories ?
                         <>
                             <div className="cPanelContainer__existingCategories__loadingProps">
@@ -1888,6 +1984,18 @@ const CPanel = () => {
                                 <div className="cPanelContainer__newCategoryForm">
                                     <div className='cPanelContainer__newCategoryForm__title'>Crear nueva categoría</div>
                                     <div className='cPanelContainer__newCategoryForm__form'>
+                                        <select
+                                            value={parent}
+                                            onChange={(e) => setParent(e.target.value)}
+                                            //className="border p-2 w-full rounded"
+                                            >
+                                            <option value="">-- Raíz --</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat._id} value={cat._id}>
+                                                {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
                                         <input
                                         className='cPanelContainer__newCategoryForm__form__input'
                                         type="text"
@@ -1909,7 +2017,24 @@ const CPanel = () => {
                             </div>
 
                         </>
-                }
+                } */}
+
+                {/* <div>
+                    <h2>Categorías</h2>
+                    <div style={{ marginBottom: "1rem" }}>
+                        <input value={newRoot} onChange={(e) => setNewRoot(e.target.value)} placeholder="Nueva categoría" />
+                        <button onClick={handleCreateRoot} disabled={creatingRoot}>{creatingRoot ? <Spinner /> : "Crear categoría"}</button>
+                    </div>
+                    {loading ? <Spinner /> : (
+                        <DndContext onDragEnd={handleDragEnd}>
+                        <CategoryTree tree={tree} onRefresh={fetchCategories} />
+                        </DndContext>
+                    )}
+                </div> */}
+                <div style={{ padding: "20px" }}>
+                    <h1>📂 Gestión de Categorías</h1>
+                    <CategoriesPage />
+                </div>
 
                 {
                     loadingAddresses ?

@@ -1504,6 +1504,16 @@ h2 {
     display: flex;
     flex-direction: column;
     padding: 30vh 0vh 8vh 0vh;
+    &__inputSearchDeletedProducts {
+        @include disFC();
+        &__input {
+            width: 30%;
+            text-align: center;
+            height: 30px;
+            border-radius: 0.5vh;
+            font-size: 16px;
+        }
+    }
     &__separator {
         width: 100%;
         @include disFC();
