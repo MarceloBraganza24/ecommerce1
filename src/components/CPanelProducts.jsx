@@ -9,6 +9,7 @@ import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 
 const CPanelProducts = () => {
+    const [categoriesTree, setCategoriesTree] = useState([]);
     const [showConfirmationUpdatePricesModal, setShowConfirmationUpdatePricesModal] = useState(false);
     const [showConfirmationRestoreOriginalPricesModal, setShowConfirmationRestoreOriginalPricesModal] = useState(false);
     const [showConfirmationDeleteAllProductsSelectedModal, setShowConfirmationDeleteAllProductsSelectedModal] = useState(false);
@@ -19,6 +20,7 @@ const CPanelProducts = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
+    //console.log(products)
     const [totalProducts, setTotalProducts] = useState("");
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [storeSettings, setStoreSettings] = useState({});
@@ -42,6 +44,16 @@ const CPanelProducts = () => {
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
 
     const productsListRef = useRef(null); 
+
+    const fetchCategoriesTree = async () => {
+        try {
+            const res = await fetch("http://localhost:8081/api/categories/combined");
+            const data = await res.json();
+            if (res.ok) setCategoriesTree(data.tree || []);
+        } catch (err) {
+            console.error("Error al cargar categorías:", err);
+        }
+    };
     
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -155,7 +167,7 @@ const CPanelProducts = () => {
     };
 
     const fetchCategories = async () => {
-        try {
+        /* try {
             const response = await fetch('http://localhost:8081/api/categories');
             const data = await response.json();
             if (response.ok) {
@@ -189,7 +201,7 @@ const CPanelProducts = () => {
             });
         } finally {
             setIsLoadingCategories(false)
-        }
+        } */
     };
 
     const fetchCartByUserId = async (user_id) => {
@@ -245,6 +257,7 @@ const CPanelProducts = () => {
         fetchCurrentUser();
         fetchProducts(1, inputFilteredProducts, selectedField);
         fetchStoreSettings();
+        fetchCategoriesTree();
         fetchCategories();
         window.scrollTo(0, 0);
     }, []);
@@ -830,7 +843,7 @@ const CPanelProducts = () => {
                                 fetchProducts={fetchProducts}
                                 inputFilteredProducts={inputFilteredProducts}
                                 selectedField={selectedField}
-                                categories={categories}
+                                categories={categoriesTree}
                                 selectedProducts={selectedProducts}
                                 setSelectedProducts={setSelectedProducts}
                                 toggleSelectProduct={toggleSelectProduct}
@@ -863,7 +876,7 @@ const CPanelProducts = () => {
             {
                 showCreateProductModal &&
                 <CreateProductModal
-                categories={categories}
+                categories={categoriesTree}
                 fetchProducts={fetchProducts}
                 setShowCreateProductModal={setShowCreateProductModal}/>      
             }

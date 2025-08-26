@@ -367,7 +367,10 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                     <Link to='/favorites' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
                         FAVORITOS
                     </Link>
-                    {/* WRAPPER agregado */}
+                    <Link to='/products' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
+                        PRODUCTOS
+                    </Link>
+                    {/* 
                     <div
                     className='menuCategoriesWrapper'
                     onMouseEnter={() => setShowCategories(true)}
@@ -403,7 +406,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                             )}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     <Link to='/about' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/about' ? 'activeLink' : ''}`}>
                         SOBRE NOSOTROS
                     </Link>

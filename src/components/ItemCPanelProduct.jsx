@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import ConfirmationDeleteCPanelProductModal from './ConfirmationDeleteCPanelProductModal';
 
 const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selectedField,categories,selectedProducts,setSelectedProducts,toggleSelectProduct}) => {
+    //console.log(product.category)
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showConfirmationDeleteCPanelProductModal, setShowConfirmationDeleteCPanelProductModal] = useState(false);
     const [textConfirmationDeleteModal, setTextConfirmationDeleteCPanelProductModal] = useState('');
@@ -65,8 +66,8 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
                     </div>
                 </div>
 
-                <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">{capitalizeFirstLetter(product.category)}</div>
+                <div className="cPanelProductsContainer__productsTable__itemContainer__itemEllipsis">
+                    <div className="cPanelProductsContainer__productsTable__itemContainer__itemEllipsis__label">{product.category?.name}</div>
                 </div>
 
                 <div className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer'>

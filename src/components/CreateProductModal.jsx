@@ -19,6 +19,15 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
     const fileInputRef = useRef(null);
 
+    const renderCategoryOptions = (categories, level = 0) => {
+        return categories.flatMap(category => [
+            <option key={category._id} value={category._id}>
+                {`${"— ".repeat(level)}${capitalizeFirstLetter(category.name)}`}
+            </option>,
+            ...(category.children ? renderCategoryOptions(category.children, level + 1) : [])
+        ]);
+    };
+
     useEffect(() => {
         return () => {
             product.images.forEach(imagen => URL.revokeObjectURL(imagen));
@@ -576,7 +585,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Categoría</div>
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__select'>
-                                <select
+                                {/* <select
                                     name='category'
                                     value={product.category}
                                     onChange={(e) => setProduct({ ...product, category: e.target.value })}
@@ -585,10 +594,25 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                 >
                                     <option value="">Selecciona una categoría</option>
                                     {categories.map((category) => (
-                                        <option key={category._id} value={category.name}>
-                                            {capitalizeFirstLetter(category.name)}
-                                        </option>
+                                        <>
+                                            {<option key={category._id} value={category.name}>
+                                                {capitalizeFirstLetter(category.name)}
+                                                </option>}
+                                            <option key={category._id} value={category._id}>
+                                                {capitalizeFirstLetter(category.name)}
+                                            </option>
+                                        </>
                                     ))}
+                                </select> */}
+                                <select
+                                    className='createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop'
+                                    name='category'
+                                    value={product.category}
+                                    onChange={(e) => setProduct({ ...product, category: e.target.value })}
+                                    required
+                                >
+                                    <option value="">Selecciona una categoría</option>
+                                    {renderCategoryOptions(categories)}
                                 </select>
                                 <Link
                                     to={`/cpanel`}
@@ -631,12 +655,12 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                             <ul className='createProductModalContainer__createProductModal__propsContainer__variantsContainer'>
                                 {
                                     variantes.length > 0 &&
-                                    <strong>Variantes:</strong>  
+                                    <strong className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__title'>Variantes:</strong>  
                                 }
                                 {variantes.map((v, i) => (
-                                    <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
+                                    <li className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__li' key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
                                     <div style={{ marginBottom: '4px' }}>
-                                        {/* <strong>Variante:</strong>  */}{Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
+                                       {Object.entries(v.campos).map(([k, val]) => `${capitalizeFirstLetter(k)}: ${val}`).join(' | ')}
                                     </div>
 
                                     <div style={{ marginBottom: '4px' }}>
@@ -677,17 +701,13 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                             nuevasVariantes.splice(i, 1);
                                             setVariantes(nuevasVariantes);
                                         }}
-                                        style={{
-                                        marginTop: '4px',
-                                        color: 'white',
-                                        background: 'red',
-                                        border: 'none',
-                                        padding: '4px 8px',
-                                        cursor: 'pointer',
-                                        }}
+                                        className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__btn'
                                     >
                                         Eliminar
                                     </button>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__line'>
+                                        <div className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__line__prop'></div>
+                                    </div>
                                     </li>
                                 ))}
                             </ul>

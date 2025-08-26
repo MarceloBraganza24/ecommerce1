@@ -94,29 +94,6 @@ const CPanel = () => {
 
     const SERVER_URL = "http://localhost:8081/";
 
-    /* const fetchCategories = async () => {
-        setLoading(true);
-        try { const data = await getCategories(); setCategories(data); }
-        finally { setLoading(false); }
-    }; */
-
-    //useEffect(() => { fetchCategories(); }, []);
-
-    /* const handleCreateRoot = async () => {
-        if (!newRoot) return alert("Ingresa un nombre");
-        setCreatingRoot(true);
-        try { await createCategory({ name: newRoot }); setNewRoot(""); fetchCategories(); }
-        finally { setCreatingRoot(false); }
-    };
-
-    const handleDragEnd = async ({ active, over }) => {
-        if (!over || active.id === over.id) return;
-        try { await updateCategory({ id: active.id, parent: over.id }); fetchCategories(); }
-        catch (err) { alert(err.message); }
-    }; */
-
-    //const tree = buildCategoryTree(categories);
-
     useEffect(() => {
         if (user?.isLoggedIn) {
             fetchCartByUserId(user._id)
@@ -372,44 +349,6 @@ const CPanel = () => {
             setLoadingAddresses(false)
         }
     };
-
-    /* const fetchCategories = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/categories');
-            const data = await response.json();
-            if (response.ok) {
-                setCategories(data.data); 
-            } else {
-                toast('Error al cargar categorías', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setLoadingCategories(false)
-            }
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setLoadingCategories(false)
-        }
-    }; */
 
     const fetchCoupons = async () => {
         try {
@@ -955,7 +894,8 @@ const CPanel = () => {
         footerLogoText: '',
         copyrightText: '', 
         sliderLogos: [],
-        socialNetworks: []
+        socialNetworks: [],
+        offers: [{ image: null, filter: '', prevImagePath: null }]
     });
     const [colorSelectFormData, setColorSelectFormData] = useState({
         primaryColor: '#000000',
@@ -963,6 +903,61 @@ const CPanel = () => {
         accentColor: '#fccf03',
         colorInputMode: 'pallete'
     });
+
+    const handleOfferChange = (index, field, value) => {
+        const updatedOffers = [...configurationSiteformData.offers];
+        updatedOffers[index][field] = value;
+        setConfigurationSiteformData({
+            ...configurationSiteformData,
+            offers: updatedOffers
+        });
+    };
+
+    /* const handleOfferImageChange = (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const updatedOffers = [...configurationSiteformData.offers];
+        updatedOffers[index].image = file;
+        setConfigurationSiteformData({
+            ...configurationSiteformData,
+            offers: updatedOffers
+        });
+    }; */
+    const handleOfferImageChange = (e, index) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const updatedOffers = [...configurationSiteformData.offers];
+
+        // Liberar URL anterior si existía y era un File
+        if (updatedOffers[index].image && updatedOffers[index].image instanceof File) {
+            URL.revokeObjectURL(updatedOffers[index].image.preview);
+        }
+
+        file.preview = URL.createObjectURL(file); // agregar preview
+        updatedOffers[index].image = file;
+
+        setConfigurationSiteformData({
+            ...configurationSiteformData,
+            offers: updatedOffers
+        });
+    };
+
+
+    const addOffer = () => {
+        setConfigurationSiteformData({
+            ...configurationSiteformData,
+            offers: [...configurationSiteformData.offers, { image: null, filter: '' }]
+        });
+    };
+
+    const removeOffer = (index) => {
+        const updatedOffers = configurationSiteformData.offers.filter((_, i) => i !== index);
+        setConfigurationSiteformData({
+            ...configurationSiteformData,
+            offers: updatedOffers
+        });
+    };
 
     const shouldBlockNavigation =
         initialConfigLoaded && (
@@ -1210,6 +1205,25 @@ const CPanel = () => {
             return;
         }
 
+        const hasInvalidOffer = configurationSiteformData.offers.some(
+            offer => !offer.image || offer.filter.trim() === ''
+        );
+
+        if (hasInvalidOffer) {
+            toast('Cada oferta debe tener una imagen y un filtro', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+
         const configToCompare = {
             ...configurationSiteformData,
             primaryColor: colorSelectFormData.primaryColor,
@@ -1271,6 +1285,23 @@ const CPanel = () => {
             };
         });
 
+        // Procesar ofertas
+        const processedOffers = configurationSiteformData.offers.map((offer, index) => {
+            if (offer.image instanceof File) {
+                // Guardar el archivo en FormData
+                formData.append('offersSlider', offer.image);
+                return {
+                ...offer,
+                image: `__upload__${index}`, // marcador temporal para mapear en backend
+                };
+            }
+            return {
+                ...offer,
+                // si es string (URL), lo dejamos tal cual
+            };
+        });
+
+
         // Armar el objeto completo con los demás campos
         const configData = {
             ...configurationSiteformData,
@@ -1278,7 +1309,8 @@ const CPanel = () => {
             secondaryColor: colorSelectFormData.secondaryColor,
             accentColor: colorSelectFormData.accentColor,
             sliderLogos: configurationSiteformData.sliderLogos.filter(logo => typeof logo === 'string' && logo.trim() !== ''),
-            socialNetworks: processedSocialNetworks
+            socialNetworks: processedSocialNetworks,
+            offers: processedOffers // ✅ aquí va
         };
 
         // Convertir a JSON y añadirlo
@@ -1765,6 +1797,56 @@ const CPanel = () => {
                         colorOptions={colorOptions}
                         />
 
+                        <div className="cPanelContainer__siteConfiguration__form__offers" style={{ marginTop: '3vh' }}>
+                            <div className="cPanelContainer__siteConfiguration__form__offers__title">Ofertas</div>
+
+                            {configurationSiteformData.offers.map((offer, index) => (
+                                <div key={index} className="cPanelContainer__siteConfiguration__form__offers__item">
+                                
+                                <label>Imagen de la oferta:</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleOfferImageChange(e, index)}
+                                />
+                                {offer.image && (
+                                    <div style={{ marginTop: 8 }}>
+                                        <img
+                                            src={typeof offer.image === "string" ? offer.image : offer.image.preview}
+                                            alt={`Oferta-${index}`}
+                                            style={{ maxWidth: 150 }}
+                                        />
+                                    </div>
+                                )}
+
+                                <label>Filtro de redirección:</label>
+                                <input
+                                    type="text"
+                                    value={offer.filter}
+                                    onChange={(e) => handleOfferChange(index, "filter", e.target.value)}
+                                    placeholder="Ej: color=rojo o categoria=zapatillas"
+                                    className="cPanelContainer__siteConfiguration__form__offers__input"
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() => removeOffer(index)}
+                                    className="cPanelContainer__siteConfiguration__form__offers__removeBtn"
+                                >
+                                    Eliminar
+                                </button>
+                                </div>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addOffer}
+                                className="cPanelContainer__siteConfiguration__form__offers__addBtn"
+                            >
+                                + Agregar oferta
+                            </button>
+                        </div>
+
                         <div className="cPanelContainer__siteConfiguration__form__images" style={{marginTop: '2vh'}}>
                             <div className="cPanelContainer__siteConfiguration__form__images__title">Imágenes del sitio</div>
                             {[
@@ -1947,90 +2029,7 @@ const CPanel = () => {
                     </div>
 
                 </div>
-
-                {/* {
-                    loadingCategories ?
-                        <>
-                            <div className="cPanelContainer__existingCategories__loadingProps">
-                                Cargando categorías&nbsp;&nbsp;<Spinner/>
-                            </div>
-                        </>
-                    :
                 
-                        <>
-                            <div className="cPanelContainer__existingCategories">
-                                <div className='cPanelContainer__existingCategories__title'>Categorías</div>
-                                {categories.length === 0 ? (
-                                    <p className='cPanelContainer__existingCategories__withOutCategoriesLabel'>No hay categorías aún</p>
-                                    ) 
-                                    :
-                                    (
-                                    <ul className='cPanelContainer__existingCategories__itemCategory'>
-                                        {categories.map((category) => (
-                                            <li className='cPanelContainer__existingCategories__itemCategory__category' key={category._id}>
-                                                <span className='cPanelContainer__existingCategories__itemCategory__category__name'>{capitalizeFirstLetter(category.name)}</span>
-                                                <button
-                                                    className='cPanelContainer__existingCategories__itemCategory__category__btn'
-                                                    onClick={() => handleDeleteCategory(category._id,category.name)}
-                                                    disabled={deletingIdCategory === category._id}
-                                                    >
-                                                    {deletingIdCategory === category._id ? <Spinner/> : 'Eliminar'}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-
-                                <div className="cPanelContainer__newCategoryForm">
-                                    <div className='cPanelContainer__newCategoryForm__title'>Crear nueva categoría</div>
-                                    <div className='cPanelContainer__newCategoryForm__form'>
-                                        <select
-                                            value={parent}
-                                            onChange={(e) => setParent(e.target.value)}
-                                            //className="border p-2 w-full rounded"
-                                            >
-                                            <option value="">-- Raíz --</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat._id} value={cat._id}>
-                                                {cat.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <input
-                                        className='cPanelContainer__newCategoryForm__form__input'
-                                        type="text"
-                                        id="categoryName"
-                                        placeholder='Nombre categoría'
-                                        value={categoryName}
-                                        onChange={(e) => setCategoryName(e.target.value)}
-                                        />
-                                        <button
-                                            className='cPanelContainer__newCategoryForm__form__btn'
-                                            disabled={creatingCategory}
-                                            onClick={() => handleSubmitCategory()}
-                                            >
-                                            {creatingCategory ? <Spinner/> : 'Crear categoría'}
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </>
-                } */}
-
-                {/* <div>
-                    <h2>Categorías</h2>
-                    <div style={{ marginBottom: "1rem" }}>
-                        <input value={newRoot} onChange={(e) => setNewRoot(e.target.value)} placeholder="Nueva categoría" />
-                        <button onClick={handleCreateRoot} disabled={creatingRoot}>{creatingRoot ? <Spinner /> : "Crear categoría"}</button>
-                    </div>
-                    {loading ? <Spinner /> : (
-                        <DndContext onDragEnd={handleDragEnd}>
-                        <CategoryTree tree={tree} onRefresh={fetchCategories} />
-                        </DndContext>
-                    )}
-                </div> */}
                 <div style={{ padding: "20px" }}>
                     <h1>📂 Gestión de Categorías</h1>
                     <CategoriesPage />

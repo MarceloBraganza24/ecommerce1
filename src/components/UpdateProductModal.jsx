@@ -16,14 +16,23 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         camposDinamicos: []
     });
     const [variantes, setVariantes] = useState([]); 
-    //console.log(variantes)
+    //console.log(categories)
     const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, price: '', stock: '' });
 
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
 
     const fileInputRef = useRef(null);
 
-    useEffect(() => {
+    const renderCategoryOptions = (categories, level = 0) => {
+        return categories.flatMap(category => [
+            <option key={category._id} value={category._id}>
+                {`${"— ".repeat(level)}${capitalizeFirstLetter(category.name)}`}
+            </option>,
+            ...(category.children ? renderCategoryOptions(category.children, level + 1) : [])
+        ]);
+    };
+
+    /* useEffect(() => {
 
         if (product) {
             const imagenesDelBackend = product.images.map((imgPath) => {
@@ -61,7 +70,39 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         }
 
 
+    }, [product]); */
+    useEffect(() => {
+        if (product) {
+            const imagenesDelBackend = product.images?.map((imgPath) => {
+                const cleanedPath = imgPath.replace(/\\/g, '/'); // Normaliza la ruta a UNIX style
+                return {
+                    type: 'backend',
+                    name: cleanedPath.split('/').pop(),
+                    url: `http://localhost:8081/${cleanedPath}`
+                };
+            }) || [];
+
+            const camposExtras = product.camposExtras || {};
+            const camposDinamicosArray = Object.entries(camposExtras).map(([key, value]) => ({
+                key,
+                value
+            }));
+
+            setFormData({
+                title: product.title || '',
+                description: product.description || '',
+                price: product.price || 0,
+                stock: product.stock || 0,
+                state: product.state || '',
+                category: product.category?._id || product.category || '', // 👈 soporta populate o ID
+                images: imagenesDelBackend,
+                camposDinamicos: camposDinamicosArray
+            });
+
+            setVariantes(product.variantes || []);
+        }
     }, [product]);
+
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -554,7 +595,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Categoría</div>
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__select'>
-                                <select
+                                {/* <select
                                     name='category'
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -567,6 +608,16 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                             {capitalizeFirstLetter(category.name)}
                                         </option>
                                     ))}
+                                </select> */}
+                                <select
+                                    name='category'
+                                    className="createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop"
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    required
+                                >
+                                    <option value="">Selecciona una categoría</option>
+                                    {renderCategoryOptions(categories)}
                                 </select>
                                 <Link
                                     to={`/cpanel`}

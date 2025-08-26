@@ -29,6 +29,7 @@ import { FavoritesProvider } from './context/FavoritesContext.jsx';
 import { CPanelProductsContext } from './context/CPanelProductsContext.jsx';
 import { CPanelSalesContext } from './context/CPanelSalesContext.jsx';
 import { ShoppingCartContext } from './context/ShoppingCartContext.jsx';
+import ProductsContainer from './components/ProductsContainer.jsx';
 
 function AppContent() {
   const { setToken, fetchCurrentUser,logout } = useAuth();
@@ -215,6 +216,7 @@ function AppContent() {
         <Route exact path="/favorites" element={<Favorites/>}/>
         <Route exact path="/sendMail" element={<SendMailPass/>}/>
         <Route exact path="/resetPass" element={<ResetPass/>}/>
+        <Route exact path="/products" element={<ProductsContainer/>}/>
         
       </Routes>
 

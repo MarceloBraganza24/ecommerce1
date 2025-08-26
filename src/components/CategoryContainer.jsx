@@ -211,7 +211,7 @@ const CategoryContainer = () => {
     };
 
     const fetchCategories = async () => {
-        try {
+        /* try {
             const response = await fetch('http://localhost:8081/api/categories');
             const data = await response.json();
             if (response.ok) {
@@ -243,7 +243,7 @@ const CategoryContainer = () => {
                 theme: "dark",
                 className: "custom-toast",
             });
-        }
+        } */
     };
 
     useEffect(() => {
@@ -404,6 +404,7 @@ const CategoryContainer = () => {
                 storeName={storeSettings?.storeName || ""}
                 />
             </div>
+
             <div className='categoryContainer'>
                 {
                     user && (user.role != 'admin') &&
@@ -418,13 +419,6 @@ const CategoryContainer = () => {
                         
                         <div className='categoryContainer__grid__categoriesListContainer__categoriesList'>
                             <div className='categoryContainer__grid__categoriesListContainer__categoriesList__label'>Categorías</div>
-                            {/* {
-                                categories.map(category => (
-                                    <Link className='categoryContainer__grid__categoriesListContainer__categoriesList__category' to={`/category/${category.name}`}>
-                                        - {capitalizeFirstLetter(category.name)}
-                                    </Link>
-                                ))
-                            } */}
                             {
                                 categories.map(category => (
                                     <>
@@ -570,8 +564,8 @@ const CategoryContainer = () => {
                         </div>
                     }
 
-
                 </div>
+
             </div>
 
             <Footer

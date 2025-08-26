@@ -2014,6 +2014,24 @@ h2 {
             grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 0.5fr 1fr 1fr;
             border-bottom: 0.3vh solid #d6d5d5;
             padding: 1vh 0vh;
+            &__itemEllipsis {
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 90%;
+                max-width: 100%;
+                @include disFC();
+                justify-self: center;
+                scroll-behavior: smooth;
+                text-align: center; // ✅ centrado seguro
+                &::-webkit-scrollbar {
+                    display: none; /* Oculta la barra de desplazamiento */
+                }
+                &__label {
+                    display: inline-block;
+                    font-size: 16px;
+                    white-space: nowrap;
+                }
+            }
             &__item {
                 width: 100%;
                 @include disFC();
@@ -3395,12 +3413,15 @@ h2 {
                         gap: 1vh;
                         &__imgContainer {
                             &__btnDelete {
-                                background-color: #0e3061;
+                                background-color: var(--primary-color);
                                 width: 100%;
                                 @include disFC();
                                 padding: 0.3vh 0vh;
                                 cursor: pointer;
                                 color: white;
+                                &:hover {
+                                    color: var(--secondary-color);
+                                }
                             }
                             &__prop {
                                 width: 50px;
@@ -3464,7 +3485,32 @@ h2 {
             }
             &__variantsContainer {
                 @include disFC();
+                //display: flex;
                 flex-direction: column;
+                &__title {
+                    text-align: center;
+                    padding: 1vh 0vh;
+                }
+                &__line {
+                    @include disFC();
+                    padding: 1vh 0vh;
+                    &__prop {
+                        background-color: black;
+                        width: 45%;
+                        height: 0.3vh;
+                    }
+                }
+                &__btn {
+                    background-color: var(--primary-color);
+                    color: var(--primary-text-color);
+                    padding: 0.3vh 1vh;
+                    border-radius: 0.3vh;
+                    cursor: pointer;
+                    &:hover {
+                        //background-color: var(--secondary-color);
+                        color: var(--secondary-color);
+                    }
+                }
             }
             &__propProduct {
                 width: 90%;
@@ -3684,6 +3730,77 @@ h2 {
                         color: var(--secondary-color);
                     }
                 }
+            }
+        }
+    }
+}
+.productsContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 25vh;
+    &__titleContainer {
+        background-color: var(--primary-color);
+        width: 100%;
+        &__title {
+            width: 100%;
+            display: flex;
+            justify-content: end;
+            padding: 2vh 0vh;
+            &__prop {
+                font-size: 40px;
+                color: var(--primary-text-color);
+                font-weight: bold;
+                padding-right: 2vh;
+                font-family: "Montserrat", sans-serif;
+            }
+        }
+    }
+    &__gridCategoriesProducts {
+        width: 85%;
+        display: grid;
+        grid-template-columns: 1fr 5fr;
+        padding: 5vh 0vh;
+        &__categoriesContainer {
+            padding: 5vh 0vh;
+            position: relative;
+            &__categories {
+                width: 100%;
+                background-color: #c8c7c7;
+                display: flex;
+                flex-direction: column;
+                gap: 0.7vh;
+                padding: 4vh 0vh;
+                border-radius: 1vh;
+                position: sticky;
+                top: 30vh;
+                &__title {
+                    text-align: center;
+                    padding-bottom: 1vh;
+                    font-size: 20px;
+                }
+                &__itemCategory {
+                    text-decoration: none;
+                    color: black;
+                    padding-left: 2vh;
+                    &__label {
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+        }
+        &__productsContainer {
+            width: 100%;
+            @include disFC();
+            &__productsList {
+                width: 100%;
+                display: flex;
+                //flex-direction: column;
+                flex-wrap: wrap;
+                gap: 2vh;
             }
         }
     }

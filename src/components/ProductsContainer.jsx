@@ -1,7 +1,7 @@
 import { useEffect,useState,useContext,useRef } from "react";
 import NavBar from './NavBar'
 import ItemProduct from './ItemProduct';
-import { Link, useLocation,useNavigate } from "react-router-dom";
+import { Link, useLocation,useParams } from "react-router-dom";
 import Footer from "./Footer";
 import { toast } from 'react-toastify';
 
@@ -15,12 +15,13 @@ import Spinner from "./Spinner";
 import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import { useAuth } from '../context/AuthContext';
 import CategoriesPage from './CategoriesPage.jsx';
+import CategorySidebar from "./CategorySidebar";
+import Slider from 'rc-slider';
 
-const Home = () => {
+const ProductsContainer = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
     const [isScrollForced, setIsScrollForced] = useState(false);
-    const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [isVisible, setIsVisible] = useState(false);
@@ -28,10 +29,6 @@ const Home = () => {
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
-    const [isLoadingProductsByCategory, setIsLoadingProductsByCategory] = useState(true);
-    const [products, setProducts] = useState([]);
-    const [productsByCategory, setProductsByCategory] = useState([]);
-    const [totalProducts, setTotalProducts] = useState("");
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
     const [pageInfo, setPageInfo] = useState({
         page: 1,
@@ -43,29 +40,43 @@ const Home = () => {
     });  
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-    const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const SERVER_URL = "http://localhost:8081/";
     const [selectedField, setSelectedField] = useState('title');
-    
+    const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
+    const [sortOrder, setSortOrder] = useState('desc'); 
+    const [selectedDynamicFilters, setSelectedDynamicFilters] = useState({}); // { talle: ["38"], Material: ["cargo"] }
+    const [allCategoryFilters, setAllCategoryFilters] = useState({});
     const location = useLocation();
+    const { category } = useParams();
 
-    useEffect(() => {
-        if (firstRender.current) {
-            firstRender.current = false;
-            return;
-        }
-        setIsScrollForced(true);
-        const el = document.getElementById('catalogContainer');
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
-        }
-        const timeout = setTimeout(() => {
-            setIsScrollForced(false);
-        }, 1500);
+    
+    const [products, setProducts] = useState([]);
+    //console.log(products)
+    const [availableFilters, setAvailableFilters] = useState({});
+    const [categories, setCategories] = useState([]);
 
-        return () => clearTimeout(timeout);
-    }, [pageInfo.page]);
+    // 📌 Estados para filtros
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [appliedFilters, setAppliedFilters] = useState({});
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+    const [sort, setSort] = useState("asc");
+
+    // 📌 Paginación
+    const [page, setPage] = useState(1);
+    const [limit] = useState(8);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const fetchCategoriesTree = async () => {
+        try {
+            const res = await fetch("http://localhost:8081/api/categories/combined");
+            const data = await res.json();
+            if (res.ok) setCategories(data.tree || []);
+        } catch (err) {
+            console.error("Error al cargar categorías:", err);
+        }
+    };
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -134,61 +145,68 @@ const Home = () => {
         }
     };
 
-    const fetchCategories = async () => {
+    const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
-            const data = await response.json();
-            if (response.ok) {
-                setCategories(data.data); 
-            } else {
-                toast('Error al cargar categorías', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
+            setIsLoadingProducts(true);
+            const body = {
+                category: selectedCategory,
+                minPrice: minPrice || null,
+                maxPrice: maxPrice || null,
+                filters: appliedFilters,
+                sort,
+                page,
+                limit,
+            };
 
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
+            const res = await fetch("http://localhost:8081/api/products/search", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
             });
+
+            const data = await res.json();
+            setProducts(data.docs);
+            setTotalPages(data.totalPages);
+            setAvailableFilters(data.availableFilters);
+        } catch (err) {
+            console.error("Error al traer productos:", err);
+        } finally {
+            setIsLoadingProducts(false);
         }
     };
 
-    const fetchProducts = async (page = 1, search = "",field = "") => {
-        try {
-            const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
-            const productsAll = await response.json();
-            setTotalProducts(productsAll.data.totalDocs)
-            setProducts(productsAll.data.docs)
-            setPageInfo({
-                page: productsAll.data.page,
-                totalPages: productsAll.data.totalPages,
-                hasNextPage: productsAll.data.hasNextPage,
-                hasPrevPage: productsAll.data.hasPrevPage,
-                nextPage: productsAll.data.nextPage,
-                prevPage: productsAll.data.prevPage
-            });
-        } catch (error) {
-            console.error('Error al obtener datos:', error);
-        } finally {
-            setIsLoadingProducts(false)
+    const handleFilterChange = (filterName, value, checked) => {
+        setAppliedFilters((prev) => {
+        const prevValues = prev[filterName] || [];
+
+        let newValues;
+        if (checked) {
+            newValues = [...prevValues, value];
+        } else {
+            newValues = prevValues.filter((v) => v !== value);
         }
+
+        if (newValues.length === 0) {
+            const { [filterName]: _, ...rest } = prev;
+            return rest;
+        }
+
+        return { ...prev, [filterName]: newValues };
+        });
+    };
+
+    // 🔹 Refrescar productos cada vez que cambia categoría, filtros, precio o sort
+    useEffect(() => {
+        fetchProducts(1);
+    }, [selectedCategory, appliedFilters, priceRange, sortOrder]);
+
+    // 🎯 Al seleccionar categoría
+    const handleSelectCategory = (category) => {
+        setSelectedCategory(category);
+        //setSelectedDynamicFilters({});
+        setPriceRange({ min: 0, max: 100000 });
     };
 
     const fetchSellerAddresses = async () => {
@@ -245,40 +263,12 @@ const Home = () => {
         }
     };
 
-    const fetchProductsByCategory = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/products/grouped-by-category');
-            const data = await response.json();
-            if (response.ok) {
-                setProductsByCategory(data.data); 
-            } else {
-                toast('Error al cargar configuraciones', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoadingProductsByCategory(false)
-        }
-    };
-
     useEffect(() => {
-        fetchCategories();
-        fetchProductsByCategory();
         fetchCurrentUser();
         fetchProducts();
         fetchStoreSettings();
         fetchSellerAddresses();
+        fetchCategoriesTree();
         window.scrollTo(0, 0);
         const toggleVisibility = () => {
             if (window.scrollY > 300) {
@@ -313,6 +303,17 @@ const Home = () => {
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 
+    const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+
+    const handleResetFilters = () => {
+        setSelectedCategory(null); // limpiar categoría
+        setPriceRange({ min: 0, max: 100000 }); // rango de precios inicial
+        setSortOrder('desc'); // orden por defecto
+        setAvailableFilters({}); // filtros dinámicos vacíos
+    };
+
     return (
 
         <>
@@ -340,68 +341,75 @@ const Home = () => {
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             primaryColor={storeSettings?.primaryColor || ""}
             />
-            
-            <div className="homeContainer">
-                <div className="homeContainer__img">
-                    <img className="homeContainer__img__prop" src={`http://localhost:8081/${storeSettings?.siteImages?.homeImage}`} alt="" />
-                </div>
-            </div>
 
-            {
-                storeSettings?.sliderLogos?.length != 0 &&
+            {<div className='productsContainer' id="catalogContainer">
 
-                <div className="slider-logos">
+                <div className="productsContainer__gridCategoriesProducts">
 
-                    <div className="slider-logos__logo-slider">
-                        <div className="slider-logos__logo-slider__slider-track">
-                            {storeSettings?.sliderLogos?.concat(storeSettings?.sliderLogos).map((logo, index) => (
-                                <div key={index} className="slider-logos__logo-slider__slider-track__slide">
-                                <img className="slider-logos__logo-slider__slider-track__slide__img" src={`${SERVER_URL}${logo}`} alt={logo.alt} />
+                    <div className="productsContainer__gridCategoriesProducts__categoriesContainer">
+
+                        <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories">
+
+                            <div>
+                                <button onClick={handleResetFilters}>Borrar filtros</button>
+                            </div>
+
+                            <div>
+                                <CategorySidebar onSelectCategory={handleSelectCategory} />
+                            </div>
+                            <div className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer'>
+                                <label className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer__title'>Filtrar por precio</label>
+                                <Slider
+                                    range
+                                    min={0}
+                                    max={100000}
+                                    value={[priceRange.min, priceRange.max]}
+                                    onChange={([min, max]) => setPriceRange({ min, max })}
+                                />
+                                <p>Desde ${priceRange.min} hasta ${priceRange.max}</p>
+                            </div>
+
+                            <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
+                                <select className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                                    <option value="asc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: menor a mayor</option>
+                                    <option value="desc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: mayor a menor</option>
+                                </select>
+                            </div>
+
+                            {Object.entries(availableFilters).map(([filterName, values]) => (
+                            <div key={filterName} style={{display:'flex',flexDirection:'column',paddingLeft:'2vh'}}>
+                                <h4>{capitalizeFirstLetter(filterName)}</h4>
+                                {Object.keys(values).map((val) => (
+                                    <label style={{paddingLeft:'1vh'}} key={val}>
+                                        <input
+                                        type="checkbox"
+                                        checked={appliedFilters[filterName]?.includes(val) || false}
+                                        onChange={(e) =>
+                                            handleFilterChange(filterName, val, e.target.checked)
+                                        }
+                                        />
+                                        {val} ({values[val]})
+                                    </label>
+                                ))}
                             </div>
                             ))}
-                        </div>
-                    </div>
 
-                </div>
-            }
 
-            <div className='catalogContainer' id="catalogContainer">
-
-                <div className="catalogContainer__titleContainer">
-                    <div className='catalogContainer__titleContainer__title'>
-                        <div className='catalogContainer__titleContainer__title__prop'>CATÁLOGO</div>
-                    </div>
-                </div>
-
-                <div className="catalogContainer__gridCategoriesProducts">
-
-                    <div className="catalogContainer__gridCategoriesProducts__categoriesContainer">
-
-                        <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories">
-
-                            <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__title">Categorías</div>
-                            {/* {
-                                categories.map((category) => (
-                                <Link
-                                    key={category._id}
-                                    to={`/category/${category.name.toLowerCase()}`}
-                                    className='catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory'
-                                >
-                                    - <span className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory__label">{category.name.toUpperCase()}</span>
-                                </Link>
-                                ))
-                            } */}
-                            <div style={{ padding: "20px" }}>
-                                <CategoriesPage />
-                            </div>
                         </div>
 
                     </div>
 
-                    <div className="catalogContainer__gridCategoriesProducts__productsContainer">
+                    <div className="productsContainer__gridCategoriesProducts__productsContainer">
 
-                        <div className="catalogContainer__gridCategoriesProducts__productsContainer__productsList">
+                        <div className="productsContainer__gridCategoriesProducts__productsContainer__productsList">
                             {
+                                isLoadingProducts ?
+                                 <>
+                                    <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                                        Cargando productos&nbsp;&nbsp;<Spinner/>
+                                    </div>
+                                </>
+                                :
                                 products.map((product) => (
                                     <ItemProduct
                                     user={user} 
@@ -420,7 +428,7 @@ const Home = () => {
                             <div className='cPanelProductsContainer__btnsPagesContainer'>
                                 <button className='cPanelProductsContainer__btnsPagesContainer__btn'
                                     disabled={!pageInfo.hasPrevPage}
-                                    onClick={() => fetchProducts(pageInfo.prevPage, inputFilteredProducts, selectedField)}
+                                    onClick={() => fetchProducts(pageInfo.prevPage)}
                                     >
                                     Anterior
                                 </button>
@@ -429,7 +437,7 @@ const Home = () => {
 
                                 <button className='cPanelProductsContainer__btnsPagesContainer__btn'
                                     disabled={!pageInfo.hasNextPage}
-                                    onClick={() => fetchProducts(pageInfo.nextPage, inputFilteredProducts, selectedField)}
+                                    onClick={() => fetchProducts(pageInfo.nextPage)}
                                     >
                                     Siguiente
                                 </button>
@@ -440,7 +448,7 @@ const Home = () => {
                 
                 </div>
 
-            </div>
+            </div>}
 
             <Footer
             isLoggedIn={user?.isLoggedIn}
@@ -461,4 +469,4 @@ const Home = () => {
     
 }
 
-export default Home
+export default ProductsContainer
