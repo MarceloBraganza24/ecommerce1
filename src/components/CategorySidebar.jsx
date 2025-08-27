@@ -108,8 +108,8 @@ export default function CategorySidebar({ onSelectCategory }) {
   };
 
   return (
-    <div style={{ padding: "10px" }}>
-      <h3>Categorías</h3>
+    <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree">
+      <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__title">Categorías</div>
       <CategoryTree categories={categoriesTree} onSelect={handleSelectCategory} />
     </div>
   );
@@ -117,7 +117,7 @@ export default function CategorySidebar({ onSelectCategory }) {
 
 function CategoryTree({ categories, onSelect, level = 0 }) {
   return (
-    <ul style={{ listStyle: "none", paddingLeft: level * 15 }}>
+    <ul className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul" style={{ listStyle: "none", paddingLeft: level * 35, paddingTop: '0.3vh', cursor:'pointer' }}>
       {categories.map(cat => (
         <CategoryNode key={cat._id} category={cat} onSelect={onSelect} level={level} />
       ))}
@@ -125,23 +125,26 @@ function CategoryTree({ categories, onSelect, level = 0 }) {
   );
 }
 
+const capitalizeFirstLetter = (text) => {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 function CategoryNode({ category, onSelect, level }) {
   //console.log(category)
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <li>
+    <li className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul__li">
       <div
+      className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul__li__category"
         style={{
-          display: "flex",
-          alignItems: "center",
-          cursor: "pointer",
           fontWeight: level === 0 ? "bold" : "normal"
         }}
         onClick={() => onSelect(category)}
       >
         {category.children.length > 0 && (
           <span
+          className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul__li__subCategory"
             onClick={e => {
               e.stopPropagation();
               setExpanded(!expanded);
@@ -158,7 +161,7 @@ function CategoryNode({ category, onSelect, level }) {
             ▶
           </span>
         )}
-        {category.name} ({category.productCount})
+        {capitalizeFirstLetter(category.name)} ({category.productCount})
       </div>
 
       {expanded && category.children.length > 0 && (

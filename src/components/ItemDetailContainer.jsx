@@ -108,11 +108,25 @@ const ItemDetailContainer = () => {
         }
     }, [selectedOptions, productById]);
 
-
     useEffect(() => {
-        setSelectedOptions({});
-        setSelectedVariant(null);
+        if (productById?._id && productById?.variantes?.length > 0) {
+            // Tomamos la primera variante
+            const primeraVariante = productById.variantes[0];
+
+            // Inicializamos los selects con los campos de esa variante
+            setSelectedOptions(primeraVariante.campos || {});
+
+            // Asignamos la variante directamente
+            setSelectedVariant(primeraVariante);
+            setStockDisponible(primeraVariante.stock);
+        } else {
+            // Si no hay variantes, reseteamos
+            setSelectedOptions({});
+            setSelectedVariant(null);
+            setStockDisponible(productById?.stock || 0);
+        }
     }, [productById?._id]);
+
 
     function esColorClaro(hex) {
         if (!hex) return true;

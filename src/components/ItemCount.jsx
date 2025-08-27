@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Spinner from './Spinner';
 
 const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id,images,title,description,price,stock,fetchCartByUserId,userCart}) => {
-    //console.log(stock)
-
     const normalizeCampos = (campos) => {
         if (!campos) return {};
         return Object.fromEntries(
@@ -291,24 +289,12 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
                 <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={decrement}>-</button> : <button disabled className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={decrement}>-</button>
             }
 
-            {/* { stockVariante > 0 ?
-                <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>{count}</div>
-                :
-                <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>0</div>
-            } */}
             <div className='itemDetailContainer__itemDetail__infoContainer__info__count__prop'>
                 { stockDisponible > 0 ? count : 0 }
             </div>
 
             <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={increment}>+</button>
 
-            {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockVariante} Disponibles)</div> */}
-            {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
-                ({(variantes?.length > 0 
-                    ? (stockVariante >= 10 ? '+10' : stockVariante) 
-                    : (stock >= 10 ? '+10' : stock)
-                    )} Disponibles)
-            </div> */}
             <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
                 {
                     loadingVariant ?
@@ -320,8 +306,6 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
                     `(${stockVariante} Disponibles)`
                 }
             </div>
-            {/* <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>({stockDisponible < 10 ? stockDisponible : '+10'} Disponibles)</div> */}
-
 
         </div> 
 
@@ -343,7 +327,6 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
             </button>
 
         </div>
-
 
     </>
 

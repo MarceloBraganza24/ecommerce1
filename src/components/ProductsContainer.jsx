@@ -19,11 +19,23 @@ import CategorySidebar from "./CategorySidebar";
 import Slider from 'rc-slider';
 
 const ProductsContainer = () => {
+    
+    const DEFAULT_MIN = 0;
+    const DEFAULT_MAX = 100000;
+
+    const [priceRange, setPriceRange] = useState({ min: DEFAULT_MIN, max: DEFAULT_MAX });
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [appliedFilters, setAppliedFilters] = useState({});
+    const [sortOrder, setSortOrder] = useState("desc");
+
+    const [sort, setSort] = useState("asc"); // asc | desc
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(100000);
+
+
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
-    const firstRender = useRef(true);
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [isVisible, setIsVisible] = useState(false);
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
@@ -42,31 +54,45 @@ const ProductsContainer = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [userCart, setUserCart] = useState({});
     const SERVER_URL = "http://localhost:8081/";
-    const [selectedField, setSelectedField] = useState('title');
-    const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
-    const [sortOrder, setSortOrder] = useState('desc'); 
-    const [selectedDynamicFilters, setSelectedDynamicFilters] = useState({}); // { talle: ["38"], Material: ["cargo"] }
-    const [allCategoryFilters, setAllCategoryFilters] = useState({});
-    const location = useLocation();
-    const { category } = useParams();
 
     
     const [products, setProducts] = useState([]);
-    //console.log(products)
     const [availableFilters, setAvailableFilters] = useState({});
     const [categories, setCategories] = useState([]);
-
-    // 📌 Estados para filtros
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [appliedFilters, setAppliedFilters] = useState({});
-    const [minPrice, setMinPrice] = useState("");
-    const [maxPrice, setMaxPrice] = useState("");
-    const [sort, setSort] = useState("asc");
 
     // 📌 Paginación
     const [page, setPage] = useState(1);
     const [limit] = useState(8);
     const [totalPages, setTotalPages] = useState(1);
+
+    const [breadcrumb, setBreadcrumb] = useState([]);
+
+    function findCategoryPath(tree, targetId, path = []) {
+        for (const node of tree) {
+            const newPath = [...path, node];
+            if (String(node._id) === String(targetId)) {
+            return newPath;
+            }
+            if (node.children && node.children.length > 0) {
+            const found = findCategoryPath(node.children, targetId, newPath);
+            if (found) return found;
+            }
+        }
+        return null;
+    }
+
+    useEffect(() => {
+        if (selectedCategory && categories.length > 0) {
+            const path = findCategoryPath(categories, selectedCategory._id); // 👈 solo _id
+            setBreadcrumb(path || []);
+        } else {
+            setBreadcrumb([]);
+        }
+    }, [selectedCategory, categories]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [sort, minPrice, maxPrice]);
 
     const fetchCategoriesTree = async () => {
         try {
@@ -145,37 +171,41 @@ const ProductsContainer = () => {
         }
     };
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (pageNumber = 1) => {
         try {
             setIsLoadingProducts(true);
             const body = {
-                category: selectedCategory,
-                minPrice: minPrice || null,
-                maxPrice: maxPrice || null,
-                filters: appliedFilters,
-                sort,
-                page,
-                limit,
+            category: selectedCategory || null,
+            minPrice: priceRange.min,
+            maxPrice: priceRange.max,
+            sort: sortOrder || null,
+            page: pageNumber,
+            limit: limit,
+            ...(Object.keys(appliedFilters).length > 0 && { filters: appliedFilters }),
             };
 
             const res = await fetch("http://localhost:8081/api/products/search", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
             });
 
             const data = await res.json();
-            setProducts(data.docs);
-            setTotalPages(data.totalPages);
-            setAvailableFilters(data.availableFilters);
-        } catch (err) {
-            console.error("Error al traer productos:", err);
+
+            if (res.ok) {
+            setProducts(data.docs || []);
+            setTotalPages(data.totalPages || 1);
+            setAvailableFilters(data.availableFilters || {});
+            } else {
+            console.error("Error en la búsqueda:", data.error);
+            }
+        } catch (error) {
+            console.error("Error en fetchProducts:", error);
         } finally {
             setIsLoadingProducts(false);
         }
     };
+
 
     const handleFilterChange = (filterName, value, checked) => {
         setAppliedFilters((prev) => {
@@ -205,7 +235,6 @@ const ProductsContainer = () => {
     // 🎯 Al seleccionar categoría
     const handleSelectCategory = (category) => {
         setSelectedCategory(category);
-        //setSelectedDynamicFilters({});
         setPriceRange({ min: 0, max: 100000 });
     };
 
@@ -308,11 +337,20 @@ const ProductsContainer = () => {
     };
 
     const handleResetFilters = () => {
-        setSelectedCategory(null); // limpiar categoría
-        setPriceRange({ min: 0, max: 100000 }); // rango de precios inicial
-        setSortOrder('desc'); // orden por defecto
-        setAvailableFilters({}); // filtros dinámicos vacíos
+        setSelectedCategory(null);
+        setPriceRange({ min: DEFAULT_MIN, max: DEFAULT_MAX });
+        setSortOrder("desc");
+        setAppliedFilters({});
     };
+
+    const activeFiltersCount =
+        Object.values(appliedFilters).reduce(
+            (count, values) => count + (values?.length || 0),
+            0
+        ) +
+        (selectedCategory ? 1 : 0) +
+        (priceRange.min !== DEFAULT_MIN || priceRange.max !== DEFAULT_MAX ? 1 : 0);
+
 
     return (
 
@@ -344,56 +382,110 @@ const ProductsContainer = () => {
 
             {<div className='productsContainer' id="catalogContainer">
 
+                
+                <div className="productsContainer__routeSelect">
+
+                    <div className="productsContainer__routeSelect__route">
+                        {
+                            breadcrumb.length > 0 &&
+                            <span 
+                            onClick={handleResetFilters} 
+                        className="breadcrumb__link"
+                        >
+                            Inicio
+                        </span>
+                        }
+                        
+                        {breadcrumb.map((cat, index) => (
+                            <span key={cat._id} className="breadcrumb__item">
+                                <span style={{ margin: "0 4px" }}>{'>'}</span>
+                                <span
+                                    className="breadcrumb__link"
+                                    // 👇 pasar el objeto completo al hacer click
+                                    onClick={() => setSelectedCategory(cat)}
+                                    >
+                                    {cat.name}
+                                </span>
+                            </span>
+                        ))}
+                    </div>
+
+                    <div className='productsContainer__routeSelect__select'>
+                        <select className='productsContainer__routeSelect__select__prop' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                            <option value="asc" className=''>Precio: menor a mayor</option>
+                            <option value="desc" className=''>Precio: mayor a menor</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div className="productsContainer__gridCategoriesProducts">
+
 
                     <div className="productsContainer__gridCategoriesProducts__categoriesContainer">
 
                         <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories">
 
-                            <div>
-                                <button onClick={handleResetFilters}>Borrar filtros</button>
+                            <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__btnDeleteFilters">
+                                <button className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__btnDeleteFilters__btn" onClick={handleResetFilters}>Borrar filtros {activeFiltersCount > 0 && `(${activeFiltersCount})`}</button>
                             </div>
 
                             <div>
                                 <CategorySidebar onSelectCategory={handleSelectCategory} />
                             </div>
-                            <div className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer'>
-                                <label className='categoryContainer__grid__categoriesListContainer__pricesRangeContainer__title'>Filtrar por precio</label>
-                                <Slider
-                                    range
-                                    min={0}
-                                    max={100000}
-                                    value={[priceRange.min, priceRange.max]}
-                                    onChange={([min, max]) => setPriceRange({ min, max })}
-                                />
-                                <p>Desde ${priceRange.min} hasta ${priceRange.max}</p>
+                            
+                            <div className='productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter'> 
+                                <div className='productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__title'>Filtrar por precio</div>
+                                <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs">
+
+                                    <input
+                                    className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs__input"
+                                    type="number"
+                                    placeholder="Precio mínimo"
+                                    value={priceRange.min}
+                                    onChange={(e) =>
+                                        setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) || DEFAULT_MIN }))
+                                    }
+                                    />
+
+                                    <input
+                                    className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs__input"
+                                    type="number"
+                                    placeholder="Precio máximo"
+                                    value={priceRange.max}
+                                    onChange={(e) =>
+                                        setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) || DEFAULT_MAX }))
+                                    }
+                                    />
+                                    
+                                </div>
+                                <p className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__label">Desde ${priceRange.min} hasta ${priceRange.max}</p>
                             </div>
 
-                            <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
+
+
+                            {/* <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
                                 <select className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
                                     <option value="asc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: menor a mayor</option>
                                     <option value="desc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: mayor a menor</option>
                                 </select>
-                            </div>
+                            </div> */}
 
-                            {Object.entries(availableFilters).map(([filterName, values]) => (
-                            <div key={filterName} style={{display:'flex',flexDirection:'column',paddingLeft:'2vh'}}>
+                            {Object.entries(availableFilters || {}).map(([filterName, values]) => (
+                            <div key={filterName} className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters">
                                 <h4>{capitalizeFirstLetter(filterName)}</h4>
                                 {Object.keys(values).map((val) => (
-                                    <label style={{paddingLeft:'1vh'}} key={val}>
-                                        <input
-                                        type="checkbox"
-                                        checked={appliedFilters[filterName]?.includes(val) || false}
-                                        onChange={(e) =>
-                                            handleFilterChange(filterName, val, e.target.checked)
-                                        }
-                                        />
-                                        {val} ({values[val]})
-                                    </label>
+                                <label className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput" key={val}>
+                                    <input
+                                    className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput__input"
+                                    type="checkbox"
+                                    checked={appliedFilters[filterName]?.includes(val) || false}
+                                    onChange={(e) => handleFilterChange(filterName, val, e.target.checked)}
+                                    />
+                                    {val} ({values[val]})
+                                </label>
                                 ))}
                             </div>
                             ))}
-
 
                         </div>
 

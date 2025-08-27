@@ -3740,6 +3740,27 @@ h2 {
     align-items: center;
     flex-direction: column;
     padding-top: 25vh;
+    &__routeSelect {
+        padding: 5vh 0vh 2vh 0vh;
+        width: 80%;
+        display: grid;
+        grid-template-columns: 2fr 1fr 2fr;
+        &__route {
+            @include disFC();
+            grid-column: 2/3;
+            cursor: pointer;
+        }
+        &__select {
+            @include disFC();
+            grid-column: 3/4;
+            &__prop {
+                padding: 0.5vh 1vh;
+                cursor: pointer;
+                @include btn();
+                border-radius: 0.5vh;
+            }
+        }
+    }
     &__titleContainer {
         background-color: var(--primary-color);
         width: 100%;
@@ -3758,10 +3779,11 @@ h2 {
         }
     }
     &__gridCategoriesProducts {
-        width: 85%;
+        width: 80%;
         display: grid;
-        grid-template-columns: 1fr 5fr;
-        padding: 5vh 0vh;
+        grid-template-columns: 20% 80%;
+        padding: 0vh 0vh 5vh 0vh;
+        gap: 2vh;
         &__categoriesContainer {
             padding: 5vh 0vh;
             position: relative;
@@ -3775,6 +3797,72 @@ h2 {
                 border-radius: 1vh;
                 position: sticky;
                 top: 30vh;
+                &__tree {
+                    display: flex;
+                    flex-direction: column;
+                    &__title {
+                        padding-top: 1vh;
+                        text-align: center;
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+                    &__ul {
+                        width: 80%;
+                        align-self: center;
+                    }
+                }
+                &__priceFilter {
+                    padding: 2vh 0vh;
+                    &__inputs {
+                        padding: 1vh 0vh;
+                        @include disFC();
+                        gap: 1vh;
+                        &__input {
+                            width: 45%;
+                            text-align: center;
+                        }
+                    }
+                    &__title {
+                        font-weight: bold;
+                        font-size: 18px;
+                        text-align: center;
+                    }
+                    &__label {
+                        text-align: center;
+                    }
+                }
+                &__filters {
+                    width: 80%;
+                    display: flex;
+                    flex-direction: column;
+                    align-self: center;
+                    &__labelInput {
+                        padding-left: 2vh;
+                        //@include disFC();
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5vh;
+                        &__input {
+                            width: 15px;
+                            height: 15px;
+                        }
+                    }
+                }
+                &__btnDeleteFilters {
+                    @include disFC();
+                    &__btn {
+                        width: 60%;
+                        padding: 0.5vh 0vh;
+                        font-size: 14px;
+                        @include disFC();
+                        border-radius: 0.5vh;
+                        text-decoration: none;
+                        text-align: center;
+                        cursor: pointer;
+                        border: 0.3vh solid black;
+                        @include btn();
+                    }
+                }
                 &__title {
                     text-align: center;
                     padding-bottom: 1vh;
