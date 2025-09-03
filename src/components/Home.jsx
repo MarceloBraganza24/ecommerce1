@@ -15,6 +15,7 @@ import Spinner from "./Spinner";
 import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import { useAuth } from '../context/AuthContext';
 import CategoriesPage from './CategoriesPage.jsx';
+import OffersSlider from './OffersSlider.jsx';
 
 const Home = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
@@ -340,14 +341,10 @@ const Home = () => {
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             primaryColor={storeSettings?.primaryColor || ""}
             />
-            
-            <div className="homeContainer">
-                <div className="homeContainer__img">
-                    <img className="homeContainer__img__prop" src={`http://localhost:8081/${storeSettings?.siteImages?.homeImage}`} alt="" />
-                </div>
-            </div>
 
-            {
+            <OffersSlider />
+
+            {/* {
                 storeSettings?.sliderLogos?.length != 0 &&
 
                 <div className="slider-logos">
@@ -363,9 +360,9 @@ const Home = () => {
                     </div>
 
                 </div>
-            }
+            } */}
 
-            <div className='catalogContainer' id="catalogContainer">
+            {/* <div className='catalogContainer' id="catalogContainer">
 
                 <div className="catalogContainer__titleContainer">
                     <div className='catalogContainer__titleContainer__title'>
@@ -380,17 +377,6 @@ const Home = () => {
                         <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories">
 
                             <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__title">Categorías</div>
-                            {/* {
-                                categories.map((category) => (
-                                <Link
-                                    key={category._id}
-                                    to={`/category/${category.name.toLowerCase()}`}
-                                    className='catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory'
-                                >
-                                    - <span className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__itemCategory__label">{category.name.toUpperCase()}</span>
-                                </Link>
-                                ))
-                            } */}
                             <div style={{ padding: "20px" }}>
                                 <CategoriesPage />
                             </div>
@@ -440,9 +426,9 @@ const Home = () => {
                 
                 </div>
 
-            </div>
+            </div> */}
 
-            <Footer
+            {/* <Footer
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
@@ -453,7 +439,7 @@ const Home = () => {
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}
-            />
+            /> */}
             
         </>
 

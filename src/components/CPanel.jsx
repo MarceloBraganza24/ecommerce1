@@ -91,8 +91,40 @@ const CPanel = () => {
         specialChar: false
     });
     const navigate = useNavigate();
+    const [categoriesTree, setCategoriesTree] = useState([]);
 
     const SERVER_URL = "http://localhost:8081/";
+
+    const fetchCategoriesTree = async () => {
+        try {
+            const res = await fetch("http://localhost:8081/api/categories/combined");
+            const data = await res.json();
+            if (res.ok) setCategoriesTree(data.tree || []);
+        } catch (err) {
+            console.error("Error al cargar categorías:", err);
+        }
+    };
+
+    const findCategoryById = (categories, id) => {
+        for (const category of categories) {
+            if (category._id === id) return category;
+            if (category.children && category.children.length > 0) {
+            const found = findCategoryById(category.children, id);
+            if (found) return found;
+            }
+        }
+        return null;
+    };
+
+
+    const renderCategoryOptions = (categories, level = 0) => {
+        return categories.flatMap(category => [
+            <option key={category._id} value={category._id}>
+                {`${"— ".repeat(level)}${capitalizeFirstLetter(category.name)}`}
+            </option>,
+            ...(category.children ? renderCategoryOptions(category.children, level + 1) : [])
+        ]);
+    };
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -841,7 +873,7 @@ const CPanel = () => {
     useEffect(() => {
         fetchCurrentUser();
         fetchAdmins();
-        //fetchCategories();
+        fetchCategoriesTree();
         fetchStoreSettings();
         fetchSellerAddresses();
         fetchCoupons();
@@ -895,8 +927,9 @@ const CPanel = () => {
         copyrightText: '', 
         sliderLogos: [],
         socialNetworks: [],
-        offers: [{ image: null, filter: '', prevImagePath: null }]
+        offersSlider: [{ image: null, filters: [], prevImagePath: null }]
     });
+    //console.log(configurationSiteformData)
     const [colorSelectFormData, setColorSelectFormData] = useState({
         primaryColor: '#000000',
         secondaryColor: '#ffffff',
@@ -905,58 +938,236 @@ const CPanel = () => {
     });
 
     const handleOfferChange = (index, field, value) => {
-        const updatedOffers = [...configurationSiteformData.offers];
+        const updatedOffers = [...configurationSiteformData.offersSlider];
         updatedOffers[index][field] = value;
         setConfigurationSiteformData({
-            ...configurationSiteformData,
-            offers: updatedOffers
+        ...configurationSiteformData,
+        offersSlider: updatedOffers
+        });
+    };
+
+    /* const handleAddCondition = (offerIndex) => {
+        const offer = configurationSiteformData.offersSlider[offerIndex];
+
+        // Evitar sobrescribir category
+        const updatedFilters = { 
+            ...offer.filters, 
+            ['']: '' // agrega un filtro vacío con clave editable
+        };
+
+        handleOfferChange(offerIndex, 'filters', updatedFilters);
+    }; */
+    const handleAddCondition = (offerIndex) => {
+        setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            const filters = { ...updatedOffers[offerIndex].filters };
+
+            let newKey = "";
+            let counter = 1;
+            // Evitar duplicados en keys
+            while (filters[newKey]) {
+            newKey = `nuevoFiltro${counter}`;
+            counter++;
+            }
+
+            filters[newKey] = "";
+
+            updatedOffers[offerIndex] = {
+            ...updatedOffers[offerIndex],
+            filters,
+            };
+
+            return { ...prev, offersSlider: updatedOffers };
+        });
+    };
+
+    /* const handleConditionChange = (offerIndex, key, type, value) => {
+        const offer = configurationSiteformData.offersSlider[offerIndex];
+        const updatedFilters = { ...offer.filters };
+
+        if (key === 'category' && type === 'key') {
+            // no permitir cambiar la clave category
+            return;
+        }
+
+        if (type === 'key') {
+            // renombrar clave dinámica
+            const val = updatedFilters[key];
+            delete updatedFilters[key];
+            updatedFilters[value] = val;
+        } else if (type === 'value') {
+            updatedFilters[key] = value;
+        }
+
+        handleOfferChange(offerIndex, 'filters', updatedFilters);
+    }; */
+    /* const handleConditionChange = (offerIndex, key, type, value) => {
+        setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            const filters = { ...updatedOffers[offerIndex].filters };
+
+            if (key === "category") {
+                // Siempre bajo la clave "category"
+                filters.category = value;
+            } else {
+            if (type === "key") {
+                // Si se cambia el nombre de la clave (ej: material -> color)
+                const currentValue = filters[key];
+                delete filters[key];
+                filters[value] = currentValue;
+            } else if (type === "value") {
+                filters[key] = value;
+            }
+            }
+
+            updatedOffers[offerIndex] = {
+                ...updatedOffers[offerIndex],
+                filters,
+            };
+
+            return { ...prev, offersSlider: updatedOffers };
+        });
+    }; */
+    /* const handleConditionChange = (offerIndex, key, type, value) => {
+        setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            const offer = { ...updatedOffers[offerIndex] };
+
+            let updatedFilters = { ...(offer.filters || {}) };
+
+            if (type === "key") {
+            const oldValue = updatedFilters[key];
+            delete updatedFilters[key];
+            updatedFilters[value] = oldValue;
+            } else if (type === "value") {
+            updatedFilters[key] = value; // puede ser string (otros filtros) o objeto (category)
+            }
+
+            offer.filters = updatedFilters;
+            updatedOffers[offerIndex] = offer;
+
+            return { ...prev, offersSlider: updatedOffers };
+        });
+    }; */
+    const handleConditionChange = (offerIndex, key, type, value) => {
+        setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            const currentOffer = { ...updatedOffers[offerIndex] };
+            let updatedFilters = { ...currentOffer.filters };
+
+            if (key === "category") {
+                // Para category guardamos el objeto completo
+                updatedFilters[key] = value; // value ya es el objeto completo
+            } else if (type === "key") {
+                if (value.trim() !== "") {
+                    updatedFilters[value] = updatedFilters[key];
+                    delete updatedFilters[key];
+                }
+            } else if (type === "value") {
+                updatedFilters[key] = value;
+            }
+
+            currentOffer.filters = updatedFilters;
+            updatedOffers[offerIndex] = currentOffer;
+            return { ...prev, offersSlider: updatedOffers };
+        });
+    };
+
+    /* const handleRemoveCondition = (offerIndex, key) => {
+        if (key === 'category') return; // no eliminar
+
+        const offer = configurationSiteformData.offersSlider[offerIndex];
+        const { [key]: removed, ...restFilters } = offer.filters;
+        handleOfferChange(offerIndex, 'filters', restFilters);
+    }; */
+    const handleRemoveCondition = (offerIndex, key) => {
+        if (key === "category") return; // no eliminar category
+        setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            const filters = { ...updatedOffers[offerIndex].filters };
+            delete filters[key];
+
+            updatedOffers[offerIndex] = {
+            ...updatedOffers[offerIndex],
+            filters,
+            };
+
+            return { ...prev, offersSlider: updatedOffers };
         });
     };
 
     /* const handleOfferImageChange = (e, index) => {
         const file = e.target.files[0];
         if (!file) return;
-        const updatedOffers = [...configurationSiteformData.offers];
-        updatedOffers[index].image = file;
-        setConfigurationSiteformData({
-            ...configurationSiteformData,
-            offers: updatedOffers
-        });
-    }; */
-    const handleOfferImageChange = (e, index) => {
-        const file = e.target.files[0];
-        if (!file) return;
 
-        const updatedOffers = [...configurationSiteformData.offers];
-
-        // Liberar URL anterior si existía y era un File
+        const updatedOffers = [...configurationSiteformData.offersSlider];
         if (updatedOffers[index].image && updatedOffers[index].image instanceof File) {
-            URL.revokeObjectURL(updatedOffers[index].image.preview);
+        URL.revokeObjectURL(updatedOffers[index].image.preview);
         }
 
-        file.preview = URL.createObjectURL(file); // agregar preview
+        file.preview = URL.createObjectURL(file);
         updatedOffers[index].image = file;
 
         setConfigurationSiteformData({
+        ...configurationSiteformData,
+        offersSlider: updatedOffers
+        });
+    }; */
+    const handleOfferImageChange = (e, offerIndex) => {
+        const file = e.target.files[0];
+        if (file) {
+            setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            updatedOffers[offerIndex] = {
+                ...updatedOffers[offerIndex],
+                image: Object.assign(file, { preview: URL.createObjectURL(file) }),
+            };
+            return { ...prev, offersSlider: updatedOffers };
+            });
+        }
+    };
+
+    /* const handleRemoveOffer = (offerIndex) => {
+        const updatedOffers = configurationSiteformData.offersSlider.filter(
+            (_, index) => index !== offerIndex
+        );
+        setConfigurationSiteformData({
             ...configurationSiteformData,
-            offers: updatedOffers
+            offersSlider: updatedOffers
+        });
+    }; */
+    const handleRemoveOffer = (offerIndex) => {
+        setConfigurationSiteformData((prev) => {
+            const updatedOffers = [...prev.offersSlider];
+            updatedOffers.splice(offerIndex, 1);
+            return { ...prev, offersSlider: updatedOffers };
         });
     };
 
-
+    /* const addOffer = () => {
+        setConfigurationSiteformData({
+            ...configurationSiteformData,
+            offersSlider: [
+                ...configurationSiteformData.offersSlider,
+                { 
+                    image: null, 
+                    prevImagePath: null, 
+                    filters: { category: '' } // <-- category por defecto
+                }
+            ]
+        });
+    }; */
     const addOffer = () => {
-        setConfigurationSiteformData({
-            ...configurationSiteformData,
-            offers: [...configurationSiteformData.offers, { image: null, filter: '' }]
-        });
-    };
-
-    const removeOffer = (index) => {
-        const updatedOffers = configurationSiteformData.offers.filter((_, i) => i !== index);
-        setConfigurationSiteformData({
-            ...configurationSiteformData,
-            offers: updatedOffers
-        });
+        setConfigurationSiteformData((prev) => ({
+            ...prev,
+            offersSlider: [
+                ...prev.offersSlider,
+                {
+                    image: null,
+                    filters: { category: null }, // 👈 category como objeto
+                },
+            ],
+        }));
     };
 
     const shouldBlockNavigation =
@@ -1205,12 +1416,30 @@ const CPanel = () => {
             return;
         }
 
-        const hasInvalidOffer = configurationSiteformData.offers.some(
-            offer => !offer.image || offer.filter.trim() === ''
-        );
+        /* const hasInvalidOffer = configurationSiteformData.offersSlider.some(
+            offer => !offer.image || !offer.filters || Object.keys(offer.filters).length === 0
+        ); */
+        const hasInvalidOffer = configurationSiteformData.offersSlider.some(offer => {
+            // debe tener imagen válida
+            if (!offer.image) return true;
 
+            const filters = offer.filters;
+
+            // debe tener filtros válidos
+            if (!filters) return true;
+
+            if (Array.isArray(filters)) {
+                return filters.filter(cond => cond.key?.trim() && cond.value?.trim()).length === 0;
+            }
+
+            if (typeof filters === 'object') {
+                return Object.keys(filters).length === 0;
+            }
+
+            return true; // cualquier otro caso inválido
+        });
         if (hasInvalidOffer) {
-            toast('Cada oferta debe tener una imagen y un filtro', {
+            toast('Cada oferta debe tener una imagen y al menos una condición', {
                 position: "top-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -1224,13 +1453,62 @@ const CPanel = () => {
             return;
         }
 
+        const formData = new FormData();
+
+        let fileCounter = 0;
+        const processedOffers = configurationSiteformData.offersSlider
+            .slice(0, 20)
+            .map((offer) => {
+                let imageStr = "";
+
+                if (offer.image instanceof File || offer.image?.file) {
+                    const fileToAppend = offer.image instanceof File ? offer.image : offer.image.file;
+                    formData.append("offersSlider", fileToAppend);
+                    imageStr = `__upload__${fileCounter}`; 
+                    offer.uploadIndex = fileCounter; // 🟢 nuevo
+                    fileCounter++;
+                } else if (typeof offer.image === "string") {
+                    imageStr = offer.image;
+                }
+
+                // normalizar filtros
+                let filtersObj = {};
+                if (Array.isArray(offer.filters)) {
+                    filtersObj = offer.filters.reduce((acc, cond) => {
+                        if (cond.key?.trim() && cond.value?.trim()) acc[cond.key.trim()] = cond.value.trim();
+                        return acc;
+                    }, {});
+                } else if (offer.filters && typeof offer.filters === "object") {
+                    filtersObj = offer.filters;
+                }
+
+                return {
+                    ...offer,
+                    image: imageStr,
+                    filters: filtersObj,
+                    uploadIndex: offer.uploadIndex ?? null,
+                };
+            });
+
+
         const configToCompare = {
             ...configurationSiteformData,
             primaryColor: colorSelectFormData.primaryColor,
             secondaryColor: colorSelectFormData.secondaryColor,
             accentColor: colorSelectFormData.accentColor,
             siteImages: siteImages, // También incluímos esto si lo vas a comparar
+            offersSlider: processedOffers
         };
+
+        const initialOffers = initialConfiguration.offersSlider.map(offer => ({
+        ...offer,
+        filter: Array.isArray(offer.filter)
+            ? offer.filter.reduce((acc, cond) => {
+                if (cond.key.trim() !== '') acc[cond.key.trim()] = cond.value.trim();
+                return acc;
+            }, {})
+            : offer.filter
+        }));
 
         const initialDataToCompare = {
             ...initialConfiguration,
@@ -1238,6 +1516,7 @@ const CPanel = () => {
             secondaryColor: initialColorSelect.secondaryColor,
             accentColor: initialColorSelect.accentColor,
             siteImages: initialSiteImages,
+            offersSlider: initialOffers
         };
 
         if (isEqual(configToCompare, initialDataToCompare)) {
@@ -1250,8 +1529,6 @@ const CPanel = () => {
             return;
         }
 
-        const formData = new FormData();
-
         Object.entries(siteImages).forEach(([key, value]) => {
             if (value instanceof File) {
                 formData.append(key, value); // se envía como archivo
@@ -1260,7 +1537,6 @@ const CPanel = () => {
                 formData.append(`siteImages.${key}`, value); // ✅ Este nombre coincide con lo que espera el backend
             }
         });
-
 
         configurationSiteformData.sliderLogos.forEach((logo) => {
             if (logo instanceof File) {
@@ -1273,34 +1549,10 @@ const CPanel = () => {
         const processedSocialNetworks = configurationSiteformData.socialNetworks.map((network, index) => {
             if (network.logo instanceof File) {
                 formData.append('socialNetworkLogos', network.logo);
-                return {
-                ...network,
-                logo: `__upload__${index}`,
-                prevLogoPath: network.prevLogoPath || null,
-                };
+                return { name: network.name, url: network.url, logoFileIndex: index };
             }
-            return {
-                ...network,
-                prevLogoPath: network.prevLogoPath || null,
-            };
+            return { name: network.name, url: network.url, logo: network.logo };
         });
-
-        // Procesar ofertas
-        const processedOffers = configurationSiteformData.offers.map((offer, index) => {
-            if (offer.image instanceof File) {
-                // Guardar el archivo en FormData
-                formData.append('offersSlider', offer.image);
-                return {
-                ...offer,
-                image: `__upload__${index}`, // marcador temporal para mapear en backend
-                };
-            }
-            return {
-                ...offer,
-                // si es string (URL), lo dejamos tal cual
-            };
-        });
-
 
         // Armar el objeto completo con los demás campos
         const configData = {
@@ -1310,7 +1562,7 @@ const CPanel = () => {
             accentColor: colorSelectFormData.accentColor,
             sliderLogos: configurationSiteformData.sliderLogos.filter(logo => typeof logo === 'string' && logo.trim() !== ''),
             socialNetworks: processedSocialNetworks,
-            offers: processedOffers // ✅ aquí va
+            offersSlider: processedOffers  // ✅ aquí va
         };
 
         // Convertir a JSON y añadirlo
@@ -1345,7 +1597,7 @@ const CPanel = () => {
                 setInitialColorSelect(colorSelectFormData);
                 setInitialSiteImages(siteImages);
                 setLoadingBtnSubmitConfigSite(false);
-                //console.log('Resultado:', result);
+                fetchStoreSettings();
             } else {
                 toast('ha ocurrido un error al guardar, intente nuevamente', {
                     position: "top-right",
@@ -1797,43 +2049,167 @@ const CPanel = () => {
                         colorOptions={colorOptions}
                         />
 
-                        <div className="cPanelContainer__siteConfiguration__form__offers" style={{ marginTop: '3vh' }}>
-                            <div className="cPanelContainer__siteConfiguration__form__offers__title">Ofertas</div>
+                        <div className="cPanelContainer__siteConfiguration__form__offersTitle" style={{ marginTop: '3vh' }}>Ofertas</div>
+                        {/* <div className="cPanelContainer__siteConfiguration__form__offers" >
+                            {configurationSiteformData.offersSlider.map((offer, offerIndex) => (
+                                <div key={offerIndex} style={{ marginBottom: 20, border: '1px solid #ccc', padding: 10 }}>
+                                <label>Seleccionar nueva imagen:</label>
+                                <input type="file" accept="image/*" onChange={(e) => handleOfferImageChange(e, offerIndex)} />
+                                <br />
+                                <div style={{display:"flex", alignItems:'center', paddingTop:'2vh'}}>
+                                    <div>Imagen de la oferta</div>
+                                    {offer.image && (
+                                        <img
+                                        src={
+                                            typeof offer.image === "string"
+                                            ? `${SERVER_URL}${offer.image}` // caso BD
+                                            : offer.image.preview || URL.createObjectURL(offer.image) // caso nuevo upload
+                                        }
+                                        alt={`Oferta-${offerIndex}`}
+                                        style={{ maxWidth: 100 }}
+                                        />
 
-                            {configurationSiteformData.offers.map((offer, index) => (
-                                <div key={index} className="cPanelContainer__siteConfiguration__form__offers__item">
+                                    )}
+                                </div>
+
+                                <div style={{ marginTop: 10 }}>
+                                    <label>Filtros de redirección:</label>
+                                    {Object.entries(offer.filters || {}).map(([key, value], condIndex) => (
+                                        <div key={condIndex} style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                                            <input
+                                            type="text"
+                                            placeholder="Ej: material"
+                                            value={key}
+                                            onChange={(e) => handleConditionChange(offerIndex, key, 'key', e.target.value)}
+                                            />
+                                            <input
+                                            type="text"
+                                            placeholder={`${key=="category"?"Ej: shorts":"Ej: jean"}`}
+                                            value={value}
+                                            onChange={(e) => handleConditionChange(offerIndex, key, 'value', e.target.value)}
+                                            />
+                                            <button type="button" onClick={() => handleRemoveCondition(offerIndex, key)}>Eliminar</button>
+                                        </div>
+                                    ))}
+                                    <button type="button" onClick={() => handleAddCondition(offerIndex)}>+ Agregar condición</button>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveOffer(offerIndex)}
+                                >
+                                    Eliminar oferta
+                                </button>
+                                </div>
                                 
-                                <label>Imagen de la oferta:</label>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addOffer}
+                                className="cPanelContainer__siteConfiguration__form__offers__addBtn"
+                            >
+                                + Agregar oferta
+                            </button>
+
+                        </div> */}
+                        <div className="cPanelContainer__siteConfiguration__form__offers">
+                            {configurationSiteformData.offersSlider.map((offer, offerIndex) => (
+                                <div
+                                key={offerIndex}
+                                style={{ marginBottom: 20, border: "1px solid #ccc", padding: 10 }}
+                                >
+                                {/* Imagen */}
+                                <label>Seleccionar nueva imagen:</label>
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => handleOfferImageChange(e, index)}
+                                    onChange={(e) => handleOfferImageChange(e, offerIndex)}
                                 />
-                                {offer.image && (
-                                    <div style={{ marginTop: 8 }}>
-                                        <img
-                                            src={typeof offer.image === "string" ? offer.image : offer.image.preview}
-                                            alt={`Oferta-${index}`}
-                                            style={{ maxWidth: 150 }}
-                                        />
+                                <br />
+                                <div style={{ display: "flex", alignItems: "center", paddingTop: "2vh" }}>
+                                    <div>Imagen de la oferta</div>
+                                    {offer.image && (
+                                    <img
+                                        src={
+                                        typeof offer.image === "string"
+                                            ? `${SERVER_URL}${offer.image}`
+                                            : offer.image.preview || URL.createObjectURL(offer.image)
+                                        }
+                                        alt={`Oferta-${offerIndex}`}
+                                        style={{ maxWidth: 100 }}
+                                    />
+                                    )}
+                                </div>
+
+                                {/* FILTROS */}
+                                <div style={{ marginTop: 10 }}>
+                                    <label>Filtros de redirección:</label>
+
+                                    {/* SELECT obligatorio de categoría */}
+                                    <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                                        <span style={{ alignSelf: "center" }}>Categoría:</span>
+                                        <select
+                                            className="createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop"
+                                            name="category"
+                                            value={offer.filters?.category?._id || ""}
+                                            onChange={(e) => {
+                                                const categoryObj = findCategoryById(categoriesTree, e.target.value);
+                                                if (categoryObj) {
+                                                    handleConditionChange(offerIndex, "category", "value", categoryObj);
+                                                }
+                                            }}
+                                            required
+                                            >
+                                            <option value="">Selecciona una categoría</option>
+                                            {renderCategoryOptions(categoriesTree)}
+                                        </select>
+
                                     </div>
-                                )}
 
-                                <label>Filtro de redirección:</label>
-                                <input
-                                    type="text"
-                                    value={offer.filter}
-                                    onChange={(e) => handleOfferChange(index, "filter", e.target.value)}
-                                    placeholder="Ej: color=rojo o categoria=zapatillas"
-                                    className="cPanelContainer__siteConfiguration__form__offers__input"
-                                />
+                                    {/* Otros filtros dinámicos */}
+                                    {Object.entries(offer.filters || {})
+                                    .filter(([key]) => key !== "category")
+                                    .map(([key, value], condIndex) => (
+                                        <div
+                                        key={condIndex}
+                                        style={{ display: "flex", gap: 8, marginTop: 4 }}
+                                        >
+                                        <input
+                                            type="text"
+                                            placeholder="Ej: material"
+                                            value={key}
+                                            onChange={(e) =>
+                                            handleConditionChange(offerIndex, key, "key", e.target.value)
+                                            }
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder={`Ej: ${key === "color" ? "rojo" : "jean"}`}
+                                            value={value}
+                                            onChange={(e) =>
+                                            handleConditionChange(offerIndex, key, "value", e.target.value)
+                                            }
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveCondition(offerIndex, key)}
+                                        >
+                                            Eliminar
+                                        </button>
+                                        </div>
+                                    ))}
 
-                                <button
+                                    <button
                                     type="button"
-                                    onClick={() => removeOffer(index)}
-                                    className="cPanelContainer__siteConfiguration__form__offers__removeBtn"
-                                >
-                                    Eliminar
+                                    onClick={() => handleAddCondition(offerIndex)}
+                                    >
+                                    + Agregar condición
+                                    </button>
+                                </div>
+
+                                {/* Eliminar oferta */}
+                                <button type="button" onClick={() => handleRemoveOffer(offerIndex)}>
+                                    Eliminar oferta
                                 </button>
                                 </div>
                             ))}

@@ -19,6 +19,7 @@ import CategorySidebar from "./CategorySidebar";
 import Slider from 'rc-slider';
 
 const ProductsContainer = () => {
+    const location = useLocation();
     
     const DEFAULT_MIN = 0;
     const DEFAULT_MAX = 100000;
@@ -58,6 +59,7 @@ const ProductsContainer = () => {
     
     const [products, setProducts] = useState([]);
     const [availableFilters, setAvailableFilters] = useState({});
+    
     const [categories, setCategories] = useState([]);
 
     // 📌 Paginación
@@ -66,6 +68,35 @@ const ProductsContainer = () => {
     const [totalPages, setTotalPages] = useState(1);
 
     const [breadcrumb, setBreadcrumb] = useState([]);
+
+    useEffect(() => {
+        if (location.state?.filters) {
+            const { category, ...rest } = location.state.filters;
+
+            // Normalizar categoría
+            if (category) {
+                setSelectedCategory(typeof category === "object" ? category : category);
+            } else {
+                setSelectedCategory(null);
+            }
+
+            // Normalizar filtros
+            const normalizedFilters = {};
+            for (const [key, value] of Object.entries(rest)) {
+                const keyLower = key.trim().toLowerCase(); // 🔹 normalizar key
+                if (typeof value === "string") {
+                    normalizedFilters[keyLower] = value.split(",").map(v => v.trim().toLowerCase());
+                } else {
+                    normalizedFilters[keyLower] = value.map(v => v.trim().toLowerCase());
+                }
+            }
+
+            setAppliedFilters(normalizedFilters); // 🔹 ya no usamos setFilters
+        } else {
+            setAppliedFilters({});
+            setSelectedCategory(null);
+        }
+    }, [location.state]);
 
     function findCategoryPath(tree, targetId, path = []) {
         for (const node of tree) {
@@ -174,30 +205,31 @@ const ProductsContainer = () => {
     const fetchProducts = async (pageNumber = 1) => {
         try {
             setIsLoadingProducts(true);
+
             const body = {
-            category: selectedCategory || null,
-            minPrice: priceRange.min,
-            maxPrice: priceRange.max,
-            sort: sortOrder || null,
-            page: pageNumber,
-            limit: limit,
-            ...(Object.keys(appliedFilters).length > 0 && { filters: appliedFilters }),
+                category: selectedCategory || null, // 🔹 siempre mando _id o null
+                minPrice: priceRange.min,
+                maxPrice: priceRange.max,
+                sort: sortOrder || null,
+                page: pageNumber,
+                limit: limit,
+                filters: appliedFilters 
             };
 
             const res = await fetch("http://localhost:8081/api/products/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
             });
 
             const data = await res.json();
 
             if (res.ok) {
-            setProducts(data.docs || []);
-            setTotalPages(data.totalPages || 1);
-            setAvailableFilters(data.availableFilters || {});
+                setProducts(data.docs || []);
+                setTotalPages(data.totalPages || 1);
+                setAvailableFilters(data.availableFilters || {});
             } else {
-            console.error("Error en la búsqueda:", data.error);
+                console.error("Error en la búsqueda:", data.error);
             }
         } catch (error) {
             console.error("Error en fetchProducts:", error);
@@ -206,26 +238,29 @@ const ProductsContainer = () => {
         }
     };
 
-
     const handleFilterChange = (filterName, value, checked) => {
+        const filterKey = filterName.toLowerCase();
+        const filterValue = value.toLowerCase();
+
         setAppliedFilters((prev) => {
-        const prevValues = prev[filterName] || [];
+            const prevValues = prev[filterKey] || [];
 
-        let newValues;
-        if (checked) {
-            newValues = [...prevValues, value];
-        } else {
-            newValues = prevValues.filter((v) => v !== value);
-        }
+            let newValues;
+            if (checked) {
+                newValues = [...prevValues, filterValue];
+            } else {
+                newValues = prevValues.filter((v) => v !== filterValue);
+            }
 
-        if (newValues.length === 0) {
-            const { [filterName]: _, ...rest } = prev;
-            return rest;
-        }
+            if (newValues.length === 0) {
+                const { [filterKey]: _, ...rest } = prev;
+                return rest;
+            }
 
-        return { ...prev, [filterName]: newValues };
+            return { ...prev, [filterKey]: newValues };
         });
     };
+
 
     // 🔹 Refrescar productos cada vez que cambia categoría, filtros, precio o sort
     useEffect(() => {
@@ -460,15 +495,6 @@ const ProductsContainer = () => {
                                 </div>
                                 <p className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__label">Desde ${priceRange.min} hasta ${priceRange.max}</p>
                             </div>
-
-
-
-                            {/* <div className='categoryContainer__grid__categoriesListContainer__sortSelectContainer'>
-                                <select className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-                                    <option value="asc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: menor a mayor</option>
-                                    <option value="desc" className='categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option'>Precio: mayor a menor</option>
-                                </select>
-                            </div> */}
 
                             {Object.entries(availableFilters || {}).map(([filterName, values]) => (
                             <div key={filterName} className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters">

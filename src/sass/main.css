@@ -529,6 +529,79 @@ h2 {
   width: 100%;
 }
 
+.offersContainer {
+  background-color: var(--primary-color);
+  width: 100%;
+  height: 75vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 25vh;
+}
+.offersContainer__offersSlider {
+  width: 65%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2vh;
+}
+.offersContainer__offersSlider__track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+}
+.offersContainer__offersSlider__img {
+  width: 100%;
+  flex-shrink: 0;
+  height: 65vh;
+  cursor: pointer;
+}
+.offersContainer__offersSlider__btnAnt, .offersContainer__offersSlider__btnSig {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 2.5rem;
+  border-radius: 50%;
+}
+.offersContainer__offersSlider__btnAnt {
+  left: 10px;
+}
+.offersContainer__offersSlider__btnSig {
+  right: 10px;
+}
+.offersContainer__offersSlider__indicators {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+.offersContainer__offersSlider__indicators__indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: black;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.offersContainer__offersSlider__indicators__indicator.active {
+  background: var(--secondary-color);
+}
+.offersContainer__btn {
+  width: 100px;
+  height: 50px;
+}
+
 .cPanelContainer {
   background-color: rgba(183, 183, 183, 0.85);
   width: 100%;
@@ -823,6 +896,19 @@ h2 {
 }
 .cPanelContainer__siteConfiguration__form__gridColor__inputBtn__btnDeletePhone:hover {
   color: var(--secondary-color);
+}
+.cPanelContainer__siteConfiguration__form__offersTitle {
+  width: 500px;
+  font-size: 30px;
+  font-weight: bold;
+}
+.cPanelContainer__siteConfiguration__form__offers {
+  background-color: rgba(183, 183, 183, 0.85);
+  height: auto;
+  max-height: 60vh;
+  padding: 2vh;
+  overflow: auto;
+  border-radius: 0.5vh;
 }
 .cPanelContainer__siteConfiguration__form__gridImages {
   display: grid;

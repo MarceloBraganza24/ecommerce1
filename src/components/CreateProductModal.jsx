@@ -234,7 +234,9 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
     
         const propiedades = {};
         product.camposDinamicos.forEach(campo => {
-            propiedades[campo.key] = campo.value;
+            if(campo.key?.trim()) {
+                propiedades[campo.key.trim().toLowerCase()] = campo.value.trim();
+            }
         });
     
         formData.append('propiedades', JSON.stringify(propiedades));
@@ -585,25 +587,6 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Categoría</div>
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__select'>
-                                {/* <select
-                                    name='category'
-                                    value={product.category}
-                                    onChange={(e) => setProduct({ ...product, category: e.target.value })}
-                                    className="createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop"
-                                    required
-                                >
-                                    <option value="">Selecciona una categoría</option>
-                                    {categories.map((category) => (
-                                        <>
-                                            {<option key={category._id} value={category.name}>
-                                                {capitalizeFirstLetter(category.name)}
-                                                </option>}
-                                            <option key={category._id} value={category._id}>
-                                                {capitalizeFirstLetter(category.name)}
-                                            </option>
-                                        </>
-                                    ))}
-                                </select> */}
                                 <select
                                     className='createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop'
                                     name='category'
