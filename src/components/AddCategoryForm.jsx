@@ -3,13 +3,23 @@ import { useState } from "react";
 export default function AddCategoryForm({ categories, onCreate }) {
   const [name, setName] = useState("");
   const [parent, setParent] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) return alert("El nombre es obligatorio");
-    await onCreate({ name, parent: parent || null });
+
+    const formData = new FormData();
+    formData.append("name", name);
+    if (parent) formData.append("parent", parent);
+    if (image) formData.append("image", image);
+
+    await onCreate(formData);
+
     setName("");
     setParent("");
+    setImage(null);
+    e.target.reset(); 
   };
 
   const renderOptions = (cats, prefix = "") =>
@@ -38,6 +48,14 @@ export default function AddCategoryForm({ categories, onCreate }) {
         <option value="">Categoría raíz</option>
         {renderOptions(categories)}
       </select>
+      {!parent && (
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+          style={{ marginRight: "10px" }}
+        />
+      )}
       <button type="submit">➕ Crear</button>
     </form>
   );

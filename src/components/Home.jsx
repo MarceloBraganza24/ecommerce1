@@ -16,14 +16,17 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Pagination,Autoplay  } from "swiper/modules";
+import "swiper/css/grid";
+import { Navigation, Pagination,Autoplay,Grid  } from "swiper/modules";
 
 const Home = () => {
     const scrollRef = useRef(null);
+    const navigate = useNavigate();
 
     const [featured, setFeatured] = useState({});
-    //console.log(featured)
     const [activeTab, setActiveTab] = useState("");
+    const [rootCategories, setRootCategories] = useState([]);
+    //console.log(rootCategories)
 
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
@@ -170,7 +173,7 @@ const Home = () => {
             const response = await fetch(`http://localhost:8081/api/products/featured`)
             const productsAll = await response.json();
             if(response.ok) {
-                console.log("Productos destacados crudos:", productsAll.payload);
+                //console.log("Productos destacados crudos:", productsAll.payload);
                 setFeatured(productsAll.payload)
                 setActiveTab(Object.keys(productsAll.payload)[0] || "");
             }
@@ -190,6 +193,21 @@ const Home = () => {
         return result;
     };
 
+    useEffect(() => {
+        if (featured && Object.keys(featured).length > 0) {
+            const roots = [];
+            Object.keys(featured).forEach((key) => {
+            const catProducts = featured[key];
+            if (catProducts && catProducts.length > 0) {
+                const category = catProducts[0].category;
+                if (!category.parent) { // solo categorías raíz
+                roots.push(category);
+                }
+            }
+            });
+            setRootCategories(roots);
+        }
+    }, [featured]);
 
     const fetchSellerAddresses = async () => {
         try {
@@ -346,38 +364,45 @@ const Home = () => {
 
                 <div className="product-card__props">
 
-                    <h4 className="product-card__props__title">{product.title}</h4>
+                    <div className="product-card__props__title" onClick={handleRedirectToItemDetailProduct}>
+                        <div className="product-card__props__title__prop">{product.title}</div>
+                    </div>
 
-                    {/* Variantes */}
-                    {product.variantes && product.variantes.length > 0 && (
-                        <select
-                        className="product-card__props__select"
-                        value={selectedVariantIndex}
-                        onChange={(e) => setSelectedVariantIndex(Number(e.target.value))}
-                        >
-                        {product.variantes.map((v, idx) => {
-                            const label = Object.entries(v.campos || {})
-                            .map(([key, val]) => `${key}: ${val}`)
-                            .join(" | ");
-                            return (
-                            <option key={idx} value={idx}>
-                                {label || "Sin variante"}
-                            </option>
-                            );
-                        })}
-                        </select>
-                    )}
+                    <div className="product-card__props__select">
+                        {product.variantes && product.variantes.length > 0 && (
+                            <select
+                            className="product-card__props__select__prop"
+                            value={selectedVariantIndex}
+                            onChange={(e) => setSelectedVariantIndex(Number(e.target.value))}
+                            >
+                            {product.variantes.map((v, idx) => {
+                                const label = Object.entries(v.campos || {})
+                                .map(([key, val]) => `${key}: ${val}`)
+                                .join(" | ");
+                                return (
+                                    <option key={idx} value={idx}>
+                                    {label || "Sin variante"}
+                                </option>
+                                );
+                            })}
+                            </select>
+                        )}
+                    </div>
 
-                    <p className="text-sm text-gray-500 text-center">Precio: ${price}</p>
-                    <p className="text-xs text-gray-400 text-center">
+                    <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>Precio: ${price}</div>
+                    <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>
                         Stock disponible: {stock}
-                    </p>
+                    </div>
 
                 </div>
 
             </div>
 
         );
+    }
+
+    const handleRedirectToProducts = (category) => {
+        navigate("/products", { state: { category } });
     }
 
     return (
@@ -410,11 +435,15 @@ const Home = () => {
 
             <OffersSlider />
 
+            <div className="separatorFooter">
+                <div className="separatorFooter__prop"></div>
+            </div>
+
             {
 
                 isLoadingFeatured ? 
                 <>
-                <div style={{backgroundColor:'black',padding:'2vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <div style={{backgroundColor:'whitesmoke',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
                     <Spinner/>
                 </div>
                 </>
@@ -487,8 +516,62 @@ const Home = () => {
                             </Swiper>
                         )}
                     </div>
+
+                    <div className="separatorFooter">
+                        <div className="separatorFooter__prop"></div>
+                    </div>
+
+                    <div className="categoriesExplored">
+
+                        <div className="categoriesExplored__title">
+                            <div className="categoriesExplored__title__prop">Explorá nuestras categorías</div>
+                        </div>
+
+                        <div className="categoriesExplored__grid">
+
+                            <div className="categoriesExplored__grid__left">
+                                <div className="categoriesExplored__grid__left__categoryImg">
+                                    <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`http://localhost:8081${rootCategories[0]?.image}`} alt="category" />
+                                </div>
+                            </div>
+
+                            <div className="categoriesExplored__grid__right">
+                                {rootCategories.length > 1 && (
+                                    <>
+                                    <Swiper
+                                        modules={[Navigation, Pagination, Grid, Autoplay]}
+                                        navigation
+                                        autoplay={{ delay: 3000, disableOnInteraction: false }}
+                                        pagination={{ clickable: true }}
+                                        spaceBetween={20}
+                                        slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
+                                        slidesPerGroup={1}       // 🔹 que avance de a 1
+                                        grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                                        >
+                                        {rootCategories.slice(1).map((category) => (
+                                            <SwiperSlide key={category._id}>
+                                            <div className="categoriesExplored__grid__right__category">
+                                                <img
+                                                className="categoriesExplored__grid__right__category__img"
+                                                src={`http://localhost:8081${category.image}`}
+                                                alt={category.name}
+                                                onClick={()=>handleRedirectToProducts(category)}
+                                                />
+                                            </div>
+                                            </SwiperSlide>
+                                        ))}
+                                    </Swiper>
+
+                                    </>
+                                )}
+                            </div>
+
+                        </div>
+                    
+                    </div>
                 </>
             }
+
 
             {/* {
                 storeSettings?.sliderLogos?.length != 0 &&
@@ -508,7 +591,11 @@ const Home = () => {
                 </div>
             } */}
 
-            {/* <Footer
+            {/* <div className="separatorFooter">
+                <div className="separatorFooter__prop"></div>
+            </div> */}
+
+            <Footer
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
@@ -519,7 +606,7 @@ const Home = () => {
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}
-            /> */}
+            />
             
         </>
 

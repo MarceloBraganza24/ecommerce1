@@ -18,13 +18,6 @@ import ConfirmationDeleteCPanelUserModal from './ConfirmationDeleteCPanelUserMod
 import CategoriesPage from './CategoriesPage.jsx';
 
 
-/* function buildCategoryTree(categories) {
-  const map = {}; const roots = [];
-  categories.forEach(cat => { cat.children = []; map[cat._id] = cat; });
-  categories.forEach(cat => cat.parent ? map[cat.parent]?.children.push(cat) : roots.push(cat));
-  return roots;
-} */
-
 const CPanel = () => {
     const [categoryId, setCategoryId] = useState('');
     const [showConfirmationDeleteCPanelCategoryModal, setShowConfirmationDeleteCPanelCategoryModal] = useState(false);
@@ -929,7 +922,6 @@ const CPanel = () => {
         socialNetworks: [],
         offersSlider: [{ image: null, filters: [], prevImagePath: null }]
     });
-    //console.log(configurationSiteformData)
     const [colorSelectFormData, setColorSelectFormData] = useState({
         primaryColor: '#000000',
         secondaryColor: '#ffffff',
@@ -937,26 +929,6 @@ const CPanel = () => {
         colorInputMode: 'pallete'
     });
 
-    const handleOfferChange = (index, field, value) => {
-        const updatedOffers = [...configurationSiteformData.offersSlider];
-        updatedOffers[index][field] = value;
-        setConfigurationSiteformData({
-        ...configurationSiteformData,
-        offersSlider: updatedOffers
-        });
-    };
-
-    /* const handleAddCondition = (offerIndex) => {
-        const offer = configurationSiteformData.offersSlider[offerIndex];
-
-        // Evitar sobrescribir category
-        const updatedFilters = { 
-            ...offer.filters, 
-            ['']: '' // agrega un filtro vacío con clave editable
-        };
-
-        handleOfferChange(offerIndex, 'filters', updatedFilters);
-    }; */
     const handleAddCondition = (offerIndex) => {
         setConfigurationSiteformData((prev) => {
             const updatedOffers = [...prev.offersSlider];
@@ -981,74 +953,6 @@ const CPanel = () => {
         });
     };
 
-    /* const handleConditionChange = (offerIndex, key, type, value) => {
-        const offer = configurationSiteformData.offersSlider[offerIndex];
-        const updatedFilters = { ...offer.filters };
-
-        if (key === 'category' && type === 'key') {
-            // no permitir cambiar la clave category
-            return;
-        }
-
-        if (type === 'key') {
-            // renombrar clave dinámica
-            const val = updatedFilters[key];
-            delete updatedFilters[key];
-            updatedFilters[value] = val;
-        } else if (type === 'value') {
-            updatedFilters[key] = value;
-        }
-
-        handleOfferChange(offerIndex, 'filters', updatedFilters);
-    }; */
-    /* const handleConditionChange = (offerIndex, key, type, value) => {
-        setConfigurationSiteformData((prev) => {
-            const updatedOffers = [...prev.offersSlider];
-            const filters = { ...updatedOffers[offerIndex].filters };
-
-            if (key === "category") {
-                // Siempre bajo la clave "category"
-                filters.category = value;
-            } else {
-            if (type === "key") {
-                // Si se cambia el nombre de la clave (ej: material -> color)
-                const currentValue = filters[key];
-                delete filters[key];
-                filters[value] = currentValue;
-            } else if (type === "value") {
-                filters[key] = value;
-            }
-            }
-
-            updatedOffers[offerIndex] = {
-                ...updatedOffers[offerIndex],
-                filters,
-            };
-
-            return { ...prev, offersSlider: updatedOffers };
-        });
-    }; */
-    /* const handleConditionChange = (offerIndex, key, type, value) => {
-        setConfigurationSiteformData((prev) => {
-            const updatedOffers = [...prev.offersSlider];
-            const offer = { ...updatedOffers[offerIndex] };
-
-            let updatedFilters = { ...(offer.filters || {}) };
-
-            if (type === "key") {
-            const oldValue = updatedFilters[key];
-            delete updatedFilters[key];
-            updatedFilters[value] = oldValue;
-            } else if (type === "value") {
-            updatedFilters[key] = value; // puede ser string (otros filtros) o objeto (category)
-            }
-
-            offer.filters = updatedFilters;
-            updatedOffers[offerIndex] = offer;
-
-            return { ...prev, offersSlider: updatedOffers };
-        });
-    }; */
     const handleConditionChange = (offerIndex, key, type, value) => {
         setConfigurationSiteformData((prev) => {
             const updatedOffers = [...prev.offersSlider];
@@ -1073,13 +977,6 @@ const CPanel = () => {
         });
     };
 
-    /* const handleRemoveCondition = (offerIndex, key) => {
-        if (key === 'category') return; // no eliminar
-
-        const offer = configurationSiteformData.offersSlider[offerIndex];
-        const { [key]: removed, ...restFilters } = offer.filters;
-        handleOfferChange(offerIndex, 'filters', restFilters);
-    }; */
     const handleRemoveCondition = (offerIndex, key) => {
         if (key === "category") return; // no eliminar category
         setConfigurationSiteformData((prev) => {
@@ -1096,23 +993,6 @@ const CPanel = () => {
         });
     };
 
-    /* const handleOfferImageChange = (e, index) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const updatedOffers = [...configurationSiteformData.offersSlider];
-        if (updatedOffers[index].image && updatedOffers[index].image instanceof File) {
-        URL.revokeObjectURL(updatedOffers[index].image.preview);
-        }
-
-        file.preview = URL.createObjectURL(file);
-        updatedOffers[index].image = file;
-
-        setConfigurationSiteformData({
-        ...configurationSiteformData,
-        offersSlider: updatedOffers
-        });
-    }; */
     const handleOfferImageChange = (e, offerIndex) => {
         const file = e.target.files[0];
         if (file) {
@@ -1127,15 +1007,6 @@ const CPanel = () => {
         }
     };
 
-    /* const handleRemoveOffer = (offerIndex) => {
-        const updatedOffers = configurationSiteformData.offersSlider.filter(
-            (_, index) => index !== offerIndex
-        );
-        setConfigurationSiteformData({
-            ...configurationSiteformData,
-            offersSlider: updatedOffers
-        });
-    }; */
     const handleRemoveOffer = (offerIndex) => {
         setConfigurationSiteformData((prev) => {
             const updatedOffers = [...prev.offersSlider];
@@ -1144,19 +1015,6 @@ const CPanel = () => {
         });
     };
 
-    /* const addOffer = () => {
-        setConfigurationSiteformData({
-            ...configurationSiteformData,
-            offersSlider: [
-                ...configurationSiteformData.offersSlider,
-                { 
-                    image: null, 
-                    prevImagePath: null, 
-                    filters: { category: '' } // <-- category por defecto
-                }
-            ]
-        });
-    }; */
     const addOffer = () => {
         setConfigurationSiteformData((prev) => ({
             ...prev,
@@ -2050,68 +1908,7 @@ const CPanel = () => {
                         />
 
                         <div className="cPanelContainer__siteConfiguration__form__offersTitle" style={{ marginTop: '3vh' }}>Ofertas</div>
-                        {/* <div className="cPanelContainer__siteConfiguration__form__offers" >
-                            {configurationSiteformData.offersSlider.map((offer, offerIndex) => (
-                                <div key={offerIndex} style={{ marginBottom: 20, border: '1px solid #ccc', padding: 10 }}>
-                                <label>Seleccionar nueva imagen:</label>
-                                <input type="file" accept="image/*" onChange={(e) => handleOfferImageChange(e, offerIndex)} />
-                                <br />
-                                <div style={{display:"flex", alignItems:'center', paddingTop:'2vh'}}>
-                                    <div>Imagen de la oferta</div>
-                                    {offer.image && (
-                                        <img
-                                        src={
-                                            typeof offer.image === "string"
-                                            ? `${SERVER_URL}${offer.image}` // caso BD
-                                            : offer.image.preview || URL.createObjectURL(offer.image) // caso nuevo upload
-                                        }
-                                        alt={`Oferta-${offerIndex}`}
-                                        style={{ maxWidth: 100 }}
-                                        />
-
-                                    )}
-                                </div>
-
-                                <div style={{ marginTop: 10 }}>
-                                    <label>Filtros de redirección:</label>
-                                    {Object.entries(offer.filters || {}).map(([key, value], condIndex) => (
-                                        <div key={condIndex} style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-                                            <input
-                                            type="text"
-                                            placeholder="Ej: material"
-                                            value={key}
-                                            onChange={(e) => handleConditionChange(offerIndex, key, 'key', e.target.value)}
-                                            />
-                                            <input
-                                            type="text"
-                                            placeholder={`${key=="category"?"Ej: shorts":"Ej: jean"}`}
-                                            value={value}
-                                            onChange={(e) => handleConditionChange(offerIndex, key, 'value', e.target.value)}
-                                            />
-                                            <button type="button" onClick={() => handleRemoveCondition(offerIndex, key)}>Eliminar</button>
-                                        </div>
-                                    ))}
-                                    <button type="button" onClick={() => handleAddCondition(offerIndex)}>+ Agregar condición</button>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveOffer(offerIndex)}
-                                >
-                                    Eliminar oferta
-                                </button>
-                                </div>
-                                
-                            ))}
-
-                            <button
-                                type="button"
-                                onClick={addOffer}
-                                className="cPanelContainer__siteConfiguration__form__offers__addBtn"
-                            >
-                                + Agregar oferta
-                            </button>
-
-                        </div> */}
+                        
                         <div className="cPanelContainer__siteConfiguration__form__offers">
                             {configurationSiteformData.offersSlider.map((offer, offerIndex) => (
                                 <div

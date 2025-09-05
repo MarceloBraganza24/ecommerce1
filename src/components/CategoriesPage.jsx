@@ -24,20 +24,18 @@ export default function CategoriesPage() {
     fetchCategories();
   };
 
-  const handleEdit = async (id, updateData) => {
+  const handleEdit = async (id, formData) => {
     await fetch(`${SERVER_URL}/api/categories/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updateData),
+      body: formData, // ✅ ahora se envía como multipart/form-data
     });
     fetchCategories();
   };
 
-  const handleCreate = async (data) => {
+  const handleCreate = async (formData) => {
     await fetch(`${SERVER_URL}/api/categories`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: formData, // ✅ ahora va FormData
     });
     fetchCategories();
   };

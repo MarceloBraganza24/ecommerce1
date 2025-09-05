@@ -300,6 +300,9 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
                     loadingVariant ?
                     <Spinner/>
                     :
+                    !selectedVariant ?
+                    ""
+                    :
                     stockVariante >= 10 ?
                     '(+10 Disponibles)'
                     :

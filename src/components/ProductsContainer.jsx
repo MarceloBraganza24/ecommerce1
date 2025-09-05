@@ -69,6 +69,7 @@ const ProductsContainer = () => {
 
     const [breadcrumb, setBreadcrumb] = useState([]);
 
+    /* console.log(location.state)
     useEffect(() => {
         if (location.state?.filters) {
             const { category, ...rest } = location.state.filters;
@@ -92,11 +93,93 @@ const ProductsContainer = () => {
             }
 
             setAppliedFilters(normalizedFilters); // 🔹 ya no usamos setFilters
+        } if (location.state?.category) {
+            const category = location.state.category;
+
+            // Normalizar categoría
+            if (category) {
+                setSelectedCategory(typeof category === "object" ? category : category);
+            } else {
+                setSelectedCategory(null);
+            }
+        } else {
+            setAppliedFilters({});
+            setSelectedCategory(null);
+        }
+    }, [location.state]); */
+    useEffect(() => {
+        if (location.state?.filters) {
+            const { category, ...rest } = location.state.filters;
+
+            // Normalizar categoría
+            if (category) {
+                setSelectedCategory(typeof category === "object" ? category : category);
+            } else {
+                setSelectedCategory(null);
+            }
+
+            // Normalizar filtros
+            const normalizedFilters = {};
+            for (const [key, value] of Object.entries(rest)) {
+                const keyLower = key.trim().toLowerCase();
+                if (typeof value === "string") {
+                    normalizedFilters[keyLower] = value
+                        .split(",")
+                        .map(v => v.trim().toLowerCase());
+                } else {
+                    normalizedFilters[keyLower] = value.map(v =>
+                        v.trim().toLowerCase()
+                    );
+                }
+            }
+
+            setAppliedFilters(normalizedFilters);
+
+        } else if (location.state?.category) {
+            const category = location.state.category;
+
+            if (category) {
+                setSelectedCategory(typeof category === "object" ? category : category);
+            } else {
+                setSelectedCategory(null);
+            }
+
+            setAppliedFilters({}); // 🔹 aseguro que no herede filtros viejos
+
         } else {
             setAppliedFilters({});
             setSelectedCategory(null);
         }
     }, [location.state]);
+
+    /* useEffect(() => {
+        if (location.state?.filters) {
+            const { category, ...rest } = location.state.filters;
+
+            // Normalizar categoría
+            if (category) {
+                setSelectedCategory(typeof category === "object" ? category : category);
+            } else {
+                setSelectedCategory(null);
+            }
+
+            // // Normalizar filtros
+            // const normalizedFilters = {};
+            // for (const [key, value] of Object.entries(rest)) {
+            //     const keyLower = key.trim().toLowerCase(); // 🔹 normalizar key
+            //     if (typeof value === "string") {
+            //         normalizedFilters[keyLower] = value.split(",").map(v => v.trim().toLowerCase());
+            //     } else {
+            //         normalizedFilters[keyLower] = value.map(v => v.trim().toLowerCase());
+            //     }
+            // }
+
+            // setAppliedFilters(normalizedFilters); // 🔹 ya no usamos setFilters
+        } else {
+            // setAppliedFilters({});
+            // setSelectedCategory(null);
+        }
+    }, [location.state]); */
 
     function findCategoryPath(tree, targetId, path = []) {
         for (const node of tree) {
