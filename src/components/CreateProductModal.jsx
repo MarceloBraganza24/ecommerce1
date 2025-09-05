@@ -231,7 +231,8 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         }
         formData.append('state', product.state);
         formData.append('category', product.category);
-    
+        formData.append('isFeatured', product.isFeatured);
+
         const propiedades = {};
         product.camposDinamicos.forEach(campo => {
             if(campo.key?.trim()) {
@@ -254,7 +255,6 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
     
             const data = await res.json();
-            //console.log(data)
             if(data.error === 'There is already a product with that title') {
                 toast('Ya existe un producto con ese título!', {
                     position: "top-right",
@@ -281,7 +281,8 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                     price: '',
                     stock: '',
                     category: '',
-                    camposDinamicos: []
+                    camposDinamicos: [],
+                    isFeatured: false 
                 });
                 fetchProducts();
                 setShowCreateProductModal(false);
@@ -607,6 +608,23 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                         </div>
 
+                        <div className='createProductModalContainer__createProductModal__propsContainer__featuredProduct'>
+                            
+                            <div className='createProductModalContainer__createProductModal__propsContainer__featuredProduct__input'>
+                                <input
+                                    className='createProductModalContainer__createProductModal__propsContainer__featuredProduct__input__prop'
+                                    type="checkbox"
+                                    checked={product.isFeatured}
+                                    onChange={(e) =>
+                                        setProduct({ ...product, isFeatured: e.target.checked })
+                                    }
+                                />
+                                <div className='createProductModalContainer__createProductModal__propsContainer__featuredProduct__input__label'>Marcar como destacado</div>
+                            </div>
+
+                        </div>
+
+
                         {product.camposDinamicos.map((campo, index) => (
                             <div key={index} className='createProductModalContainer__createProductModal__propsContainer__propProduct'>
 
@@ -785,7 +803,6 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     type="number"
                                     placeholder="Stock"
                                     value={nuevaVariante.stock}
-                                    //onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         const parsed = parseInt(value, 10);

@@ -13,10 +13,10 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         stock: '',
         state: '',
         category: '',
-        camposDinamicos: []
+        camposDinamicos: [],
+        isFeatured: false
     });
     const [variantes, setVariantes] = useState([]); 
-    //console.log(categories)
     const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, price: '', stock: '' });
 
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
@@ -32,45 +32,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         ]);
     };
 
-    /* useEffect(() => {
-
-        if (product) {
-            const imagenesDelBackend = product.images.map((imgPath) => {
-                const cleanedPath = imgPath.replace(/\\/g, '/'); // Normaliza la ruta a UNIX style
-                return {
-                type: 'backend',
-                name: cleanedPath.split('/').pop(), // Si necesitás el nombre solo
-                url: `http://localhost:8081/${cleanedPath}` // Ruta correcta
-                };
-            });
-      
-            setFormData((prev) => ({
-                ...prev,
-                images: imagenesDelBackend
-            }));
-            
-            const camposExtras = product.camposExtras || {};
-            const camposDinamicosArray = Object.entries(camposExtras).map(([key, value]) => ({
-                key,
-                value
-            }));
-        
-            setFormData({
-                title: product.title || '',
-                description: product.description || '',
-                price: product.price || 0,
-                stock: product.stock || 0,
-                state: product.state || '',
-                category: product.category || '',
-                images: imagenesDelBackend || [],
-                camposDinamicos: camposDinamicosArray
-            });
-
-            setVariantes(product.variantes || []);
-        }
-
-
-    }, [product]); */
     useEffect(() => {
         if (product) {
             const imagenesDelBackend = product.images?.map((imgPath) => {
@@ -96,13 +57,13 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                 state: product.state || '',
                 category: product.category?._id || product.category || '', // 👈 soporta populate o ID
                 images: imagenesDelBackend,
-                camposDinamicos: camposDinamicosArray
+                camposDinamicos: camposDinamicosArray,
+                isFeatured: product.isFeatured || false  // 👈 acá
             });
 
             setVariantes(product.variantes || []);
         }
     }, [product]);
-
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
@@ -256,6 +217,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         }
         formToSend.append('state', formData.state);
         formToSend.append('category', formData.category);
+        formToSend.append('isFeatured', formData.isFeatured);
 
         const propiedadesObj = {};
         formData.camposDinamicos.forEach(campo => {
@@ -545,14 +507,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                                     <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__label'>Stock</div>
                                     <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                        {/* <input
-                                            name='stock'
-                                            placeholder='Stock'
-                                            type="number"
-                                            value={formData.stock}
-                                            onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                                            className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__propShort"
-                                        /> */}
                                         <input 
                                         name='stock'
                                         placeholder='Stock'
@@ -595,20 +549,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__label'>Categoría</div>
                             <div className='createProductModalContainer__createProductModal__propsContainer__propProduct__select'>
-                                {/* <select
-                                    name='category'
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop"
-                                    required
-                                >
-                                    <option value="">Selecciona una categoría</option>
-                                    {categories?.map((category) => (
-                                        <option key={category._id} value={category.name}>
-                                            {capitalizeFirstLetter(category.name)}
-                                        </option>
-                                    ))}
-                                </select> */}
                                 <select
                                     name='category'
                                     className="createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop"
@@ -625,6 +565,22 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                     >
                                     Agregar categoría
                                 </Link>
+                            </div>
+
+                        </div>
+
+                        <div className='updateProductModalContainer__updateProductModal__propsContainer__featuredProduct'>
+                            
+                            <div className='updateProductModalContainer__updateProductModal__propsContainer__featuredProduct__input'>
+                                <input
+                                    className='updateProductModalContainer__updateProductModal__propsContainer__featuredProduct__input__prop'
+                                    type="checkbox"
+                                    checked={formData.isFeatured}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, isFeatured: e.target.checked })
+                                    }
+                                />
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__featuredProduct__input__label'>Marcar como destacado</div>
                             </div>
 
                         </div>

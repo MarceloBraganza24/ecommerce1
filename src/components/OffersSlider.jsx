@@ -3,9 +3,22 @@ import { useNavigate } from "react-router-dom";
 
 const OffersSlider = () => {
   const [offers, setOffers] = useState([]);
-  //console.log(offers)
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
+  const [isPaused, setIsPaused] = useState(false);
+
+  // autoplay que respeta isPaused
+  useEffect(() => {
+    if (isPaused || offers.length === 0) return; // si está pausado o no hay ofertas, no arranca
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) =>
+        prev === offers.length - 1 ? 0 : prev + 1
+      );
+    }, 3000); // cada 5s cambia de oferta
+
+    return () => clearInterval(interval);
+  }, [isPaused, offers.length]);
 
   // Traer configuración con ofertas
   useEffect(() => {
@@ -21,15 +34,6 @@ const OffersSlider = () => {
     fetchOffers();
   }, []);
 
-  // Cambio automático cada 5s
-  useEffect(() => {
-    if (offers.length === 0) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % offers.length);
-    }, 3000); 
-    return () => clearInterval(interval);
-  }, [offers]);
-
   // Click en oferta → navegar a /products con filtros
   const handleOfferClick = (filters) => {
     navigate("/products", { state: { filters } });
@@ -39,50 +43,16 @@ const OffersSlider = () => {
 
   const currentOffer = offers[currentIndex];
 
+  // función para pausar y reanudar
+  const handlePause = () => {
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 15000); // reanuda después de 10s
+  };
+
   return (
 
     <>
 
-      {/* <div className="offersContainer">
-        <div className="offersContainer__offersSlider">
-          <img
-            src={`http://localhost:8081/${currentOffer.image}`}
-            alt="Oferta"
-            onClick={() => handleOfferClick(currentOffer.filters)}
-            className="offersContainer__offersSlider__img"
-          />
-
-          <button
-            onClick={() =>
-              setCurrentIndex((prev) => (prev === 0 ? offers.length - 1 : prev - 1))
-            }
-            className="offersContainer__offersSlider__btnAnt"
-          >
-            ‹
-          </button>
-
-          <button
-            onClick={() =>
-              setCurrentIndex((prev) => (prev === offers.length - 1 ? 0 : prev + 1))
-            }
-            className="offersContainer__offersSlider__btnSig"
-          >
-            ›
-          </button>
-
-          <div className="offersContainer__offersSlider__indicators">
-            {offers.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                className={`offersContainer__offersSlider__indicators__indicator ${
-                  idx === currentIndex ? "active" : ""
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div> */}
       <div className="offersContainer">
         <div className="offersContainer__offersSlider">
           <div
@@ -101,18 +71,24 @@ const OffersSlider = () => {
           </div>
 
           <button
-            onClick={() =>
-              setCurrentIndex((prev) => (prev === 0 ? offers.length - 1 : prev - 1))
-            }
+            onClick={() => {
+              handlePause();
+              setCurrentIndex((prev) =>
+                prev === 0 ? offers.length - 1 : prev - 1
+              );
+            }}
             className="offersContainer__offersSlider__btnAnt"
           >
             ‹
           </button>
 
           <button
-            onClick={() =>
-              setCurrentIndex((prev) => (prev === offers.length - 1 ? 0 : prev + 1))
-            }
+            onClick={() => {
+              handlePause();
+              setCurrentIndex((prev) =>
+                prev === offers.length - 1 ? 0 : prev + 1
+              );
+            }}
             className="offersContainer__offersSlider__btnSig"
           >
             ›

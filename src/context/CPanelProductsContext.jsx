@@ -13,7 +13,8 @@ export const CPanelProductsContext = ({children}) => {
         stock: '',
         state: '',
         category: '',
-        camposDinamicos: []
+        camposDinamicos: [],
+        isFeatured: false
     });
 
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });

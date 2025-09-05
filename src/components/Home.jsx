@@ -5,11 +5,6 @@ import { Link, useLocation,useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import { toast } from 'react-toastify';
 
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Navigation, Pagination,Autoplay  } from "swiper/modules";
 import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
@@ -17,10 +12,23 @@ import { useAuth } from '../context/AuthContext';
 import CategoriesPage from './CategoriesPage.jsx';
 import OffersSlider from './OffersSlider.jsx';
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation, Pagination,Autoplay  } from "swiper/modules";
+
 const Home = () => {
+    const scrollRef = useRef(null);
+
+    const [featured, setFeatured] = useState({});
+    //console.log(featured)
+    const [activeTab, setActiveTab] = useState("");
+
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
     const [isScrollForced, setIsScrollForced] = useState(false);
+    const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
     const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
@@ -135,42 +143,6 @@ const Home = () => {
         }
     };
 
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch('http://localhost:8081/api/categories');
-            const data = await response.json();
-            if (response.ok) {
-                setCategories(data.data); 
-            } else {
-                toast('Error al cargar categorías', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        }
-    };
-
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
             const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
@@ -191,6 +163,33 @@ const Home = () => {
             setIsLoadingProducts(false)
         }
     };
+
+    const fetchFeatured = async () => {
+        try {
+            setIsLoadingFeatured(true);
+            const response = await fetch(`http://localhost:8081/api/products/featured`)
+            const productsAll = await response.json();
+            if(response.ok) {
+                console.log("Productos destacados crudos:", productsAll.payload);
+                setFeatured(productsAll.payload)
+                setActiveTab(Object.keys(productsAll.payload)[0] || "");
+            }
+        } catch (error) {
+            console.error('Error al obtener datos:', error);
+        } finally {
+            setIsLoadingFeatured(false);
+        }
+    };
+
+    // Función para dividir productos en grupos de 9
+    const chunkArray = (arr, chunkSize) => {
+        const result = [];
+        for (let i = 0; i < arr.length; i += chunkSize) {
+        result.push(arr.slice(i, i + chunkSize));
+        }
+        return result;
+    };
+
 
     const fetchSellerAddresses = async () => {
         try {
@@ -274,8 +273,9 @@ const Home = () => {
     };
 
     useEffect(() => {
-        fetchCategories();
+        //fetchCategories();
         fetchProductsByCategory();
+        fetchFeatured();
         fetchCurrentUser();
         fetchProducts();
         fetchStoreSettings();
@@ -314,6 +314,72 @@ const Home = () => {
         return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     }
 
+    function ProductCard({ product }) {
+        const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
+
+        const handleRedirectToItemDetailProduct = () => {
+            window.location.href = `/item/${product._id}`
+        }
+
+        // Obtener precio y stock según variante o producto simple
+        const price =
+            product.variantes && product.variantes.length > 0
+            ? product.variantes[selectedVariantIndex].price
+            : product.price;
+
+        const stock =
+            product.variantes && product.variantes.length > 0
+            ? product.variantes[selectedVariantIndex].stock
+            : product.stock;
+
+        return (
+            <div className="product-card">
+
+                <div className="product-card__img">
+                    <img
+                    src={`http://localhost:8081/${product.images[0]}`}
+                    alt={product.title}
+                    className="product-card__img__prop"
+                    onClick={handleRedirectToItemDetailProduct}
+                    />
+                </div>
+
+                <div className="product-card__props">
+
+                    <h4 className="product-card__props__title">{product.title}</h4>
+
+                    {/* Variantes */}
+                    {product.variantes && product.variantes.length > 0 && (
+                        <select
+                        className="product-card__props__select"
+                        value={selectedVariantIndex}
+                        onChange={(e) => setSelectedVariantIndex(Number(e.target.value))}
+                        >
+                        {product.variantes.map((v, idx) => {
+                            const label = Object.entries(v.campos || {})
+                            .map(([key, val]) => `${key}: ${val}`)
+                            .join(" | ");
+                            return (
+                            <option key={idx} value={idx}>
+                                {label || "Sin variante"}
+                            </option>
+                            );
+                        })}
+                        </select>
+                    )}
+
+                    <p className="text-sm text-gray-500 text-center">Precio: ${price}</p>
+                    <p className="text-xs text-gray-400 text-center">
+                        Stock disponible: {stock}
+                    </p>
+
+                </div>
+
+            </div>
+
+        );
+    }
+
     return (
 
         <>
@@ -344,6 +410,86 @@ const Home = () => {
 
             <OffersSlider />
 
+            {
+
+                isLoadingFeatured ? 
+                <>
+                <div style={{backgroundColor:'black',padding:'2vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <Spinner/>
+                </div>
+                </>
+                :
+                <>
+                    <div className="featured-products">
+                        <div className="featured-products__title">
+                            <div className="featured-products__title__prop">Conocé nuestros productos destacados</div>
+                        </div>
+                        <div className="tabsContainer">
+
+                            <div className="tabsContainer__tabs">
+
+                                <button
+                                    style={{paddingRight:'1.5vh'}}
+                                    className="tabsContainer__tabs__scrollButton left"
+                                    onClick={() => {
+                                    scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
+                                    }}
+                                >
+                                    ◀
+                                </button>
+
+                                <div className="tabsContainer__tabs__buttonContainer" ref={scrollRef}>
+                                    {Object.keys(featured).map((category) => (
+                                    <button
+                                        key={category}
+                                        className={activeTab === category ? "active" : ""}
+                                        onClick={() => setActiveTab(category)}
+                                    >
+                                        {category}
+                                    </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    style={{paddingLeft:'1.5vh'}}
+                                    className="tabsContainer__tabs__scrollButton right"
+                                    onClick={() => {
+                                    scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+                                    }}
+                                >
+                                    ▶
+                                </button>
+                                
+                            </div>
+
+                        </div>
+
+                        {activeTab && featured[activeTab] && (
+                            <Swiper
+                            modules={[Navigation, Pagination, Autoplay]}
+                            navigation
+                            pagination={{ clickable: true }}
+                            autoplay={{ delay: 3000, disableOnInteraction: false }}
+                            spaceBetween={20}
+                            slidesPerView={1}
+                            >
+                            {chunkArray(featured[activeTab], 9).map((page, idx) => (
+                                <SwiperSlide key={idx}>
+                                    <div className="product-grid-container">
+                                        <div className="product-grid-container__product-grid">
+                                            {page.map((product) => (
+                                                <ProductCard key={product._id} product={product} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                            </Swiper>
+                        )}
+                    </div>
+                </>
+            }
+
             {/* {
                 storeSettings?.sliderLogos?.length != 0 &&
 
@@ -361,72 +507,6 @@ const Home = () => {
 
                 </div>
             } */}
-
-            {/* <div className='catalogContainer' id="catalogContainer">
-
-                <div className="catalogContainer__titleContainer">
-                    <div className='catalogContainer__titleContainer__title'>
-                        <div className='catalogContainer__titleContainer__title__prop'>CATÁLOGO</div>
-                    </div>
-                </div>
-
-                <div className="catalogContainer__gridCategoriesProducts">
-
-                    <div className="catalogContainer__gridCategoriesProducts__categoriesContainer">
-
-                        <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories">
-
-                            <div className="catalogContainer__gridCategoriesProducts__categoriesContainer__categories__title">Categorías</div>
-                            <div style={{ padding: "20px" }}>
-                                <CategoriesPage />
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div className="catalogContainer__gridCategoriesProducts__productsContainer">
-
-                        <div className="catalogContainer__gridCategoriesProducts__productsContainer__productsList">
-                            {
-                                products.map((product) => (
-                                    <ItemProduct
-                                    user={user} 
-                                    fetchCartByUserId={fetchCartByUserId}
-                                    id={product._id}
-                                    stock={product.stock}
-                                    images={product.images}
-                                    title={product.title}
-                                    description={product.description}
-                                    price={product.price}
-                                    variantes={product.variantes}
-                                    userCart={userCart}
-                                    />
-                                ))
-                            }
-                            <div className='cPanelProductsContainer__btnsPagesContainer'>
-                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                    disabled={!pageInfo.hasPrevPage}
-                                    onClick={() => fetchProducts(pageInfo.prevPage, inputFilteredProducts, selectedField)}
-                                    >
-                                    Anterior
-                                </button>
-                                
-                                <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
-
-                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                    disabled={!pageInfo.hasNextPage}
-                                    onClick={() => fetchProducts(pageInfo.nextPage, inputFilteredProducts, selectedField)}
-                                    >
-                                    Siguiente
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                
-                </div>
-
-            </div> */}
 
             {/* <Footer
             isLoggedIn={user?.isLoggedIn}
