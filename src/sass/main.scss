@@ -496,7 +496,7 @@ h2 {
     width: 100%;
 }
 .separatorFooter {
-    background-color: whitesmoke;
+    background-color: rgba(183, 183, 183, 0.85);
     width: 100%;
     @include disFC();
     &__prop {
@@ -519,7 +519,7 @@ h2 {
     &__title {
         width: 100%;
         //background-color: black;
-        background-color: whitesmoke;
+        background-color: rgba(183, 183, 183, 0.85);
         @include disFC();
         padding: 6vh 0vh 1vh 0vh;
         &__prop {
@@ -531,7 +531,7 @@ h2 {
     }
     .tabsContainer {
         //background-color: var(--primary-color);
-        background-color: whitesmoke;
+        background-color: rgba(183, 183, 183, 0.85);
         width: 100%;
         padding: 2vh 0vh;
         display: flex;
@@ -557,9 +557,9 @@ h2 {
                 }
                 button {
                 flex: 0 0 auto; // evitar que los botones se achiquen
-                width: 150px;
+                //width: 150px;
                 padding: 0.5rem 1rem;
-                border-radius: 0.375rem;
+                border-radius: 5vh;
                 border: none;
                 cursor: pointer;
                 background-color: whitesmoke;
@@ -602,7 +602,8 @@ h2 {
     .product-grid-container {
         @include disFC();
         //background-color: var(--primary-color);
-        background-color: whitesmoke;
+        //background-color: whitesmoke;
+        background-color: rgba(183, 183, 183, 0.85);
         padding: 2vh 0vh 6vh 0vh;
         &__product-grid {
             display: grid;
@@ -685,7 +686,7 @@ h2 {
     }
 }
 .categoriesExplored {
-    background-color: whitesmoke;
+    background-color: rgba(183, 183, 183, 0.85);
     @include disFC();
     flex-direction: column;
     &__title {
@@ -696,17 +697,17 @@ h2 {
         }
     }
     &__grid {
-        width: 70%;
+        width: 80%;
         display: grid;
-        grid-template-columns: 1fr 3fr;
-        padding: 6vh 0vh;
+        grid-template-columns: 1fr 2fr;
+        padding: 4vh 0vh;
         &__left {
             @include disFC();
             &__categoryImg {
+                width: 100%;
                 @include disFC();
                 &__prop {
-                    width: 100%;
-                    max-width: 250px;
+                    width: 95%;
                     object-fit: cover;
                     cursor: pointer;
                     border-radius: 8px;
@@ -719,7 +720,7 @@ h2 {
             &__page {
                 display: flex;
                 flex-wrap: wrap; // que las categorías se acomoden en filas
-                gap: 10px;       // separación entre categorías
+                //gap: 10px;       // separación entre categorías
                 justify-content: start;
             }
             &__category {
@@ -728,8 +729,8 @@ h2 {
                 align-items: center;
                 text-align: center;
                 &__img {
-                    width: 70%;
-                    aspect-ratio: 1 / 1;
+                    width: 100%;
+                    //aspect-ratio: 1 / 1;
                     object-fit: cover;
                     border-radius: 8px;
                     transition: transform 0.2s ease;
@@ -745,7 +746,7 @@ h2 {
 }
 .offersContainer {
     //background-color: var(--primary-color);
-    background-color: whitesmoke;
+    background-color: rgba(183, 183, 183, 0.85);
     width: 100%;
     height: 75vh;
     @include disFC();
@@ -4137,7 +4138,7 @@ h2 {
         }
     }
     &__gridCategoriesProducts {
-        width: 80%;
+        width: 85%;
         display: grid;
         grid-template-columns: 20% 80%;
         padding: 0vh 0vh 5vh 0vh;
@@ -4167,6 +4168,9 @@ h2 {
                     &__ul {
                         width: 80%;
                         align-self: center;
+                        &__li {
+                            padding: 0.3vh 0vh;
+                        }
                     }
                 }
                 &__priceFilter {
@@ -4240,7 +4244,6 @@ h2 {
         }
         &__productsContainer {
             width: 100%;
-            display: flex;
             &__productsList {
                 width: 100%;
                 display: flex;
@@ -4448,6 +4451,7 @@ h2 {
     border-radius: 12px;
     padding: 1rem;
     width: 200px;
+    max-height: 300px;
     transition: transform 0.2s ease;
     cursor: pointer;
     &:hover {

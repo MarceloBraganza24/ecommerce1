@@ -26,7 +26,8 @@ const Home = () => {
     const [featured, setFeatured] = useState({});
     const [activeTab, setActiveTab] = useState("");
     const [rootCategories, setRootCategories] = useState([]);
-    //console.log(rootCategories)
+    const [rootCategoriesTree, setRootCategoriesTree] = useState([]);
+    const [categoriesTree, setCategoriesTree] = useState([]);
 
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
@@ -61,6 +62,24 @@ const Home = () => {
     const [selectedField, setSelectedField] = useState('title');
     
     const location = useLocation();
+
+    useEffect(() => {
+        if (categoriesTree && categoriesTree.length > 0) {
+            // Tomamos SOLO categorías raíz
+            const roots = categoriesTree.filter(cat => !cat.parent);
+            setRootCategoriesTree(roots);
+        }
+    }, [categoriesTree]);
+
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${SERVER_URL}api/categories/combined`);
+        const data = await res.json();
+        if (res.ok) setCategoriesTree(data.tree || []);
+      } catch (err) {
+        console.error("Error al cargar categorías:", err);
+      }
+    };
 
     useEffect(() => {
         if (firstRender.current) {
@@ -291,7 +310,7 @@ const Home = () => {
     };
 
     useEffect(() => {
-        //fetchCategories();
+        fetchCategories();
         fetchProductsByCategory();
         fetchFeatured();
         fetchCurrentUser();
@@ -443,7 +462,7 @@ const Home = () => {
 
                 isLoadingFeatured ? 
                 <>
-                <div style={{backgroundColor:'whitesmoke',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <div style={{backgroundColor:'rgba(183, 183, 183, 0.85)',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
                     <Spinner/>
                 </div>
                 </>
@@ -536,19 +555,19 @@ const Home = () => {
                             </div>
 
                             <div className="categoriesExplored__grid__right">
-                                {rootCategories.length > 1 && (
+                                {rootCategoriesTree.length > 1 && (
                                     <>
                                     <Swiper
                                         modules={[Navigation, Pagination, Grid, Autoplay]}
                                         navigation
-                                        autoplay={{ delay: 3000, disableOnInteraction: false }}
+                                        autoplay={{ delay: 3000, disableOnInteraction: true }}
                                         pagination={{ clickable: true }}
                                         spaceBetween={20}
-                                        slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
+                                        slidesPerView={4}        // 🔹 mostramos 9 categorías a la vez
                                         slidesPerGroup={1}       // 🔹 que avance de a 1
                                         grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
                                         >
-                                        {rootCategories.slice(1).map((category) => (
+                                        {rootCategoriesTree.slice(1).map((category) => (
                                             <SwiperSlide key={category._id}>
                                             <div className="categoriesExplored__grid__right__category">
                                                 <img
