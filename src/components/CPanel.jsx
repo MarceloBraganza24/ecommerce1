@@ -920,7 +920,10 @@ const CPanel = () => {
         copyrightText: '', 
         sliderLogos: [],
         socialNetworks: [],
-        offersSlider: [{ image: null, filters: [], prevImagePath: null }]
+        offersSlider: [{ image: null, filters: [], prevImagePath: null }],
+        storeInfoBoxes: [
+            { title: '', description: '', iconFile: null, iconPreview: '', prevIconPath: '' }
+        ]
     });
     const [colorSelectFormData, setColorSelectFormData] = useState({
         primaryColor: '#000000',
@@ -1274,9 +1277,6 @@ const CPanel = () => {
             return;
         }
 
-        /* const hasInvalidOffer = configurationSiteformData.offersSlider.some(
-            offer => !offer.image || !offer.filters || Object.keys(offer.filters).length === 0
-        ); */
         const hasInvalidOffer = configurationSiteformData.offersSlider.some(offer => {
             // debe tener imagen válida
             if (!offer.image) return true;
@@ -1311,7 +1311,49 @@ const CPanel = () => {
             return;
         }
 
+        /* const hasInvalidInfoBox = configurationSiteformData.storeInfoBoxes.some(box => {
+            const hasTitleOrDescription = box.title.trim() !== '' || box.description.trim() !== '';
+            const hasImage = box.iconFile instanceof File || typeof box.prevIconPath === 'string';
+            return hasTitleOrDescription && !hasImage;
+        });
+
+         if (hasInvalidInfoBox) {
+            toast('Cada box debe tener una imagen si tiene texto.', {
+                position: "top-right",
+                autoClose: 3000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        } */
+
         const formData = new FormData();
+
+        let infoBoxFileCounter = 0;
+
+        const processedInfoBoxes = configurationSiteformData.storeInfoBoxes.map((box) => {
+            let iconStr = '';
+            let iconFileIndex = null;
+
+            if (box.iconFile instanceof File) {
+                // Nuevo archivo
+                formData.append('storeInfoIcons', box.iconFile);
+                iconStr = `__upload__${infoBoxFileCounter}`;
+                iconFileIndex = infoBoxFileCounter;
+                infoBoxFileCounter++;
+            } else if (typeof box.prevIconPath === 'string' && box.prevIconPath.trim() !== '') {
+                // Mantener el ícono viejo
+                iconStr = box.prevIconPath;
+            }
+
+            return {
+                title: box.title,
+                description: box.description,
+                icon: iconStr,
+                iconFileIndex // 🔑 clave que el backend espera
+            };
+        });
+
 
         let fileCounter = 0;
         const processedOffers = configurationSiteformData.offersSlider
@@ -1420,6 +1462,7 @@ const CPanel = () => {
             accentColor: colorSelectFormData.accentColor,
             sliderLogos: configurationSiteformData.sliderLogos.filter(logo => typeof logo === 'string' && logo.trim() !== ''),
             socialNetworks: processedSocialNetworks,
+            storeInfoBoxes: processedInfoBoxes,
             offersSlider: processedOffers  // ✅ aquí va
         };
 
@@ -2019,6 +2062,116 @@ const CPanel = () => {
                                 + Agregar oferta
                             </button>
                         </div>
+
+
+
+
+
+
+
+
+
+                        {configurationSiteformData.storeInfoBoxes.map((box, index) => (
+                            <div key={index} className="info-box-edit">
+                                <label>Título</label>
+                                <input
+                                type="text"
+                                value={box.title}
+                                onChange={e => {
+                                    const newBoxes = [...configurationSiteformData.storeInfoBoxes];
+                                    newBoxes[index].title = e.target.value;
+                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                }}
+                                />
+
+                                <label>Descripción</label>
+                                <input
+                                type="text"
+                                value={box.description}
+                                onChange={e => {
+                                    const newBoxes = [...configurationSiteformData.storeInfoBoxes];
+                                    newBoxes[index].description = e.target.value;
+                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                }}
+                                />
+
+                                <label>Ícono (imagen)</label>
+                                {box.iconPreview && (
+                                <img
+                                    src={box.iconPreview}
+                                    alt="Icon preview"
+                                    style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                                />
+                                )}
+
+                                <input
+                                type="file"
+                                accept="image/*"
+                                onChange={e => {
+                                    const file = e.target.files[0];
+                                    const newBoxes = [...configurationSiteformData.storeInfoBoxes];
+                                    newBoxes[index].iconFile = file;
+                                    newBoxes[index].iconPreview = URL.createObjectURL(file);
+                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                }}
+                                />
+
+                                <button
+                                type="button"
+                                onClick={() => {
+                                    const newBoxes = configurationSiteformData.storeInfoBoxes.filter((_, i) => i !== index);
+                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                }}
+                                >
+                                Eliminar bloque
+                                </button>
+
+                                <hr />
+                            </div>
+                        ))}
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setConfigurationSiteformData(prev => {
+                                if (prev.storeInfoBoxes.length >= 3) {
+                                    toast('Solo puedes agregar hasta 3 bloques', {
+                                        position: "top-right",
+                                        autoClose: 2000,
+                                        hideProgressBar: false,
+                                        closeOnClick: true,
+                                        pauseOnHover: true,
+                                        draggable: true,
+                                        progress: undefined,
+                                        theme: "dark",
+                                        className: "custom-toast",
+                                    });
+                                    return prev; // 👈 no agrega nada
+                                }
+
+                                return {
+                                    ...prev,
+                                    storeInfoBoxes: [
+                                    ...prev.storeInfoBoxes,
+                                    { title: '', description: '', iconFile: null, iconPreview: '', prevIconPath: '' }
+                                    ]
+                                };
+                                });
+                            }}
+                            >
+                            + Agregar nuevo bloque
+                        </button>
+
+
+
+
+
+
+
+
+
+
+
 
                         <div className="cPanelContainer__siteConfiguration__form__images" style={{marginTop: '2vh'}}>
                             <div className="cPanelContainer__siteConfiguration__form__images__title">Imágenes del sitio</div>

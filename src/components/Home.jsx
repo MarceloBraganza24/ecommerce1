@@ -25,6 +25,8 @@ const Home = () => {
 
     const [featured, setFeatured] = useState({});
     const [activeTab, setActiveTab] = useState("");
+    const [latestNews, setLatestNews] = useState({});
+    const [activeTabLatestNews, setActiveTabLatestNews] = useState("");
     const [rootCategories, setRootCategories] = useState([]);
     const [rootCategoriesTree, setRootCategoriesTree] = useState([]);
     const [categoriesTree, setCategoriesTree] = useState([]);
@@ -33,6 +35,7 @@ const Home = () => {
     const firstRender = useRef(true);
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
+    const [isLoadingLatestNews, setIsLoadingLatestNews] = useState(false);
     const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
@@ -203,6 +206,22 @@ const Home = () => {
         }
     };
 
+    const fetchLatestNews = async () => {
+        try {
+            setIsLoadingLatestNews(true);
+            const response = await fetch(`http://localhost:8081/api/products/latest-news`)
+            const productsAll = await response.json();
+            if(response.ok) {
+                setLatestNews(productsAll.payload)
+                setActiveTabLatestNews(Object.keys(productsAll.payload)[0] || "");
+            }
+        } catch (error) {
+            console.error('Error al obtener datos:', error);
+        } finally {
+            setIsLoadingLatestNews(false);
+        }
+    };
+
     // Función para dividir productos en grupos de 9
     const chunkArray = (arr, chunkSize) => {
         const result = [];
@@ -313,6 +332,7 @@ const Home = () => {
         fetchCategories();
         fetchProductsByCategory();
         fetchFeatured();
+        fetchLatestNews();
         fetchCurrentUser();
         fetchProducts();
         fetchStoreSettings();
@@ -454,15 +474,11 @@ const Home = () => {
 
             <OffersSlider />
 
-            <div className="separatorFooter">
-                <div className="separatorFooter__prop"></div>
-            </div>
-
             {
 
                 isLoadingFeatured ? 
                 <>
-                <div style={{backgroundColor:'rgba(183, 183, 183, 0.85)',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <div style={{backgroundColor:'#EFEFEF',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
                     <Spinner/>
                 </div>
                 </>
@@ -470,7 +486,7 @@ const Home = () => {
                 <>
                     <div className="featured-products">
                         <div className="featured-products__title">
-                            <div className="featured-products__title__prop">Conocé nuestros productos destacados</div>
+                            <div className="featured-products__title__prop">Conocé nuestros <strong>productos destacados</strong></div>
                         </div>
                         <div className="tabsContainer">
 
@@ -512,38 +528,55 @@ const Home = () => {
 
                         </div>
 
-                        {activeTab && featured[activeTab] && (
-                            <Swiper
-                            modules={[Navigation, Pagination, Autoplay]}
-                            navigation
-                            pagination={{ clickable: true }}
-                            autoplay={{ delay: 3000, disableOnInteraction: false }}
-                            spaceBetween={20}
-                            slidesPerView={1}
-                            >
-                            {chunkArray(featured[activeTab], 9).map((page, idx) => (
-                                <SwiperSlide key={idx}>
-                                    <div className="product-grid-container">
-                                        <div className="product-grid-container__product-grid">
-                                            {page.map((product) => (
-                                                <ProductCard key={product._id} product={product} />
-                                            ))}
-                                        </div>
-                                    </div>
-                                </SwiperSlide>
-                            ))}
-                            </Swiper>
-                        )}
+                        <div className="product-grid-container">
+                            <div className="product-grid-container__product-grid">
+                                {activeTab && featured[activeTab] && (
+                                    <Swiper
+                                    modules={[Navigation, Pagination, Grid, Autoplay]}
+                                    navigation
+                                    autoplay={{ delay: 3000, disableOnInteraction: true }}
+                                    pagination={{ clickable: true }}
+                                    spaceBetween={15}
+                                    slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
+                                    slidesPerGroup={1}       // 🔹 que avance de a 1
+                                    grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                                    >
+                                    {chunkArray(featured[activeTab], 1).map((page, idx) => (
+                                        <SwiperSlide key={idx}>
+                                            <div>
+                                                {page.map((product) => (
+                                                    <ProductCard key={product._id} product={product} />
+                                                ))}
+                                            </div>
+                                        </SwiperSlide>
+                                    ))}
+                                    </Swiper>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="separatorFooter">
-                        <div className="separatorFooter__prop"></div>
+                    <div className="linkToAboutPagContainer">
+                        <div
+                            className="linkToAboutPagContainer__imgContainer"
+                            style={{
+                                backgroundImage: `url("http://localhost:8081/${storeSettings?.siteImages?.aboutImage}")`,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center"
+                            }}
+                        >
+                            <div className="linkToAboutPagContainer__imgContainer__phrase">
+                                <div onClick={()=>window.location.href='/about'} className='linkToAboutPagContainer__imgContainer__phrase__prop'>
+                                    Conocé más sobre nosotros
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="categoriesExplored">
 
                         <div className="categoriesExplored__title">
-                            <div className="categoriesExplored__title__prop">Explorá nuestras categorías</div>
+                            <div className="categoriesExplored__title__prop">Explorá nuestras <strong>categorías</strong></div>
                         </div>
 
                         <div className="categoriesExplored__grid">
@@ -588,6 +621,101 @@ const Home = () => {
                         </div>
                     
                     </div>
+
+                    <div className="informationStrip">
+
+                        <div className="informationStrip__grid">
+
+                            {storeSettings?.storeInfoBoxes?.map((box, i) => (
+                            <div key={i} className="informationStrip__grid__box">
+
+                                <div className="informationStrip__grid__box__img">
+                                    {box.icon && <img className="informationStrip__grid__box__img__prop" src={`${SERVER_URL}${box.icon}`} alt="" />}
+                                </div>
+                                <div className="informationStrip__grid__box__info">
+                                    <h4 className="informationStrip__grid__box__info__h4">{box.title}</h4>
+                                    <p className="informationStrip__grid__box__info__p">{box.description}</p>
+                                </div>
+
+                            </div>
+                            ))}
+
+                        </div>
+
+                    </div>
+
+                    <div className="featured-products">
+                        <div className="featured-products__title">
+                            <div className="featured-products__title__prop">Conocé nuestras <strong>últimas novedades</strong></div>
+                        </div>
+                        <div className="tabsContainer">
+
+                            <div className="tabsContainer__tabs">
+
+                                <button
+                                    style={{paddingRight:'1.5vh'}}
+                                    className="tabsContainer__tabs__scrollButton left"
+                                    onClick={() => {
+                                    scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
+                                    }}
+                                >
+                                    ◀
+                                </button>
+
+                                <div className="tabsContainer__tabs__buttonContainer" ref={scrollRef}>
+                                    {Object.keys(featured).map((category) => (
+                                    <button
+                                        key={category}
+                                        className={activeTab === category ? "active" : ""}
+                                        onClick={() => setActiveTab(category)}
+                                    >
+                                        {category}
+                                    </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    style={{paddingLeft:'1.5vh'}}
+                                    className="tabsContainer__tabs__scrollButton right"
+                                    onClick={() => {
+                                    scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+                                    }}
+                                >
+                                    ▶
+                                </button>
+                                
+                            </div>
+
+                        </div>
+
+                        <div className="product-grid-container">
+                            <div className="product-grid-container__product-grid">
+                                {activeTab && featured[activeTab] && (
+                                    <Swiper
+                                    modules={[Navigation, Pagination, Grid, Autoplay]}
+                                    navigation
+                                    autoplay={{ delay: 3000, disableOnInteraction: true }}
+                                    pagination={{ clickable: true }}
+                                    spaceBetween={15}
+                                    slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
+                                    slidesPerGroup={1}       // 🔹 que avance de a 1
+                                    grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                                    >
+                                    {chunkArray(featured[activeTab], 1).map((page, idx) => (
+                                        <SwiperSlide key={idx}>
+                                            <div>
+                                                {page.map((product) => (
+                                                    <ProductCard key={product._id} product={product} />
+                                                ))}
+                                            </div>
+                                        </SwiperSlide>
+                                    ))}
+                                    </Swiper>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                 </>
             }
 
