@@ -454,6 +454,7 @@ h2 {
  
 .slider-logos {
     background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    background-color: white;
     width: 100%;
     height: auto;
     @include disFC();
@@ -558,7 +559,7 @@ h2 {
                 border-radius: 4vh;
                 border: none;
                 cursor: pointer;
-                background-color: whitesmoke;
+                background-color: white;
                 color: #111827;
                 border: 0.3vh solid black;
 
@@ -602,7 +603,7 @@ h2 {
             width: 70%;
         }
         .product-card {
-            background-color: whitesmoke;
+            background-color: white;
             border-radius: 12px;
             padding: 1vh 0vh 1vh 4vh;
             width: 300px;
@@ -674,8 +675,8 @@ h2 {
     }
 }
 .linkToAboutPagContainer {
-    background-color: #EFEFEF;
-    padding: 2vh 0vh;
+    //background-color: #EFEFEF;
+    padding: 6vh 0vh;
     @include disFC();
     &__imgContainer {
         width: 85%;
@@ -4580,7 +4581,10 @@ h2 {
             font-size: 25px;
         }
         &__propLabel {
-            font-size: 20px;
+            font-size: 22px;
+            &__span {
+                font-size: 14px;
+            }
         }
     }
     &__btnContainer {

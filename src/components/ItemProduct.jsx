@@ -79,6 +79,10 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
         }, 200);
     };
 
+    const minVariantPrice = variantes.length > 0 
+        ? Math.min(...variantes.map(v => v.price))
+        : null;
+
     return (
 
         <>
@@ -136,7 +140,7 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
                     {
                         variantes.length > 0 ?
                         <div className="itemProduct__priceContainer__propLabel">
-                            Ver precios  
+                            {/* <span className='itemProduct__priceContainer__propLabel__span'>Desde</span> */} ${minVariantPrice}  
                         </div>
                         :
                         <div className="itemProduct__priceContainer__prop">

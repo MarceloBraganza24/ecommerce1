@@ -21,12 +21,14 @@ import { Navigation, Pagination,Autoplay,Grid  } from "swiper/modules";
 
 const Home = () => {
     const scrollRef = useRef(null);
+    const scrollRefLatestNews = useRef(null);
     const navigate = useNavigate();
 
     const [featured, setFeatured] = useState({});
     const [activeTab, setActiveTab] = useState("");
     const [latestNews, setLatestNews] = useState({});
     const [activeTabLatestNews, setActiveTabLatestNews] = useState("");
+    
     const [rootCategories, setRootCategories] = useState([]);
     const [rootCategoriesTree, setRootCategoriesTree] = useState([]);
     const [categoriesTree, setCategoriesTree] = useState([]);
@@ -475,6 +477,24 @@ const Home = () => {
             <OffersSlider />
 
             {
+                storeSettings?.sliderLogos?.length != 0 &&
+
+                <div className="slider-logos">
+
+                    <div className="slider-logos__logo-slider">
+                        <div className="slider-logos__logo-slider__slider-track">
+                            {storeSettings?.sliderLogos?.concat(storeSettings?.sliderLogos).map((logo, index) => (
+                                <div key={index} className="slider-logos__logo-slider__slider-track__slide">
+                                <img className="slider-logos__logo-slider__slider-track__slide__img" src={`${SERVER_URL}${logo}`} alt={logo.alt} />
+                            </div>
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+            {
 
                 isLoadingFeatured ? 
                 <>
@@ -656,18 +676,18 @@ const Home = () => {
                                     style={{paddingRight:'1.5vh'}}
                                     className="tabsContainer__tabs__scrollButton left"
                                     onClick={() => {
-                                    scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
+                                    scrollRefLatestNews.current.scrollBy({ left: -200, behavior: "smooth" });
                                     }}
                                 >
                                     ◀
                                 </button>
 
-                                <div className="tabsContainer__tabs__buttonContainer" ref={scrollRef}>
-                                    {Object.keys(featured).map((category) => (
+                                <div className="tabsContainer__tabs__buttonContainer" ref={scrollRefLatestNews}>
+                                    {Object.keys(latestNews).map((category) => (
                                     <button
                                         key={category}
-                                        className={activeTab === category ? "active" : ""}
-                                        onClick={() => setActiveTab(category)}
+                                        className={activeTabLatestNews === category ? "active" : ""}
+                                        onClick={() => setActiveTabLatestNews(category)}
                                     >
                                         {category}
                                     </button>
@@ -678,7 +698,7 @@ const Home = () => {
                                     style={{paddingLeft:'1.5vh'}}
                                     className="tabsContainer__tabs__scrollButton right"
                                     onClick={() => {
-                                    scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
+                                    scrollRefLatestNews.current.scrollBy({ left: 200, behavior: "smooth" });
                                     }}
                                 >
                                     ▶
@@ -690,7 +710,7 @@ const Home = () => {
 
                         <div className="product-grid-container">
                             <div className="product-grid-container__product-grid">
-                                {activeTab && featured[activeTab] && (
+                                {activeTabLatestNews && latestNews[activeTabLatestNews] && (
                                     <Swiper
                                     modules={[Navigation, Pagination, Grid, Autoplay]}
                                     navigation
@@ -701,7 +721,7 @@ const Home = () => {
                                     slidesPerGroup={1}       // 🔹 que avance de a 1
                                     grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
                                     >
-                                    {chunkArray(featured[activeTab], 1).map((page, idx) => (
+                                    {chunkArray(latestNews[activeTabLatestNews], 1).map((page, idx) => (
                                         <SwiperSlide key={idx}>
                                             <div>
                                                 {page.map((product) => (
@@ -720,23 +740,7 @@ const Home = () => {
             }
 
 
-            {/* {
-                storeSettings?.sliderLogos?.length != 0 &&
-
-                <div className="slider-logos">
-
-                    <div className="slider-logos__logo-slider">
-                        <div className="slider-logos__logo-slider__slider-track">
-                            {storeSettings?.sliderLogos?.concat(storeSettings?.sliderLogos).map((logo, index) => (
-                                <div key={index} className="slider-logos__logo-slider__slider-track__slide">
-                                <img className="slider-logos__logo-slider__slider-track__slide__img" src={`${SERVER_URL}${logo}`} alt={logo.alt} />
-                            </div>
-                            ))}
-                        </div>
-                    </div>
-
-                </div>
-            } */}
+            
 
             {/* <div className="separatorFooter">
                 <div className="separatorFooter__prop"></div>

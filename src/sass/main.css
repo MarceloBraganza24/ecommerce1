@@ -483,6 +483,7 @@ h2 {
 
 .slider-logos {
   background-color: rgba(183, 183, 183, 0.85);
+  background-color: white;
   width: 100%;
   height: auto;
   display: flex;
@@ -600,7 +601,7 @@ h2 {
   border-radius: 4vh;
   border: none;
   cursor: pointer;
-  background-color: whitesmoke;
+  background-color: white;
   color: #111827;
   border: 0.3vh solid black;
 }
@@ -640,7 +641,7 @@ h2 {
   width: 70%;
 }
 .featured-products .product-grid-container .product-card {
-  background-color: whitesmoke;
+  background-color: white;
   border-radius: 12px;
   padding: 1vh 0vh 1vh 4vh;
   width: 300px;
@@ -713,8 +714,7 @@ h2 {
 }
 
 .linkToAboutPagContainer {
-  background-color: #EFEFEF;
-  padding: 2vh 0vh;
+  padding: 6vh 0vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -5139,7 +5139,10 @@ h2 {
   font-size: 25px;
 }
 .itemProduct__priceContainer__propLabel {
-  font-size: 20px;
+  font-size: 22px;
+}
+.itemProduct__priceContainer__propLabel__span {
+  font-size: 14px;
 }
 .itemProduct__btnContainer {
   width: 100%;

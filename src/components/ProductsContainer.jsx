@@ -242,6 +242,14 @@ const ProductsContainer = () => {
                 setProducts(data.docs || []);
                 setTotalPages(data.totalPages || 1);
                 setAvailableFilters(data.availableFilters || {});
+                setPageInfo({
+                    page: data.page,
+                    hasNextPage: data.hasNextPage,
+                    hasPrevPage: data.hasPrevPage,
+                    nextPage: data.nextPage,
+                    prevPage: data.prevPage,
+                    totalPages: data.totalPages,
+                });
             } else {
                 console.error("Error en la búsqueda:", data.error);
             }
