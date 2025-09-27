@@ -9,6 +9,7 @@ const SendMailPass = () => {
     const [storeName, setStoreName] = useState('');
     const [showSpinner, setShowSpinner] = useState(false);
     const [loadingBtnRecieveLink, setLoadingBtnRecieveLink] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         fetchStoreName();
@@ -16,10 +17,10 @@ const SendMailPass = () => {
 
     const fetchStoreName = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
-                setStoreName(data.storeName)
+                setStoreName(data?.storeName)
             } else {
                 toast('Error al cargar configuraciones', {
                     position: "top-right",
@@ -36,8 +37,6 @@ const SendMailPass = () => {
 
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsLoadingStoreSettings(false)
         }
     };
 
@@ -63,7 +62,7 @@ const SendMailPass = () => {
         }
         try {
             setLoadingBtnRecieveLink(true);
-            const response = await fetch(`http://localhost:8081/api/users/password-link`, {
+            const response = await fetch(`${SERVER_URL}api/users/password-link`, {
                 method: 'POST',         
                 headers: {
                     'Content-Type': 'application/json',

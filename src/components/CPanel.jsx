@@ -7,9 +7,7 @@ import Spinner from './Spinner';
 
 import { useUnsavedChangesPrompt } from '../hooks/useUnsavedChangesPrompt';
 import isEqual from 'lodash.isequal';
-import {IsLoggedContext} from '../context/IsLoggedContext';
 import { useAuth } from '../context/AuthContext.jsx';
-import ConfirmationDeleteCPanelProductModal from './ConfirmationDeleteCPanelProductModal.jsx';
 import ConfirmationDeleteCPanelCategoryModal from './ConfirmationDeleteCPanelCategoryModal.jsx';
 import ConfirmationDeleteCPanelSellerAddressModal from './ConfirmationDeleteCPanelSellerAddressModal.jsx';
 import ConfirmationDeleteCPanelCouponModal from './ConfirmationDeleteCPanelCouponModal.jsx';
@@ -19,6 +17,7 @@ import CategoriesPage from './CategoriesPage.jsx';
 
 
 const CPanel = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [categoryId, setCategoryId] = useState('');
     const [showConfirmationDeleteCPanelCategoryModal, setShowConfirmationDeleteCPanelCategoryModal] = useState(false);
     const [textConfirmationDeleteCPanelCategoryModal, setTextConfirmationDeleteCPanelCategoryModal] = useState('');
@@ -39,7 +38,7 @@ const CPanel = () => {
     const [loadingBtnUserRegister, setLoadingBtnUserRegister] = useState(false);
     const [loadingBtnDeleteAdmin, setLoadingBtnDeleteAdmin] = useState(null);
     const [loadingBtnUpdateAdmin, setLoadingBtnUpdateAdmin] = useState(null);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [creatingCategory, setCreatingCategory] = useState(false);
     const [loadingBtnSubmitConfigSite, setLoadingBtnSubmitConfigSite] = useState(false);
     const [deletingIdCategory, setDeletingIdCategory] = useState(null);
@@ -60,7 +59,6 @@ const CPanel = () => {
     const [loading, setLoading] = useState(true);
     const [newRoot, setNewRoot] = useState("");
     const [creatingRoot, setCreatingRoot] = useState(false);
-    //console.log(categories)
     const [userCart, setUserCart] = useState({});
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [coupons, setCoupons] = useState([]);
@@ -86,13 +84,11 @@ const CPanel = () => {
     const navigate = useNavigate();
     const [categoriesTree, setCategoriesTree] = useState([]);
 
-    const SERVER_URL = "http://localhost:8081/";
-
     const fetchCategoriesTree = async () => {
         try {
-            const res = await fetch("http://localhost:8081/api/categories/combined");
+            const res = await fetch(`${SERVER_URL}api/categories/combined`);
             const data = await res.json();
-            if (res.ok) setCategoriesTree(data.tree || []);
+            if (res.ok) setCategoriesTree(data.payload || []);
         } catch (err) {
             console.error("Error al cargar categorías:", err);
         }
@@ -118,6 +114,14 @@ const CPanel = () => {
             ...(category.children ? renderCategoryOptions(category.children, level + 1) : [])
         ]);
     };
+
+    useEffect(() => {
+        if (!isLoadingAuth) {
+            if (!user || user.role !== 'admin') {
+                navigate('/');
+            }
+        }
+    }, [user, isLoadingAuth, navigate]);
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -181,7 +185,7 @@ const CPanel = () => {
         if (!validateUserRegisterForm()) return;
         try {
             setLoadingBtnUserRegister(true);
-            const response = await fetch(`http://localhost:8081/api/sessions/signInAdmin`, {
+            const response = await fetch(`${SERVER_URL}api/sessions/signInAdmin`, {
                 method: 'POST',         
                 headers: {
                     'Content-Type': 'application/json',
@@ -290,7 +294,7 @@ const CPanel = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -339,7 +343,7 @@ const CPanel = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -377,7 +381,7 @@ const CPanel = () => {
 
     const fetchCoupons = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/coupons');
+            const response = await fetch(`${SERVER_URL}api/coupons`);
             const data = await response.json();
             if (response.ok) {
                 setCoupons(data.data); 
@@ -431,142 +435,6 @@ const CPanel = () => {
         setShowConfirmationDeleteCPanelCouponModal(true);
     }; 
 
-    const handleSubmitCategory = async () => {
-        setCreatingCategory(true);
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const category_datetime = `${year}-${month}-${day} ${hours}:${minutes}`;
-
-        if (!categoryName) {
-            toast("Por favor, ingresa un nombre para la categoría", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            setCreatingCategory(false);
-            return;
-        }
-
-        /* try {
-            await new Promise(res => setTimeout(res, 500));
-            const response = await fetch('http://localhost:8081/api/categories', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: categoryName, category_datetime: category_datetime}),
-            });
-            const data = await response.json();
-            if(data.error === 'There is already a category with that name') {
-                toast('Ya existe una categoría con ese nombre!', {
-                    position: "top-right",
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            } else if (response.ok) {
-                toast('Categoría creada con éxito', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setCategoryName('');
-                fetchCategories()
-            } 
-        } catch (error) {
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setCreatingCategory(false);
-        } */
-        try {
-            const res = await fetch("http://localhost:8081/api/categories", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: categoryName,
-                    parent: parent || null, // null si es raíz
-                    //category_datetime: new Date().toISOString(),
-                    category_datetime
-                }),
-            });
-            const data = await res.json();
-            if(data.error === 'There is already a category with that name') {
-                toast('Ya existe una categoría con ese nombre!', {
-                    position: "top-right",
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            } else if (res.ok) {
-                toast('Categoría creada con éxito', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setCategoryName("");
-                setParent("");
-                fetchCategories(); // refrescar lista
-            } else {
-                toast.error(data.message || "Error al crear categoría");
-            }
-        } catch (err) {
-            console.error(err);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setCreatingCategory(false);
-        }
-    };
-
     const handleSubmitAddress = async () => {
         if(!addressData.street || !addressData.street_number || !addressData.locality || !addressData.province) {
             toast('Debes ingresar un domicilio', {
@@ -601,7 +469,7 @@ const CPanel = () => {
                 postal_code: addressData.postal_code,
                 sellerAddress_datetime 
             }
-            const response = await fetch('http://localhost:8081/api/sellerAddresses', {
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(sellerAddress),
@@ -699,7 +567,7 @@ const CPanel = () => {
                 expiration_date: new Date(expirationDate).toISOString(),
                 coupon_datetime 
             }
-            const response = await fetch('http://localhost:8081/api/coupons', {
+            const response = await fetch(`${SERVER_URL}api/coupons`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(coupon),
@@ -778,17 +646,26 @@ const CPanel = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 const transformedConfig = {
                     ...data,
-                    socialNetworks: Array.isArray(data.socialNetworks)
+                    socialNetworks: Array.isArray(data?.socialNetworks)
                         ? data.socialNetworks.map(item => ({
                             name: item.name || '',
                             url: item.url || '',
-                            logo: typeof item.logo === 'string' ? SERVER_URL + item.logo : null,
+                            logo: typeof item.logo === 'string' ? item.logo : null,
                             prevLogoPath: typeof item.logo === 'string' ? item.logo : null,
+                        }))
+                        : [],
+                    storeInfoBoxes: Array.isArray(data?.storeInfoBoxes)
+                        ? data.storeInfoBoxes.map(box => ({
+                            title: box.title || '',
+                            description: box.description || '',
+                            iconFile: null,
+                            iconPreview: '', // si cambia la imagen, se llena con URL.createObjectURL(file)
+                            prevIconPath: typeof box.icon === 'string' ? box.icon : '' // lo que viene de Mongo
                         }))
                         : [],
                 };
@@ -801,24 +678,23 @@ const CPanel = () => {
                 
                 setColorSelectFormData((prev) => ({
                     ...prev,
-                    primaryColor: data.primaryColor || prev.primaryColor,
-                    secondaryColor: data.secondaryColor || prev.secondaryColor,
-                    accentColor: data.accentColor || prev.accentColor,
+                    primaryColor: data?.primaryColor || prev.primaryColor,
+                    secondaryColor: data?.secondaryColor || prev.secondaryColor,
+                    accentColor: data?.accentColor || prev.accentColor,
                 }));
                 const siteImagesData = {
-                    favicon: data.siteImages.favicon ? SERVER_URL + data.siteImages.favicon : null,
-                    logoStore: data.siteImages.logoStore ? SERVER_URL + data.siteImages.logoStore : null,
-                    homeImage: data.siteImages.homeImage ? SERVER_URL + data.siteImages.homeImage : null,
-                    aboutImage: data.siteImages.aboutImage ? SERVER_URL + data.siteImages.aboutImage : null,
-                    contactImage: data.siteImages.contactImage ? SERVER_URL + data.siteImages.contactImage : null,
+                    favicon: data?.siteImages.favicon ? data?.siteImages.favicon : null,
+                    logoStore: data?.siteImages.logoStore ? data?.siteImages.logoStore : null,
+                    aboutImage: data?.siteImages.aboutImage ? data?.siteImages.aboutImage : null,
+                    contactImage: data?.siteImages.contactImage ? data?.siteImages.contactImage : null,
                 };
                 setSiteImages(siteImagesData);
                 
                 setInitialConfiguration(newFormData);
                 setInitialColorSelect({
-                    primaryColor: data.primaryColor || '',
-                    secondaryColor: data.secondaryColor || '',
-                    accentColor: data.accentColor || '',
+                    primaryColor: data?.primaryColor || '',
+                    secondaryColor: data?.secondaryColor || '',
+                    accentColor: data?.accentColor || '',
                     colorInputMode: 'pallete'
                 });
                 setInitialSiteImages(siteImagesData);
@@ -846,7 +722,7 @@ const CPanel = () => {
 
     const fetchAdmins = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/users/getAdmins', {
+            const response = await fetch(`${SERVER_URL}api/users/getAdmins`, {
                 method: 'GET',
                 credentials: 'include', // MUY IMPORTANTE para enviar cookies
             });
@@ -876,7 +752,6 @@ const CPanel = () => {
     const [siteImages, setSiteImages] = useState({
         favicon: null,
         logoStore: null,
-        homeImage: null,
         aboutImage: null,
         contactImage: null
     });
@@ -1236,7 +1111,6 @@ const CPanel = () => {
 
 
     const handleSubmitConfigSite = async () => {
-        
         if (!validatePhoneNumbers()) return;
 
         const hasEmptyPhone = configurationSiteformData.phoneNumbers.some(phoneObj =>
@@ -1311,25 +1185,9 @@ const CPanel = () => {
             return;
         }
 
-        /* const hasInvalidInfoBox = configurationSiteformData.storeInfoBoxes.some(box => {
-            const hasTitleOrDescription = box.title.trim() !== '' || box.description.trim() !== '';
-            const hasImage = box.iconFile instanceof File || typeof box.prevIconPath === 'string';
-            return hasTitleOrDescription && !hasImage;
-        });
-
-         if (hasInvalidInfoBox) {
-            toast('Cada box debe tener una imagen si tiene texto.', {
-                position: "top-right",
-                autoClose: 3000,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            return;
-        } */
-
         const formData = new FormData();
 
-        let infoBoxFileCounter = 0;
+        /* let infoBoxFileCounter = 0;
 
         const processedInfoBoxes = configurationSiteformData.storeInfoBoxes.map((box) => {
             let iconStr = '';
@@ -1352,43 +1210,72 @@ const CPanel = () => {
                 icon: iconStr,
                 iconFileIndex // 🔑 clave que el backend espera
             };
+        }); */
+        let infoBoxFileCounter = 0;
+
+        const processedInfoBoxes = configurationSiteformData.storeInfoBoxes.map((box) => {
+            let iconStr = '';
+            let iconFileIndex = null;
+
+            if (box.iconFile instanceof File) {
+                // 📂 Nuevo archivo → lo mandamos en el formData
+                formData.append('storeInfoIcons', box.iconFile);
+                iconStr = `__upload__${infoBoxFileCounter}`;
+                iconFileIndex = infoBoxFileCounter;
+                infoBoxFileCounter++;
+            } else if (typeof box.prevIconPath === 'string' && box.prevIconPath.trim() !== '') {
+                // 🗂 Mantener ícono viejo → mandamos la ruta anterior
+                iconStr = box.prevIconPath;
+            }
+
+            return {
+                title: box.title || '',
+                description: box.description || '',
+                icon: iconStr,        // siempre lo mandamos
+                iconFileIndex: iconFileIndex // solo se usará si es nuevo
+            };
         });
 
 
         let fileCounter = 0;
-        const processedOffers = configurationSiteformData.offersSlider
-            .slice(0, 20)
-            .map((offer) => {
-                let imageStr = "";
+            const processedOffers = configurationSiteformData.offersSlider
+                .slice(0, 20)
+                .map((offer) => {
+                    let imageStr = "";
 
-                if (offer.image instanceof File || offer.image?.file) {
-                    const fileToAppend = offer.image instanceof File ? offer.image : offer.image.file;
-                    formData.append("offersSlider", fileToAppend);
-                    imageStr = `__upload__${fileCounter}`; 
-                    offer.uploadIndex = fileCounter; // 🟢 nuevo
-                    fileCounter++;
-                } else if (typeof offer.image === "string") {
-                    imageStr = offer.image;
-                }
+                    if (offer.image instanceof File || offer.image?.file) {
+                        const fileToAppend = offer.image instanceof File ? offer.image : offer.image.file;
+                        formData.append("offersSlider", fileToAppend);
 
-                // normalizar filtros
-                let filtersObj = {};
-                if (Array.isArray(offer.filters)) {
-                    filtersObj = offer.filters.reduce((acc, cond) => {
-                        if (cond.key?.trim() && cond.value?.trim()) acc[cond.key.trim()] = cond.value.trim();
-                        return acc;
-                    }, {});
-                } else if (offer.filters && typeof offer.filters === "object") {
-                    filtersObj = offer.filters;
-                }
+                        // ⚡ usamos imageFileIndex
+                        offer.imageFileIndex = fileCounter;
+                        imageStr = ""; // no mandamos marcador "__upload__", el backend resuelve por index
+                        fileCounter++;
+                    } else if (typeof offer.image === "string") {
+                        imageStr = offer.image; // mantener URL si ya existe
+                    }
 
-                return {
-                    ...offer,
-                    image: imageStr,
-                    filters: filtersObj,
-                    uploadIndex: offer.uploadIndex ?? null,
-                };
-            });
+                    // normalizar filtros
+                    let filtersObj = {};
+                    if (Array.isArray(offer.filters)) {
+                        filtersObj = offer.filters.reduce((acc, cond) => {
+                            if (cond.key?.trim() && cond.value?.trim()) {
+                                acc[cond.key.trim()] = cond.value.trim();
+                            }
+                            return acc;
+                        }, {});
+                    } else if (offer.filters && typeof offer.filters === "object") {
+                        filtersObj = offer.filters;
+                    }
+
+                    return {
+                        ...offer,
+                        image: imageStr,
+                        filters: filtersObj,
+                        imageFileIndex: offer.imageFileIndex ?? null, // 👈 clave que espera el backend
+                    };
+                });
+
 
 
         const configToCompare = {
@@ -1431,27 +1318,39 @@ const CPanel = () => {
 
         Object.entries(siteImages).forEach(([key, value]) => {
             if (value instanceof File) {
-                formData.append(key, value); // se envía como archivo
-            } else if (typeof value === 'string') {
-                // Enviar la URL de imagen existente usando el mismo nombre del campo
-                formData.append(`siteImages.${key}`, value); // ✅ Este nombre coincide con lo que espera el backend
+            formData.append(key, value); // archivo nuevo
             }
         });
 
-        configurationSiteformData.sliderLogos.forEach((logo) => {
+        let fileCounterSliderLogos = 0;
+        const processedSliderLogos = configurationSiteformData.sliderLogos.map((logo, index) => {
+            let logoObj = {};
+
             if (logo instanceof File) {
+                // archivo nuevo
                 formData.append('sliderLogos', logo);
-            } else if (typeof logo === 'string' && logo.trim().startsWith('uploads/')) {
-                formData.append('sliderLogosUrls[]', logo);
+                logoObj = {
+                    imageFileIndex: fileCounterSliderLogos, // 🔹 índice para el backend
+                };
+                fileCounterSliderLogos++;
+            } else if (typeof logo === 'string' && logo.trim().startsWith('http')) {
+                // URL existente
+                logoObj = {
+                    url: logo,
+                };
             }
+
+            return logoObj;
         });
 
-        const processedSocialNetworks = configurationSiteformData.socialNetworks.map((network, index) => {
-            if (network.logo instanceof File) {
-                formData.append('socialNetworkLogos', network.logo);
-                return { name: network.name, url: network.url, logoFileIndex: index };
-            }
-            return { name: network.name, url: network.url, logo: network.logo };
+
+        let fileCounterr = 0;
+        const processedSocialNetworks = configurationSiteformData.socialNetworks.map((network) => {
+        if (network.logo instanceof File) {
+            formData.append("socialNetworkLogos", network.logo);
+            return { name: network.name, url: network.url, logoFileIndex: fileCounterr++ };
+        }
+        return { name: network.name, url: network.url, logo: network.logo };
         });
 
         // Armar el objeto completo con los demás campos
@@ -1460,22 +1359,29 @@ const CPanel = () => {
             primaryColor: colorSelectFormData.primaryColor,
             secondaryColor: colorSelectFormData.secondaryColor,
             accentColor: colorSelectFormData.accentColor,
-            sliderLogos: configurationSiteformData.sliderLogos.filter(logo => typeof logo === 'string' && logo.trim() !== ''),
+            sliderLogos: processedSliderLogos,
             socialNetworks: processedSocialNetworks,
             storeInfoBoxes: processedInfoBoxes,
+            siteImages: {
+                // pasar solo nombres de archivo existentes si no se sube
+                favicon: typeof siteImages.favicon === "string" ? siteImages.favicon : "",
+                logoStore: typeof siteImages.logoStore === "string" ? siteImages.logoStore : "",
+                aboutImage: typeof siteImages.aboutImage === "string" ? siteImages.aboutImage : "",
+                contactImage: typeof siteImages.contactImage === "string" ? siteImages.contactImage : "",
+            },
             offersSlider: processedOffers  // ✅ aquí va
         };
 
         // Convertir a JSON y añadirlo
         formData.append('data', JSON.stringify(configData));
 
-        formData.forEach((value, key) => {
-            console.log(`${key}:`, value);
-        });
+        /* formData.forEach((value, key) => {
+            console.log("FORMDATA:", key, value);
+        }); */
 
         try {
             setLoadingBtnSubmitConfigSite(true);
-            const response = await fetch('http://localhost:8081/api/settings', {
+            const response = await fetch(`${SERVER_URL}api/settings`, {
                 method: 'PUT',
                 body: formData
             });
@@ -1493,6 +1399,7 @@ const CPanel = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
+                console.log(result)
                 setInitialConfiguration(configData);
                 setConfigurationSiteformData(configData);
                 setInitialColorSelect(colorSelectFormData);
@@ -1515,6 +1422,8 @@ const CPanel = () => {
             }
         } catch (error) {
             console.error('Error al enviar la configuración:', error);
+            setLoadingBtnSubmitConfigSite(false);
+        } finally {
             setLoadingBtnSubmitConfigSite(false);
         }
     };
@@ -1567,7 +1476,7 @@ const CPanel = () => {
         const adminToSave = adminsEdited[index];
         try {
             setLoadingBtnUpdateAdmin(adminToSave._id);
-            const response = await fetch(`http://localhost:8081/api/users/${adminToSave._id}`, {
+            const response = await fetch(`${SERVER_URL}api/users/${adminToSave._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1956,229 +1865,252 @@ const CPanel = () => {
                             {configurationSiteformData.offersSlider.map((offer, offerIndex) => (
                                 <div
                                 key={offerIndex}
-                                style={{ marginBottom: 20, border: "1px solid #ccc", padding: 10 }}
+                                className='cPanelContainer__siteConfiguration__form__offers__offer'
                                 >
-                                {/* Imagen */}
-                                <label>Seleccionar nueva imagen:</label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => handleOfferImageChange(e, offerIndex)}
-                                />
-                                <br />
-                                <div style={{ display: "flex", alignItems: "center", paddingTop: "2vh" }}>
-                                    <div>Imagen de la oferta</div>
-                                    {offer.image && (
-                                    <img
-                                        src={
-                                        typeof offer.image === "string"
-                                            ? `${SERVER_URL}${offer.image}`
-                                            : offer.image.preview || URL.createObjectURL(offer.image)
-                                        }
-                                        alt={`Oferta-${offerIndex}`}
-                                        style={{ maxWidth: 100 }}
-                                    />
-                                    )}
-                                </div>
-
-                                {/* FILTROS */}
-                                <div style={{ marginTop: 10 }}>
-                                    <label>Filtros de redirección:</label>
-
-                                    {/* SELECT obligatorio de categoría */}
-                                    <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                                        <span style={{ alignSelf: "center" }}>Categoría:</span>
-                                        <select
-                                            className="createProductModalContainer__createProductModal__propsContainer__propProduct__select__prop"
-                                            name="category"
-                                            value={offer.filters?.category?._id || ""}
-                                            onChange={(e) => {
-                                                const categoryObj = findCategoryById(categoriesTree, e.target.value);
-                                                if (categoryObj) {
-                                                    handleConditionChange(offerIndex, "category", "value", categoryObj);
-                                                }
-                                            }}
-                                            required
-                                            >
-                                            <option value="">Selecciona una categoría</option>
-                                            {renderCategoryOptions(categoriesTree)}
-                                        </select>
-
+                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer'>
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__label'>Imagen de la oferta</div>
+                                        {offer.image && (
+                                        <img
+                                            className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__prop'
+                                            src={
+                                            typeof offer.image === "string"
+                                                ? `${offer.image}`
+                                                : offer.image.preview || URL.createObjectURL(offer.image)
+                                            }
+                                            alt={`Oferta-${offerIndex}`}
+                                        />
+                                        )}
+                                    </div>
+                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput'>
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput__label'>Seleccionar nueva imagen:</div>
+                                        <input
+                                            className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput__input'
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleOfferImageChange(e, offerIndex)}
+                                        />
                                     </div>
 
-                                    {/* Otros filtros dinámicos */}
-                                    {Object.entries(offer.filters || {})
-                                    .filter(([key]) => key !== "category")
-                                    .map(([key, value], condIndex) => (
-                                        <div
-                                        key={condIndex}
-                                        style={{ display: "flex", gap: 8, marginTop: 4 }}
-                                        >
-                                        <input
-                                            type="text"
-                                            placeholder="Ej: material"
-                                            value={key}
-                                            onChange={(e) =>
-                                            handleConditionChange(offerIndex, key, "key", e.target.value)
-                                            }
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder={`Ej: ${key === "color" ? "rojo" : "jean"}`}
-                                            value={value}
-                                            onChange={(e) =>
-                                            handleConditionChange(offerIndex, key, "value", e.target.value)
-                                            }
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveCondition(offerIndex, key)}
-                                        >
-                                            Eliminar
-                                        </button>
+                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection'>
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__label'>Filtros de redirección:</div>
+
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect'>
+                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__label'>Categoría</div>
+                                            <select
+                                                className="cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__select"
+                                                name="category"
+                                                value={offer.filters?.category?._id || ""}
+                                                onChange={(e) => {
+                                                    const categoryObj = findCategoryById(categoriesTree, e.target.value);
+                                                    if (categoryObj) {
+                                                        handleConditionChange(offerIndex, "category", "value", categoryObj);
+                                                    }
+                                                }}
+                                                required
+                                                >
+                                                <option value="">Selecciona una categoría</option>
+                                                {renderCategoryOptions(categoriesTree)}
+                                            </select>
+
                                         </div>
-                                    ))}
 
-                                    <button
-                                    type="button"
-                                    onClick={() => handleAddCondition(offerIndex)}
-                                    >
-                                    + Agregar condición
-                                    </button>
-                                </div>
+                                        {Object.entries(offer.filters || {})
+                                        .filter(([key]) => key !== "category")
+                                        .map(([key, value], condIndex) => (
+                                            <div
+                                            key={condIndex}
+                                            style={{ display: "flex", gap: 8, marginTop: 4 }}
+                                            className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn'
+                                            >
+                                                <input
+                                                    className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input'
+                                                    type="text"
+                                                    placeholder="Ej: material"
+                                                    value={key}
+                                                    onChange={(e) =>
+                                                    handleConditionChange(offerIndex, key, "key", e.target.value)
+                                                    }
+                                                />
+                                                <input
+                                                    type="text"
+                                                    className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input'
+                                                    placeholder={`Ej: ${key === "color" ? "rojo" : "jean"}`}
+                                                    value={value}
+                                                    onChange={(e) =>
+                                                    handleConditionChange(offerIndex, key, "value", e.target.value)
+                                                    }
+                                                />
+                                                <button
+                                                    className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__btn'
+                                                    type="button"
+                                                    onClick={() => handleRemoveCondition(offerIndex, key)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition'>
+                                            <button
+                                            className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition__prop'
+                                            type="button"
+                                            onClick={() => handleAddCondition(offerIndex)}
+                                            >
+                                            + Agregar condición
+                                            </button>
+                                        </div>
+                                    </div>
 
-                                {/* Eliminar oferta */}
-                                <button type="button" onClick={() => handleRemoveOffer(offerIndex)}>
-                                    Eliminar oferta
-                                </button>
+                                    {/* Eliminar oferta */}
+                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer'>
+                                        <button className='cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer__prop' type="button" onClick={() => handleRemoveOffer(offerIndex)}>
+                                            Eliminar oferta
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
 
-                            <button
-                                type="button"
-                                onClick={addOffer}
-                                className="cPanelContainer__siteConfiguration__form__offers__addBtn"
-                            >
-                                + Agregar oferta
-                            </button>
+                            <div className='cPanelContainer__siteConfiguration__form__offers__btnAddOffer'>
+                                <button
+                                    type="button"
+                                    onClick={addOffer}
+                                    className="cPanelContainer__siteConfiguration__form__offers__btnAddOffer__prop"
+                                    >
+                                    + Agregar oferta
+                                </button>
+                            </div>
                         </div>
 
+                        <div className="cPanelContainer__siteConfiguration__form__infoBlock" style={{ marginTop: '3vh' }}>Bloque de info</div>
+
+                        <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer'> 
+
+                            {configurationSiteformData.storeInfoBoxes.map((box, index) => (
+                                <div key={index} className="cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock">
+
+                                    <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput'>
+
+                                        <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__label'>Título</div>
+                                        <input
+                                        className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__input'
+                                        type="text"
+                                        value={box.title}
+                                        onChange={e => {
+                                            const newBoxes = [...configurationSiteformData.storeInfoBoxes];
+                                            newBoxes[index].title = e.target.value;
+                                            setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                        }}
+                                        />
+
+                                    </div>
+
+                                    <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput'>
+
+                                        <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__label'>Descripción</div>
+                                        <input
+                                        type="text"
+                                        value={box.description}
+                                        className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__input'
+                                        onChange={e => {
+                                            const newBoxes = [...configurationSiteformData.storeInfoBoxes];
+                                            newBoxes[index].description = e.target.value;
+                                            setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                        }}
+                                        />
+
+                                    </div>
+
+                                    <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput'>
+
+                                        <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__label'>Ícono (imagen)</div>
+                                        
+                                        <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__img'>
+                                            {(box.iconPreview || box.prevIconPath) && (
+                                                <img
+                                                className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__img__prop'
+                                                src={box.iconPreview || (box.prevIconPath)}
+                                                alt="Icon"
+                                                />
+                                            )}
+
+                                            <input
+                                            type="file"
+                                            accept="image/*"
+                                            className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__img__inputFile'
+                                            onChange={e => {
+                                                const file = e.target.files[0];
+                                                const newBoxes = [...configurationSiteformData.storeInfoBoxes];
+                                                newBoxes[index].iconFile = file;
+                                                newBoxes[index].iconPreview = URL.createObjectURL(file);
+                                                setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                            }}
+                                            />
+                                        </div>
+
+                                    </div>
+
+                                    <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btn'>
 
 
+                                        <button
+                                        className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btn__prop'
+                                        type="button"
+                                        onClick={() => {
+                                            const newBoxes = configurationSiteformData.storeInfoBoxes.filter((_, i) => i !== index);
+                                            setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
+                                        }}
+                                        >
+                                        Eliminar bloque
+                                        </button>
 
+                                    </div>
 
+                                </div>
+                            ))}
 
+                        </div>
 
+                        <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btnAddBlock'>
 
-
-                        {configurationSiteformData.storeInfoBoxes.map((box, index) => (
-                            <div key={index} className="info-box-edit">
-                                <label>Título</label>
-                                <input
-                                type="text"
-                                value={box.title}
-                                onChange={e => {
-                                    const newBoxes = [...configurationSiteformData.storeInfoBoxes];
-                                    newBoxes[index].title = e.target.value;
-                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
-                                }}
-                                />
-
-                                <label>Descripción</label>
-                                <input
-                                type="text"
-                                value={box.description}
-                                onChange={e => {
-                                    const newBoxes = [...configurationSiteformData.storeInfoBoxes];
-                                    newBoxes[index].description = e.target.value;
-                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
-                                }}
-                                />
-
-                                <label>Ícono (imagen)</label>
-                                {box.iconPreview && (
-                                <img
-                                    src={box.iconPreview}
-                                    alt="Icon preview"
-                                    style={{ width: '40px', height: '40px', objectFit: 'contain' }}
-                                />
-                                )}
-
-                                <input
-                                type="file"
-                                accept="image/*"
-                                onChange={e => {
-                                    const file = e.target.files[0];
-                                    const newBoxes = [...configurationSiteformData.storeInfoBoxes];
-                                    newBoxes[index].iconFile = file;
-                                    newBoxes[index].iconPreview = URL.createObjectURL(file);
-                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
-                                }}
-                                />
-
-                                <button
+                            <button
+                                className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btnAddBlock__prop'
                                 type="button"
                                 onClick={() => {
-                                    const newBoxes = configurationSiteformData.storeInfoBoxes.filter((_, i) => i !== index);
-                                    setConfigurationSiteformData(prev => ({ ...prev, storeInfoBoxes: newBoxes }));
-                                }}
-                                >
-                                Eliminar bloque
-                                </button>
-
-                                <hr />
-                            </div>
-                        ))}
-
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setConfigurationSiteformData(prev => {
-                                if (prev.storeInfoBoxes.length >= 3) {
-                                    toast('Solo puedes agregar hasta 3 bloques', {
-                                        position: "top-right",
-                                        autoClose: 2000,
-                                        hideProgressBar: false,
-                                        closeOnClick: true,
-                                        pauseOnHover: true,
-                                        draggable: true,
-                                        progress: undefined,
-                                        theme: "dark",
-                                        className: "custom-toast",
-                                    });
-                                    return prev; // 👈 no agrega nada
-                                }
-
-                                return {
-                                    ...prev,
-                                    storeInfoBoxes: [
-                                    ...prev.storeInfoBoxes,
-                                    { title: '', description: '', iconFile: null, iconPreview: '', prevIconPath: '' }
-                                    ]
-                                };
+                                    setConfigurationSiteformData(prev => {
+                                    if (prev.storeInfoBoxes.length >= 3) {
+                                        toast('Solo puedes agregar hasta 3 bloques', {
+                                            position: "top-right",
+                                            autoClose: 2000,
+                                            hideProgressBar: false,
+                                            closeOnClick: true,
+                                            pauseOnHover: true,
+                                            draggable: true,
+                                            progress: undefined,
+                                            theme: "dark",
+                                            className: "custom-toast",
+                                        });
+                                        return prev; // 👈 no agrega nada
+                                    }
+                                    
+                                    return {
+                                        ...prev,
+                                        storeInfoBoxes: [
+                                            ...prev.storeInfoBoxes,
+                                            { title: '', description: '', iconFile: null, iconPreview: '', prevIconPath: '' }
+                                        ]
+                                    };
                                 });
                             }}
-                            >
-                            + Agregar nuevo bloque
-                        </button>
+                                >
+                                + Agregar nuevo bloque
+                            </button>
 
-
-
-
-
-
-
-
-
-
-
+                        </div>
 
                         <div className="cPanelContainer__siteConfiguration__form__images" style={{marginTop: '2vh'}}>
                             <div className="cPanelContainer__siteConfiguration__form__images__title">Imágenes del sitio</div>
                             {[
                                 { name: 'favicon', label: 'Favicon' },
                                 { name: 'logoStore', label: 'Logo de la tienda' },
-                                { name: 'homeImage', label: 'Fondo "Home"' },
                                 { name: 'aboutImage', label: 'Fondo "Sobre nosotros"' },
                                 { name: 'contactImage', label: 'Fondo "Contacto"' },
                             ].map(({ name, label }) => (
@@ -2222,14 +2154,16 @@ const CPanel = () => {
                                 {configurationSiteformData.sliderLogos.map((logo, index) => (
                                 <div key={index} className="cPanelContainer__siteConfiguration__form__gridImages__preview__imgBtn">
                                     <img
-                                        className='cPanelContainer__siteConfiguration__form__gridImages__preview__imgBtn__img'
+                                        className="cPanelContainer__siteConfiguration__form__gridImages__preview__imgBtn__img"
                                         src={
-                                            typeof logo === 'string'
-                                            ? `${SERVER_URL}${logo}` // Agregás la URL base
-                                            : URL.createObjectURL(logo)
+                                            logo instanceof File
+                                            ? URL.createObjectURL(logo)
+                                            : typeof logo === "string"
+                                            ? logo
+                                            : logo?.url || "" // si viene en objeto { url: "..." }
                                         }
                                         alt={`logo-${index}`}
-                                    />
+                                        />
                                     <button className='cPanelContainer__siteConfiguration__form__gridImages__preview__imgBtn__btn' type="button" onClick={() => removeLogo(index)}>Eliminar</button>
                                 </div>
                                 ))}
@@ -2287,7 +2221,6 @@ const CPanel = () => {
                                     </div>
                                     
                                     <div className='cPanelContainer__siteConfiguration__form__socialNetworks__grid__imgContainer'>
-                                        {/* Vista previa de la imagen si ya se subió */}
                                         {network.logo ? (
                                             <img
                                                 src={typeof network.logo === 'string' ? network.logo : URL.createObjectURL(network.logo)}
@@ -2356,7 +2289,7 @@ const CPanel = () => {
 
                 </div>
                 
-                <div style={{ padding: "20px" }}>
+                <div className='cPanelContainer__categoriesManagement'>
                     <h1>📂 Gestión de Categorías</h1>
                     <CategoriesPage />
                 </div>
@@ -2610,17 +2543,17 @@ const CPanel = () => {
 
                         <div className='cPanelContainer__userRegisterContainer__form__input'>
                             <div className='cPanelContainer__userRegisterContainer__form__input__label'>Nombre:</div>
-                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="text" value={userCredentials.first_name} onChange={handleUserCredentialsChange} placeholder='Nombre' name="first_name" id="" />
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="text" value={userCredentials.first_name} onChange={handleUserCredentialsChange} placeholder='Nombre' name="first_name" />
                         </div>
 
                         <div className='cPanelContainer__userRegisterContainer__form__input'>
                             <div className='cPanelContainer__userRegisterContainer__form__input__label'>Apellido:</div>
-                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="text" value={userCredentials.last_name} onChange={handleUserCredentialsChange} placeholder='Apellido' name="last_name" id="" />
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="text" value={userCredentials.last_name} onChange={handleUserCredentialsChange} placeholder='Apellido' name="last_name" />
                         </div>
 
                         <div className='cPanelContainer__userRegisterContainer__form__input'>
                             <div className='cPanelContainer__userRegisterContainer__form__input__label'>Email:</div>
-                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="email" value={userCredentials.email} onChange={handleUserCredentialsChange} placeholder='Email' name="email" id="" />
+                            <input className='cPanelContainer__userRegisterContainer__form__input__prop' type="email" value={userCredentials.email} onChange={handleUserCredentialsChange} placeholder='Email' name="email" />
                         </div>
 
                         <div className='cPanelContainer__userRegisterContainer__form__inputPass'>
@@ -2726,7 +2659,6 @@ const CPanel = () => {
                 text={textConfirmationDeleteCPanelCategoryModal}
                 setShowConfirmationDeleteCPanelCategoryModal={setShowConfirmationDeleteCPanelCategoryModal}
                 categoryId={categoryId}
-                fetchCategories={fetchCategories}
                 />
             }
 

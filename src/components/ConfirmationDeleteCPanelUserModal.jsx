@@ -4,12 +4,13 @@ import Spinner from './Spinner';
 
 const ConfirmationDeleteCPanelUserModal = ({text,setShowConfirmationDeleteCPanelUserModal,userId,fetchAdmins}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleDeleteAdmin = async () => {
 
         try {
             setLoading(true)
-            const response = await fetch(`http://localhost:8081/api/users/delete-one/${userId}`, {
+            const response = await fetch(`${SERVER_URL}api/users/delete-one/${userId}`, {
                 method: 'DELETE',
             });
             if (response.ok) {

@@ -8,6 +8,7 @@ import CreateSaleModal from './CreateSaleModal';
 import { useAuth } from '../context/AuthContext';
 
 const Tickets = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [showConfirmationDeleteAllTicketsSelectedModal, setShowConfirmationDeleteAllTicketsSelectedModal] = useState(false);
     const [selectedTickets, setSelectedTickets] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
@@ -25,8 +26,8 @@ const Tickets = () => {
     });   
     const [selectedProducts, setSelectedProducts] = useState([]);
 
-    const [selectedField, setSelectedField] = useState('title');
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [selectedField, setSelectedField] = useState('all');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -49,7 +50,7 @@ const Tickets = () => {
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
 
     const [inputFilteredTickets, setInputFilteredTickets] = useState('');
-    const [isLoadingTickets, setIsLoadingTickets] = useState(true);
+    const [isLoadingTickets, setIsLoadingTickets] = useState(false);
 
     const fieldLabels = {
         title: 'Título',
@@ -65,6 +66,14 @@ const Tickets = () => {
     }, [selectedProducts, products]);
 
     
+    useEffect(() => {
+        if (!isLoadingAuth) {
+            if (!user || user.role !== 'admin') {
+                navigate('/');
+            }
+        }
+    }, [user, isLoadingAuth, navigate]);
+
     useEffect(() => {
         if (user?.isLoggedIn) {
             fetchCartByUserId(user._id)
@@ -101,10 +110,6 @@ const Tickets = () => {
         }
     }, [storeSettings]);
 
-    /* useEffect(() => {
-        fetchTickets(1, "", "", selectedDate);
-    }, [selectedDate]);  */
-
     const goToPreviousDay = () => {
         setIsLoadingTickets(true);
         const prevDate = new Date(selectedDate);
@@ -128,15 +133,9 @@ const Tickets = () => {
 
     const ticketsOrdenados = [...tickets].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
 
-    /* useEffect(() => {
-        if (user?.email) {
-            fetchTickets(1, "", "", selectedDate);
-        }
-    }, [user]); */
-
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
             const productsAll = await response.json();
             setTotalProducts(productsAll.data.totalDocs)
             setProducts(productsAll.data.docs)
@@ -157,7 +156,7 @@ const Tickets = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -193,6 +192,7 @@ const Tickets = () => {
 
     const fetchTickets = async (page = 1, search = "",field = "", selectedDate = null) => {
         try {
+            setIsLoadingTickets(true);
             const params = new URLSearchParams({
                 page,
                 search,
@@ -201,7 +201,7 @@ const Tickets = () => {
             if (selectedDate) {
                 params.append("selectedDate", formatDateToString(selectedDate));
             }
-            const response = await fetch(`http://localhost:8081/api/tickets/byPage?${params.toString()}`);
+            const response = await fetch(`${SERVER_URL}api/tickets/byPage?${params.toString()}`);
             const ticketsAll = await response.json();
             if (response.ok) {
                 setTotalTickets(ticketsAll.data.totalTickets)
@@ -248,7 +248,7 @@ const Tickets = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
             if (!response.ok) {
                 console.error("Error al obtener el carrito:", data);
@@ -318,7 +318,7 @@ const Tickets = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -350,7 +350,7 @@ const Tickets = () => {
 
             try {
                 setLoading(true);
-                const res = await fetch('http://localhost:8081/api/tickets/mass-delete', {
+                const res = await fetch(`${SERVER_URL}api/tickets/mass-delete`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: selectedTickets })
@@ -466,14 +466,6 @@ const Tickets = () => {
     const handleBtnCreateSale = () => {
         setCreateSaleModal(true)
     };
-
-    /* useEffect(() => {
-        const delay = setTimeout(() => {
-            fetchTickets(1, inputFilteredTickets, selectedField, selectedDate);
-        }, 300); // debounce
-
-        return () => clearTimeout(delay);
-    }, [inputFilteredTickets, selectedField]); */
 
     return (
 

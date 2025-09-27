@@ -15,10 +15,11 @@ const Login = () => {
         email: '',
         password: '',
     });
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -74,21 +75,7 @@ const Login = () => {
         if (!validateForm()) return;
     
         try {
-            setLoadingBtnLogin(true);
-            /* const response = await fetch(`http://localhost:8081/api/sessions/login`, {
-                method: 'POST',         
-                credentials: 'include', // 👈 necesario para recibir cookies
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: credentials.email,
-                    password: credentials.password,
-                })
-            })
-            const data = await response.json(); */
-
-            
+            setLoadingBtnLogin(true);           
             const success = await login(credentials.email, credentials.password);
             if (success) {
                 navigate("/");
@@ -115,7 +102,7 @@ const Login = () => {
                     theme: "dark",
                     className: "custom-toast",
                 });
-                setLoadingBtnLogin(true);
+                setLoadingBtnLogin(false);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -217,7 +204,7 @@ const Login = () => {
                         {storeSettings?.siteImages?.logoStore &&
                             <img
                             className='loginContainer__logoContainer__logo__prop'
-                            src={`http://localhost:8081/${storeSettings?.siteImages?.logoStore}`}
+                            src={`${storeSettings?.siteImages?.logoStore}`}
                             alt="logo_tienda"
                             />
                         }

@@ -13,6 +13,7 @@ const ItemBinProductModal = ({product,setShowItemBinProductModal,fetchProducts,c
         camposDinamicos: []
     });
     const [variantes, setVariantes] = useState([]); 
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const fileInputRef = useRef(null);
 
@@ -24,7 +25,7 @@ const ItemBinProductModal = ({product,setShowItemBinProductModal,fetchProducts,c
                 return {
                 type: 'backend',
                 name: cleanedPath.split('/').pop(), // Si necesitás el nombre solo
-                url: `http://localhost:8081/${cleanedPath}` // Ruta correcta
+                url: `${SERVER_URL}${cleanedPath}` // Ruta correcta
                 };
             });
       

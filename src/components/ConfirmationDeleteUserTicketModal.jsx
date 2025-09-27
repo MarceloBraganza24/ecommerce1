@@ -2,30 +2,26 @@ import React, {useState} from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 
-const ConfirmationPermanentDeleteItemBinProductModal = ({text,setShowConfirmationPermanentDeleteItemBinProductModal,productId,fetchDeletedProducts,setSelectedProducts}) => {
+const ConfirmationDeleteUserTicketModal = ({text,email,setShowConfirmationDeleteUserTicketModal,ticketId,fetchTickets,selectedDate,setSelectedTickets}) => {
     const [loading, setLoading] = useState(false);
     const SERVER_URL = import.meta.env.VITE_API_URL;
 
-    const handleBtnDeleteProduct = async () => {
+    const handleBtnHiddenProduct = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${SERVER_URL}api/products/${productId}`, {
-                method: 'DELETE'
+            const res = await fetch(`${SERVER_URL}api/tickets/${ticketId}`, {
+                method: 'PUT'
             });
-            const result = await res.json();
-            console.log(result)
             if (res.ok) {
-                toast('Has eliminado el producto con éxito', {
+                toast('Has eliminado la compra con éxito', {
                     position: "top-right",
                     autoClose: 2000,
                     theme: "dark",
                     className: "custom-toast",
                 });
-                fetchDeletedProducts();
-                setSelectedProducts([])
-                setShowConfirmationPermanentDeleteItemBinProductModal(false);
+                fetchTickets(1, "", email);
             } else {
-                toast('No se ha podido borrar el producto, intente nuevamente', {
+                toast('No se ha podido eliminar la compra, intente nuevamente', {
                     position: "top-right",
                     autoClose: 2000,
                     theme: "dark",
@@ -37,8 +33,9 @@ const ConfirmationPermanentDeleteItemBinProductModal = ({text,setShowConfirmatio
         } finally {
             setLoading(false);
         }
+        
     };
-
+    
   return (
     <>
 
@@ -47,11 +44,11 @@ const ConfirmationPermanentDeleteItemBinProductModal = ({text,setShowConfirmatio
             <div className='confirmationDeleteModalContainer__confirmationModal'>
 
                 <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
-                    <div onClick={()=>setShowConfirmationPermanentDeleteItemBinProductModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                    <div onClick={()=>setShowConfirmationDeleteUserTicketModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
                 </div>
                 
                 <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar permanentemente {text}?</div>
+                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar {text}?</div>
                 </div>
 
                 <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
@@ -64,13 +61,13 @@ const ConfirmationPermanentDeleteItemBinProductModal = ({text,setShowConfirmatio
                         </button>
                     ) : (
                         <button
-                        onClick={handleBtnDeleteProduct}
+                        onClick={handleBtnHiddenProduct}
                         className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
                         >
                         Si
                         </button>
                     )}
-                    <button onClick={()=>setShowConfirmationPermanentDeleteItemBinProductModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                    <button onClick={()=>setShowConfirmationDeleteUserTicketModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
                 </div>
 
             </div>
@@ -80,4 +77,4 @@ const ConfirmationPermanentDeleteItemBinProductModal = ({text,setShowConfirmatio
   )
 }
 
-export default ConfirmationPermanentDeleteItemBinProductModal
+export default ConfirmationDeleteUserTicketModal

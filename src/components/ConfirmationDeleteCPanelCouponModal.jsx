@@ -4,11 +4,12 @@ import Spinner from './Spinner';
 
 const ConfirmationDeleteCPanelCouponModal = ({text,setShowConfirmationDeleteCPanelCouponModal,couponId,fetchCoupons}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleDeleteCoupons = async () => {
         try {
             setLoading(true)
-            const response = await fetch(`http://localhost:8081/api/coupons/${couponId}`, {
+            const response = await fetch(`${SERVER_URL}api/coupons/${couponId}`, {
                 method: 'DELETE',
             });
 

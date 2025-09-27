@@ -8,6 +8,7 @@ import ItemBinTicket from "./ItemBinTicket";
 import { useAuth } from '../context/AuthContext';
 
 const Bin = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [showConfirmationDeleteAllProductsSelectedModal, setShowConfirmationDeleteAllProductsSelectedModal] = useState(false);
     const [showConfirmationDeleteAllTicketsSelectedModal, setShowConfirmationDeleteAllTicketsSelectedModal] = useState(false);
     const [showConfirmationRestoreAllProductsSelectedModal, setShowConfirmationRestoreAllProductsSelectedModal] = useState(false);
@@ -17,7 +18,7 @@ const Bin = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
@@ -69,7 +70,7 @@ const Bin = () => {
 
     const fetchDeletedProducts = async (searchValue = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/products/deleted?search=${encodeURIComponent(searchValue)}`);
+            const response = await fetch(`${SERVER_URL}api/products/deleted?search=${encodeURIComponent(searchValue)}`);
             const data = await response.json();
             if (response.ok) {
                 setProducts(data.payload);
@@ -95,7 +96,7 @@ const Bin = () => {
 
     const fetchDeletedTickets = async (searchValue = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/tickets/deleted?search=${encodeURIComponent(searchValue)}`);
+            const response = await fetch(`${SERVER_URL}api/tickets/deleted?search=${encodeURIComponent(searchValue)}`);
             const data = await response.json();
             if (response.ok) {
                 setTickets(data.payload);
@@ -122,7 +123,7 @@ const Bin = () => {
     const fetchStoreSettings = async () => {
         try {
             setIsLoadingStoreSettings(true)
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -149,7 +150,7 @@ const Bin = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
             if (!response.ok) {
                 console.error("Error al obtener el carrito:", data);
@@ -197,7 +198,7 @@ const Bin = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -237,6 +238,14 @@ const Bin = () => {
             setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
         }
     }, [storeSettings]);
+
+    useEffect(() => {
+        if (!isLoadingAuth) {
+            if (!user || user.role !== 'admin') {
+                navigate('/');
+            }
+        }
+    }, [user, isLoadingAuth, navigate]);
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -296,7 +305,7 @@ const Bin = () => {
 
             try {
                 setLoading(true);
-                const res = await fetch('http://localhost:8081/api/products/mass-delete-permanent', {
+                const res = await fetch(`${SERVER_URL}api/products/mass-delete-permanent`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: selectedProducts })
@@ -388,7 +397,7 @@ const Bin = () => {
         const handleMassDeleteTickets = async () => {
             try {
                 setLoading(true);
-                const res = await fetch('http://localhost:8081/api/tickets/mass-delete-permanent', {
+                const res = await fetch(`${SERVER_URL}api/tickets/mass-delete-permanent`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: selectedTickets })
@@ -499,7 +508,7 @@ const Bin = () => {
 
             try {
                 setLoading(true);
-                const res = await fetch('http://localhost:8081/api/tickets/mass-restore', {
+                const res = await fetch(`${SERVER_URL}api/tickets/mass-restore`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: selectedTickets })
@@ -591,7 +600,7 @@ const Bin = () => {
         const handleMassRestore = async () => {
             try {
                 setLoading(true);
-                const res = await fetch('http://localhost:8081/api/products/mass-restore', {
+                const res = await fetch(`${SERVER_URL}api/products/mass-restore`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: selectedProducts })

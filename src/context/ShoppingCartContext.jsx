@@ -4,12 +4,13 @@ import { toast } from "react-toastify"
 export const CartContext = createContext(null)
 
 export const ShoppingCartContext = ({children}) => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const [cart, setCart] = useState([])
 
     const updateQuantity = async (user_id, id, newQuantity, selectedVariant, fetchCartByUserId) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/update-quantity/${user_id}`, {
+            const response = await fetch(`${SERVER_URL}api/carts/update-quantity/${user_id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 //body: JSON.stringify({ product: id, quantity: newQuantity }),
@@ -27,7 +28,7 @@ export const ShoppingCartContext = ({children}) => {
     
     const deleteItemCart = async (user_id, id, selectedVariant, fetchCartByUserId) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/remove-product/${user_id}/${id}`, {
+            const response = await fetch(`${SERVER_URL}api/carts/remove-product/${user_id}/${id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -62,7 +63,7 @@ export const ShoppingCartContext = ({children}) => {
 
     const deleteAllItemCart = async (user_id, fetchCartByUserId) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/${user_id}`, {
+            const response = await fetch(`${SERVER_URL}api/carts/${user_id}`, {
                 method: "DELETE",
             });
     

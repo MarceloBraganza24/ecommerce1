@@ -16,6 +16,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         setNuevaVariante
     } = useContext(ProductsContext);
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const fileInputRef = useRef(null);
 
@@ -249,7 +250,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         setLoading(true);
     
         try {
-            const res = await fetch('http://localhost:8081/api/products/', {
+            const res = await fetch(`${SERVER_URL}api/products`, {
                 method: 'POST',
                 body: formData
             });

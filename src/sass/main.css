@@ -30,7 +30,8 @@ h2 {
   padding: 0.5vh 2vh;
 }
 .btn-expired-modal__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .modal-content {
@@ -125,6 +126,7 @@ h2 {
   transition: transform 0.4s ease, opacity 0.4s ease;
   opacity: 1;
   overflow: visible;
+  box-shadow: 0 2px 10px var(--primary-text-color);
 }
 .header__hide {
   transform: translateY(-95%);
@@ -157,7 +159,7 @@ h2 {
   width: 100%;
   height: 30px;
   text-align: center;
-  border: 0.3vh solid white;
+  border: 0.1vh solid var(--primary-text-color);
   border-radius: 0.5vh;
 }
 .header__gridUp__inputSearch__productsListContainer {
@@ -239,7 +241,7 @@ h2 {
   width: 30%;
 }
 .header__gridUp__logoContainer__storeName {
-  color: white;
+  color: var(--primary-text-color);
   font-size: 30px;
 }
 .header__gridUp__links {
@@ -255,7 +257,7 @@ h2 {
   justify-content: center;
   align-items: center;
   font-size: 14px;
-  color: white;
+  color: var(--primary-text-color);
   text-decoration: none;
   cursor: pointer;
 }
@@ -265,7 +267,7 @@ h2 {
   justify-content: center;
   align-items: center;
   font-size: 16px;
-  color: white;
+  color: var(--primary-text-color);
   padding: 0vh 2vh;
   text-decoration: none;
   cursor: pointer;
@@ -277,9 +279,9 @@ h2 {
   align-items: center;
   text-align: center;
   font-size: 14px;
-  color: white;
+  color: var(--primary-text-color);
   padding: 0vh 2vh;
-  border-right: 0.3vh solid white;
+  border-right: 0.3vh solid var(--primary-text-color);
 }
 .header__gridUp__links__itemCart {
   width: 100%;
@@ -288,7 +290,7 @@ h2 {
   align-items: center;
   padding: 0vh 2vh;
   gap: 1vh;
-  border-right: 0.3vh solid white;
+  border-right: 0.3vh solid var(--primary-text-color);
 }
 .header__gridUp__links__itemCart__logo {
   width: 40%;
@@ -319,7 +321,7 @@ h2 {
   justify-content: center;
   align-items: center;
   font-size: 14px;
-  color: white;
+  color: var(--primary-text-color);
   text-decoration: none;
   cursor: pointer;
   padding: 0vh 1vh;
@@ -331,10 +333,10 @@ h2 {
   justify-content: center;
   align-items: center;
   font-size: 14px;
-  color: white;
+  color: var(--primary-text-color);
   text-decoration: none;
   cursor: pointer;
-  border-right: 0.3vh solid white;
+  border-right: 0.3vh solid var(--primary-text-color);
 }
 .header__menu {
   height: 5vh;
@@ -344,24 +346,24 @@ h2 {
   gap: 1vh;
 }
 .header__menu__item {
-  color: white;
+  color: var(--primary-text-color);
   text-decoration: none;
   padding: 0vh 2vh;
 }
 .header__menu__item:hover {
   padding: 1vh 2vh;
-  border-top: 2px solid white;
-  border-bottom: 2px solid white;
+  border-top: 2px solid var(--primary-text-color);
+  border-bottom: 2px solid var(--primary-text-color);
 }
 .header__menu__itemBorder {
-  color: white;
+  color: var(--primary-text-color);
   padding: 0vh 2vh;
   cursor: pointer;
 }
 .header__menu__itemBorder:hover {
   padding: 1vh 2vh;
-  border-top: 2px solid white;
-  border-bottom: 2px solid white;
+  border-top: 2px solid var(--primary-text-color);
+  border-bottom: 2px solid var(--primary-text-color);
 }
 
 .activeLink {
@@ -370,8 +372,8 @@ h2 {
 
 .hoverLink {
   padding: 1vh 2vh;
-  border-top: 2px solid white;
-  border-bottom: 2px solid white;
+  border-top: 2px solid var(--primary-text-color);
+  border-bottom: 2px solid var(--primary-text-color);
 }
 
 .menuCategoriesWrapper {
@@ -405,7 +407,7 @@ h2 {
   gap: 2vh;
 }
 .categoriesContainer__grid__item {
-  color: white;
+  color: var(--primary-text-color);
   text-decoration: none;
 }
 
@@ -544,9 +546,14 @@ h2 {
   border-radius: 5vh;
 }
 
+.separatorWhite {
+  background-color: white;
+  width: 100%;
+  height: 10vh;
+}
+
 .featured-products {
-  background-color: #EFEFEF;
-  padding-bottom: 5vh;
+  background-color: #dddddd;
 }
 .featured-products .swiper-button-next {
   color: black;
@@ -565,7 +572,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 6vh 0vh 1vh 0vh;
+  padding: 8vh 0vh 1vh 0vh;
 }
 .featured-products__title__prop {
   font-size: 25px;
@@ -636,6 +643,7 @@ h2 {
   justify-content: center;
   align-items: center;
   width: 100%;
+  padding-bottom: 10vh;
 }
 .featured-products .product-grid-container__product-grid {
   width: 70%;
@@ -714,6 +722,7 @@ h2 {
 }
 
 .linkToAboutPagContainer {
+  background-color: #dddddd;
   padding: 6vh 0vh;
   display: flex;
   justify-content: center;
@@ -742,7 +751,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .linkToAboutPagContainer__imgContainer__phrase__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .linkToAboutPagContainer__imgContainer__phrase__prop:hover {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -751,7 +761,7 @@ h2 {
 }
 
 .categoriesExplored {
-  background-color: #EFEFEF;
+  background-color: #dddddd;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -780,6 +790,7 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 .categoriesExplored__grid__left__categoryImg__prop {
   width: 95%;
@@ -787,6 +798,10 @@ h2 {
      object-fit: cover;
   cursor: pointer;
   border-radius: 8px;
+  transition: transform 0.4s ease;
+}
+.categoriesExplored__grid__left__categoryImg__prop:hover {
+  transform: scale(1.03);
 }
 .categoriesExplored__grid__right {
   width: 100%;
@@ -802,6 +817,7 @@ h2 {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  overflow: hidden;
 }
 .categoriesExplored__grid__right__category__img {
   width: 100%;
@@ -812,6 +828,77 @@ h2 {
   cursor: pointer;
 }
 .categoriesExplored__grid__right__category__img:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.brandsExplored {
+  background-color: #dddddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.brandsExplored__title {
+  width: 70%;
+  padding: 6vh 0vh 0vh 0vh;
+}
+.brandsExplored__title__prop {
+  font-size: 25px;
+}
+.brandsExplored__grid {
+  width: 80%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  padding: 2vh 0vh 4vh 0vh;
+}
+.brandsExplored__grid__left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.brandsExplored__grid__left__categoryImg {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.brandsExplored__grid__left__categoryImg__prop {
+  width: 95%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.4s ease;
+}
+.brandsExplored__grid__left__categoryImg__prop:hover {
+  transform: scale(1.03);
+}
+.brandsExplored__grid__right {
+  width: 100%;
+  overflow: hidden;
+}
+.brandsExplored__grid__right__page {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+}
+.brandsExplored__grid__right__category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.brandsExplored__grid__right__category__img {
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+.brandsExplored__grid__right__category__img:hover {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
 }
@@ -853,13 +940,13 @@ h2 {
 }
 
 .offersContainer {
-  background-color: #EFEFEF;
+  background-color: #dddddd;
   width: 100%;
   height: 75vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 25vh;
+  padding-top: 26vh;
 }
 .offersContainer__offersSlider {
   width: 75%;
@@ -869,7 +956,7 @@ h2 {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  border-radius: 5vh;
+  border-radius: 2vh;
 }
 .offersContainer__offersSlider__track {
   display: flex;
@@ -926,11 +1013,105 @@ h2 {
 }
 
 .cPanelContainer {
-  background-color: rgba(183, 183, 183, 0.85);
+  background-color: #dddddd;
   width: 100%;
   display: flex;
   flex-direction: column;
   padding-top: 27vh;
+  /* &__existingCategories {
+      background-color: white;
+      width: 95%;
+      padding: 4vh 2vh;
+      border-radius: 1vh;
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+      gap: 1vh;
+      margin-top: 4vh;
+      &__title {
+          font-size: 30px;
+          text-align: center;
+          padding-left: 2vh;
+          font-weight: bold;
+      }
+      &__loadingProps {
+          font-size: 20px;
+          display: flex;
+          padding: 2vh;
+      }
+      &__withOutCategoriesLabel {
+          padding-left: 2vh;
+          font-size: 16px;
+      }
+      &__itemCategory {
+          width: 85%;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+          gap: 1vh;
+          align-self: center;
+          padding-left: 1vh;
+          &__category {
+              background-color: #b0b7c2;
+              display: grid;
+              grid-template-columns: 3fr 1fr;
+              padding: 1vh;
+              border-radius: 1vh;
+              &__name {
+                  font-size: 18px;
+                  text-align: center;
+                  align-self: center;
+              }
+              &__btn {
+                  @include disFC();
+                  padding: 1vh;
+                  border-radius: 0.5vh;
+                  font-size: 14px;
+                  cursor: pointer;
+                  @include btn();
+              }
+          }
+      }
+  }
+  &__newCategoryForm {
+      width: 100%;
+      padding-top: 2vh;
+      display: flex;
+      flex-direction: column;
+      gap: 2vh;
+      &__title {
+          font-size: 30px;
+          font-weight: bold;
+          padding-left: 2vh;
+      }
+      &__form {
+          width: 30%;
+          display: flex;
+          flex-direction: column;
+          gap: 2vh;
+          padding-left: 2vh;
+          &__input {
+              width: 80%;
+              height: 25px;
+              border-radius: 0.5vh;
+              font-size: 16px;
+              //padding: 1vh;
+              color: black;
+              border: 0.3vh solid black;
+              &::placeholder {
+                  font-size: 16px;
+              }
+          }
+          &__btn {
+              width: 40%;
+              @include disFC();
+              padding: 0.5vh;
+              border-radius: 0.5vh;
+              font-size: 16px;
+              cursor: pointer;
+              @include btn();
+          }
+      }
+  } */
 }
 .cPanelContainer__title {
   width: 100%;
@@ -1026,7 +1207,8 @@ h2 {
   cursor: pointer;
 }
 .cPanelContainer__siteConfiguration__form__socialNetworks__grid__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__siteConfiguration__form__socialNetworks__btnAddSocialNetworkContianer__btn {
   background-color: var(--primary-color);
@@ -1036,7 +1218,8 @@ h2 {
   cursor: pointer;
 }
 .cPanelContainer__siteConfiguration__form__socialNetworks__btnAddSocialNetworkContianer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__siteConfiguration__form__images {
   display: flex;
@@ -1148,7 +1331,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__gridPhone__inputBtn__btnDeletePhone:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__siteConfiguration__form__gridColor {
   display: flex;
@@ -1218,7 +1402,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__gridColor__inputBtn__btnDeletePhone:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__siteConfiguration__form__offersTitle {
   width: 500px;
@@ -1228,10 +1413,200 @@ h2 {
 .cPanelContainer__siteConfiguration__form__offers {
   background-color: rgba(183, 183, 183, 0.85);
   height: auto;
-  max-height: 60vh;
+  max-height: 70vh;
   padding: 2vh;
   overflow: auto;
   border-radius: 0.5vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer {
+  border: 1px solid black;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__imgOffer {
+  display: flex;
+  align-items: center;
+  gap: 2vh;
+  padding-bottom: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__label {
+  font-size: 18px;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__prop {
+  width: 8%;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__labelInput {
+  display: flex;
+  padding-bottom: 4vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__labelInput__label {
+  width: 300px;
+  font-size: 20px;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__labelInput__input {
+  width: 200px;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection {
+  display: flex;
+  flex-direction: column;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__label {
+  font-size: 20px;
+  padding-bottom: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect {
+  display: flex;
+  gap: 1vh;
+  padding-bottom: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__label {
+  font-size: 18px;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__select {
+  width: 200px;
+  border-radius: 0.5vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn {
+  padding: 0vh 0vh 0.5vh 0vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input {
+  text-align: center;
+  border-radius: 0.3vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__btn {
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  padding: 0.3vh 2vh;
+  border-radius: 0.5vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__btn:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition__prop {
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  padding: 0.3vh 2vh;
+  border-radius: 0.5vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition__prop:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer {
+  width: 500px;
+  padding-top: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer__prop {
+  width: 40%;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  padding: 0.5vh 2vh;
+  border-radius: 0.5vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer__prop:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
+}
+.cPanelContainer__siteConfiguration__form__offers__btnAddOffer {
+  width: 500px;
+  padding-bottom: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__btnAddOffer__prop {
+  width: 50%;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  padding: 0.5vh 2vh;
+  font-size: 16px;
+  border-radius: 0.5vh;
+}
+.cPanelContainer__siteConfiguration__form__offers__btnAddOffer__prop:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
+}
+.cPanelContainer__siteConfiguration__form__infoBlock {
+  width: 500px;
+  font-size: 30px;
+  font-weight: bold;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4vh;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: rgba(183, 183, 183, 0.85);
+  padding: 2vh 0vh;
+  border-radius: 2vh;
+  gap: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput {
+  width: 90%;
+  display: flex;
+  align-items: center;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__img {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__img__prop {
+  width: 40px;
+  height: 40px;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__img__inputFile {
+  width: 200px;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__label {
+  width: 40%;
+  font-size: 20px;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__labelInput__input {
+  width: 250px;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btn {
+  width: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1vh;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btn__prop {
+  width: 50%;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  border-radius: 0.5vh;
+  padding: 0.5vh 0vh;
+  cursor: pointer;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btn__prop:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btnAddBlock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 350px;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btnAddBlock__prop {
+  width: 80%;
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  border-radius: 0.5vh;
+  padding: 0.5vh 0vh;
+  cursor: pointer;
+}
+.cPanelContainer__siteConfiguration__form__itemInfoBlockContainer__itemInfoBlock__btnAddBlock__prop:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__siteConfiguration__form__gridImages {
   display: grid;
@@ -1282,7 +1657,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__gridImages__preview__imgBtn__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__siteConfiguration__form__aboutText {
   display: flex;
@@ -1343,115 +1719,68 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__siteConfiguration__form__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
-.cPanelContainer__existingCategories {
+.cPanelContainer__categoriesManagement {
   background-color: white;
   width: 95%;
   padding: 4vh 2vh;
-  border-radius: 1vh;
   display: flex;
   flex-direction: column;
   align-self: center;
+  border-radius: 1vh;
   gap: 1vh;
   margin-top: 4vh;
 }
-.cPanelContainer__existingCategories__title {
-  font-size: 30px;
-  text-align: center;
-  padding-left: 2vh;
-  font-weight: bold;
-}
-.cPanelContainer__existingCategories__loadingProps {
-  font-size: 20px;
+.cPanelContainer__categoriesManagement__addCategoryForm {
   display: flex;
-  padding: 2vh;
+  flex-direction: column;
 }
-.cPanelContainer__existingCategories__withOutCategoriesLabel {
-  padding-left: 2vh;
-  font-size: 16px;
+.cPanelContainer__categoriesManagement__addCategoryForm__input {
+  width: 250px;
+  padding-bottom: 1vh;
 }
-.cPanelContainer__existingCategories__itemCategory {
-  width: 85%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 1vh;
-  align-self: center;
-  padding-left: 1vh;
-}
-.cPanelContainer__existingCategories__itemCategory__category {
-  background-color: #b0b7c2;
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  padding: 1vh;
-  border-radius: 1vh;
-}
-.cPanelContainer__existingCategories__itemCategory__category__name {
-  font-size: 18px;
+.cPanelContainer__categoriesManagement__addCategoryForm__input__prop {
+  width: 100%;
+  height: 25px;
   text-align: center;
-  align-self: center;
 }
-.cPanelContainer__existingCategories__itemCategory__category__btn {
+.cPanelContainer__categoriesManagement__addCategoryForm__select {
+  width: 254px;
+  height: 25px;
+}
+.cPanelContainer__categoriesManagement__addCategoryForm__select__prop {
+  width: 100%;
+  height: 25px;
+  text-align: center;
+}
+.cPanelContainer__categoriesManagement__addCategoryForm__inputFileImg {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  padding-top: 1vh;
+}
+.cPanelContainer__categoriesManagement__addCategoryForm__inputFileImg__img {
+  display: flex;
   align-items: center;
-  padding: 1vh;
+}
+.cPanelContainer__categoriesManagement__addCategoryForm__inputFileImg__img__prop {
+  width: 40px;
+  height: 40px;
+}
+.cPanelContainer__categoriesManagement__addCategoryForm__btn {
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  margin-top: 1vh;
+  width: 150px;
   border-radius: 0.5vh;
+  padding: 0.3vh 1vh;
   font-size: 14px;
   cursor: pointer;
-  background-color: var(--primary-color);
-  color: var(--primary-text-color);
 }
-.cPanelContainer__existingCategories__itemCategory__category__btn:hover {
-  color: var(--secondary-color);
-}
-.cPanelContainer__newCategoryForm {
-  width: 100%;
-  padding-top: 2vh;
-  display: flex;
-  flex-direction: column;
-  gap: 2vh;
-}
-.cPanelContainer__newCategoryForm__title {
-  font-size: 30px;
-  font-weight: bold;
-  padding-left: 2vh;
-}
-.cPanelContainer__newCategoryForm__form {
-  width: 30%;
-  display: flex;
-  flex-direction: column;
-  gap: 2vh;
-  padding-left: 2vh;
-}
-.cPanelContainer__newCategoryForm__form__input {
-  width: 80%;
-  height: 25px;
-  border-radius: 0.5vh;
-  font-size: 16px;
-  color: black;
-  border: 0.3vh solid black;
-}
-.cPanelContainer__newCategoryForm__form__input::-moz-placeholder {
-  font-size: 16px;
-}
-.cPanelContainer__newCategoryForm__form__input::placeholder {
-  font-size: 16px;
-}
-.cPanelContainer__newCategoryForm__form__btn {
-  width: 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5vh;
-  border-radius: 0.5vh;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: var(--primary-color);
-  color: var(--primary-text-color);
-}
-.cPanelContainer__newCategoryForm__form__btn:hover {
-  color: var(--secondary-color);
+.cPanelContainer__categoriesManagement__addCategoryForm__btn:hover {
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__existingSellerAddresses {
   background-color: white;
@@ -1509,7 +1838,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__existingSellerAddresses__itemSellerAddress__sellerAddress__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__createNewSellerAddress {
   display: flex;
@@ -1555,7 +1885,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__createNewSellerAddress__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__existingCoupons {
   background-color: white;
@@ -1639,7 +1970,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__existingCoupons__itemCoupons__coupons__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__createNewCoupons {
   display: flex;
@@ -1686,7 +2018,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__createNewCoupons__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__adminsList {
   background-color: white;
@@ -1742,7 +2075,8 @@ h2 {
   cursor: pointer;
 }
 .cPanelContainer__adminsList__item__btns__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelContainer__userRegisterContainer {
   background-color: white;
@@ -1869,7 +2203,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelContainer__userRegisterContainer__form__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .homeContainer {
@@ -2008,7 +2343,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .categoryContainer__grid__categoriesListContainer__sortSelectContainer__select:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .categoryContainer__grid__categoriesListContainer__sortSelectContainer__select__option {
   font-size: 18px;
@@ -2062,7 +2398,7 @@ h2 {
 }
 
 .binContainer {
-  background-color: rgba(183, 183, 183, 0.85);
+  background-color: #dddddd;
   width: 100%;
   height: auto;
   display: flex;
@@ -2143,7 +2479,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .binContainer__massDeleteBtnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .binContainer__headerTableContainer {
   width: 100%;
@@ -2231,7 +2568,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .binContainer__productsTable__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .binContainer__headerSalesTableContainer {
   width: 100%;
@@ -2373,7 +2711,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .binContainer__salesTable__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .binContainer__salesTable__isLoadingLabel {
   display: flex;
@@ -2388,7 +2727,7 @@ h2 {
 }
 
 .favoritesContiner {
-  background-color: rgba(183, 183, 183, 0.85);
+  background-color: #dddddd;
   width: 100%;
   padding: 28vh 0vh 5vh 0vh;
 }
@@ -2421,7 +2760,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .favoritesContiner__gridContainer__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .favoritesContiner__gridContainer__grid {
   width: 60%;
@@ -2458,7 +2798,7 @@ h2 {
 }
 
 .cPanelProductsContainer {
-  background-color: rgba(183, 183, 183, 0.85);
+  background-color: #dddddd;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -2496,7 +2836,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__inputSearchProduct__selectContainer__select:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelProductsContainer__inputSearchProduct__selectContainer__select:hover {
   cursor: pointer;
@@ -2538,7 +2879,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__btnCreateProduct__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelProductsContainer__quantityProducts {
   width: 100%;
@@ -2566,7 +2908,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelProductsContainer__formUpdatePrices {
   background-color: whitesmoke;
@@ -2576,8 +2919,7 @@ h2 {
   align-self: center;
   border-radius: 0.5vh;
   flex-direction: column;
-  border-bottom: 0.2vh solid black;
-  border-top: 0.2vh solid black;
+  border: 0.2vh solid black;
 }
 .cPanelProductsContainer__formUpdatePrices__title {
   font-size: 25px;
@@ -2627,7 +2969,8 @@ h2 {
   cursor: pointer;
 }
 .cPanelProductsContainer__formUpdatePrices__btnSubmitContainer__btnSubmit:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelProductsContainer__headerTableContainer {
   background-color: whitesmoke;
@@ -2725,7 +3068,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelProductsContainer__btnsPagesContainer {
   width: 100%;
@@ -2744,11 +3088,12 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelProductsContainer__btnsPagesContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .cPanelSalesContainer {
-  background-color: rgba(183, 183, 183, 0.85);
+  background-color: #dddddd;
   width: 100%;
   height: auto;
   display: flex;
@@ -2788,7 +3133,8 @@ h2 {
   font-size: 16px;
 }
 .cPanelSalesContainer__inputSearchSale__selectContainer__select:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelSalesContainer__inputSearchSale__inputContainer {
   display: flex;
@@ -2829,7 +3175,8 @@ h2 {
   border: 0.3vh solid black;
 }
 .cPanelSalesContainer__btnCreateSale__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelSalesContainer__dateFilter {
   display: flex;
@@ -2853,7 +3200,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelSalesContainer__dateFilter__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelSalesContainer__dateFilter__date {
   width: 180px;
@@ -2902,7 +3250,8 @@ h2 {
   margin-left: 4vh;
 }
 .cPanelSalesContainer__btnDeleteSelected__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelSalesContainer__headerTableCPanelSalesContainer {
   width: 100%;
@@ -3049,7 +3398,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cPanelSalesContainer__salesTable__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cPanelSalesContainer__salesTable__isLoadingLabel {
   display: flex;
@@ -3080,7 +3430,8 @@ h2 {
   border: 0.3vh solid black;
 }
 .cPanelSalesContainer__btnsPagesContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .myPurchasesContainer {
@@ -3283,13 +3634,15 @@ h2 {
   color: var(--primary-text-color);
 }
 .myPurchasesContainer__purchasesTable__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .myPurchasesContainer__purchasesTable__isLoadingLabel {
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 2vh;
+  flex-direction: column;
 }
 .myPurchasesContainer__purchasesTable__isLoadingLabel__label {
   font-size: 22px;
@@ -3317,7 +3670,8 @@ h2 {
   border: 0.3vh solid black;
 }
 .myPurchasesContainer__btnsPagesContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .confirmationDeleteModalContainer {
@@ -3788,7 +4142,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__select:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__select:hover {
   cursor: pointer;
@@ -3892,7 +4247,8 @@ h2 {
   cursor: pointer;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label {
   text-align: center;
@@ -3947,7 +4303,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__itemGrid {
   width: 100%;
@@ -4021,7 +4378,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__inputCouponContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btn {
   width: 100%;
@@ -4046,7 +4404,8 @@ h2 {
   border: 0.3vh solid black;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btnContainer {
   display: flex;
@@ -4062,7 +4421,8 @@ h2 {
   cursor: pointer;
 }
 .createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__btnAddSelected {
   display: flex;
@@ -4076,7 +4436,8 @@ h2 {
   cursor: pointer;
 }
 .createSaleModalContainer__createSaleModal__btnAddSelected__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__headerTableContainer {
   background-color: whitesmoke;
@@ -4190,7 +4551,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createSaleModalContainer__createSaleModal__btnsPagesContainer {
   width: 100%;
@@ -4209,7 +4571,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .createSaleModalContainer__createSaleModal__btnsPagesContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .createProductModalContainer {
@@ -4632,7 +4995,8 @@ h2 {
   border-radius: 0.5vh;
 }
 .createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .createProductModalContainer__createProductModal__propsContainer__btnContainer {
   width: 85%;
@@ -4693,7 +5057,8 @@ h2 {
   border-radius: 0.5vh;
 }
 .productsContainer__routeSelect__select__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .productsContainer__titleContainer {
   background-color: var(--primary-color);
@@ -4725,7 +5090,7 @@ h2 {
 }
 .productsContainer__gridCategoriesProducts__categoriesContainer__categories {
   width: 100%;
-  background-color: #c8c7c7;
+  background-color: #dddddd;
   display: flex;
   flex-direction: column;
   gap: 0.7vh;
@@ -4733,6 +5098,7 @@ h2 {
   border-radius: 1vh;
   position: sticky;
   top: 30vh;
+  border: 0.2vh solid black;
 }
 .productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree {
   display: flex;
@@ -4810,7 +5176,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .productsContainer__gridCategoriesProducts__categoriesContainer__categories__btnDeleteFilters__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .productsContainer__gridCategoriesProducts__categoriesContainer__categories__title {
   text-align: center;
@@ -4938,7 +5305,8 @@ h2 {
   font-size: 16px;
 }
 .catalogContainer__inputSearchProduct__inputContainer__selectContainer__select:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .catalogContainer__inputSearchProduct__inputContainer__input {
   width: 100%;
@@ -5168,7 +5536,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemProduct__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .itemDetailContainer {
@@ -5363,7 +5732,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__count__availability {
   font-size: 16px;
@@ -5393,7 +5763,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__btnAddToCart__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__btnAddToCart__propCart {
   width: 60%;
@@ -5408,7 +5779,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemDetailContainer__itemDetail__infoContainer__info__btnAddToCart__propCart:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .cartContainer {
@@ -5493,7 +5865,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cartContainer__cart__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cartContainer__accountSummaryContainer {
   width: 90%;
@@ -5596,7 +5969,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .cartContainer__accountSummaryContainer__accountSummary__inputCouponContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .cartContainer__accountSummaryContainer__accountSummary__btn {
   width: 100%;
@@ -5621,7 +5995,8 @@ h2 {
   border: 0.3vh solid black;
 }
 .cartContainer__accountSummaryContainer__accountSummary__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .noProductsContainer {
@@ -5753,7 +6128,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .itemCart__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .shippingContainer {
@@ -5868,7 +6244,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .shippingContainer__deliveryMethodContainer__btnContinue__propRedirectBtn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .shippingContainer__deliveryMethodContainer__btnContinue__prop {
   width: 20%;
@@ -5882,7 +6259,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .shippingContainer__deliveryMethodContainer__btnContinue__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .shippingContainer__accountSummaryContainer {
   width: 100%;
@@ -5975,7 +6353,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .shippingContainer__accountSummaryContainer__accountSummary__inputCouponContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .shippingContainer__accountSummaryContainer__accountSummary__itemGrid {
   width: 90%;
@@ -6047,7 +6426,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .deliveryAddressContainer__btnEdit:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .deliveryAddressContainer__btnEdit:hover {
   border: 0.3vh solid black;
@@ -6150,7 +6530,8 @@ h2 {
   font-size: 14px;
 }
 .deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .deliveryFormContainer__deliveryForm__labelInputLoadStreet {
   width: 100%;
@@ -6256,7 +6637,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .deliveryFormContainer__deliveryForm__btnContainer__btn:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .aboutContainer {
@@ -6273,13 +6655,21 @@ h2 {
   align-items: center;
 }
 .aboutContainer__phraseContainer__phrase {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   width: 60%;
-  font-size: 25px;
-  text-align: justify;
-  padding: 10vh;
+  height: 50vh;
+  font-size: 22px;
+  text-align: left;
+  -webkit-hyphens: auto;
+          hyphens: auto;
+  white-space: pre-line;
+  padding: 6vh 10vh;
   color: white;
   border-radius: 4vh;
+  overflow-y: auto;
+}
+.aboutContainer__phraseContainer__phrase::-webkit-scrollbar {
+  display: none;
 }
 .aboutContainer__imgContainer {
   background-image: url("../assets/sobre_nosotros_fondo.jpg");
@@ -6394,7 +6784,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .contactContainer__formMap__formContainer__form__prop__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .contactContainer__formMap__spinnerContainer {
   width: 100%;
@@ -6441,7 +6832,8 @@ h2 {
   cursor: pointer;
 }
 .contactContainer__formMap__mapContainer__map__select:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .resetPassContainer {
@@ -6580,7 +6972,8 @@ h2 {
   cursor: pointer;
 }
 .resetPassContainer__credentials__form__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .confirmationResetPassModalContainer {
@@ -6711,7 +7104,8 @@ h2 {
   text-align: center;
 }
 .sendMailContainer__credentials__form__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .loginContainer {
@@ -6728,7 +7122,7 @@ h2 {
   align-items: center;
 }
 .loginContainer__formContainer__form {
-  background-color: rgba(183, 183, 183, 0.85);
+  background-color: #dddddd;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   width: 75%;
@@ -6752,7 +7146,7 @@ h2 {
 }
 .loginContainer__formContainer__form__forgotPass {
   font-size: 16px;
-  color: var(--secondary-text-color);
+  color: black;
 }
 .loginContainer__formContainer__form__inputContainer {
   width: 100%;
@@ -6846,7 +7240,8 @@ h2 {
   color: var(--primary-text-color);
 }
 .loginContainer__formContainer__form__btn__prop:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 .loginContainer__logoContainer {
   background-color: var(--primary-color);
@@ -6906,6 +7301,7 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
   padding: 4vh 0vh 4vh 0vh;
+  box-shadow: 0 -2px 6px var(--primary-text-color);
 }
 .footerContainer__logoPhraseContainer {
   width: 100%;
@@ -6914,10 +7310,10 @@ h2 {
   align-items: center;
 }
 .footerContainer__logoPhraseContainer__logoPhrase {
-  width: 60%;
+  width: 65%;
   display: flex;
   flex-direction: column;
-  gap: 2vh;
+  gap: 1vh;
 }
 .footerContainer__logoPhraseContainer__logoPhrase__logo {
   width: 100%;
@@ -6929,7 +7325,10 @@ h2 {
   width: 100%;
 }
 .footerContainer__logoPhraseContainer__logoPhrase__phrase__prop {
-  text-align: justify;
+  text-align: left;
+  -webkit-hyphens: auto;
+          hyphens: auto;
+  white-space: pre-line;
   color: var(--primary-text-color);
 }
 .footerContainer__faqContainer {
@@ -6950,7 +7349,7 @@ h2 {
 .footerContainer__faqContainer__faq__links {
   color: var(--primary-text-color);
   text-decoration: none;
-  padding-top: 0.5vh;
+  padding-top: 0.7vh;
 }
 .footerContainer__contactContainer {
   width: 100%;
@@ -7235,7 +7634,8 @@ h2 {
   border: 0.3vh solid black;
 }
 .logOutContainer__label:hover {
-  color: var(--secondary-color);
+  background-color: var(--primary-text-color);
+  color: var(--primary-color);
 }
 
 .headerPurchase {

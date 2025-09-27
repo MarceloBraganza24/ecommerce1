@@ -9,9 +9,10 @@ import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 
 const DeliveryForm = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [loadingDeleteId, setLoadingDeleteId] = useState(null);
     const [loadingSaveDeliveryForm, setLoadingSaveDeliveryForm] = useState(false);
     const [deliveryForms, setDeliveryForms] = useState([]);
@@ -110,7 +111,7 @@ const DeliveryForm = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -139,7 +140,7 @@ const DeliveryForm = () => {
         setSelectedAddress(address);
         const { _id, __v, ...cleanAddress } = address;
         try {
-            const response = await fetch(`http://localhost:8081/api/users/address-selected/${user._id}`, {
+            const response = await fetch(`${SERVER_URL}api/users/address-selected/${user._id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -179,7 +180,7 @@ const DeliveryForm = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -216,7 +217,7 @@ const DeliveryForm = () => {
     const fetchDeliveryForm = async () => {
         try {
             setIsLoadingDeliveryForm(true)
-            const response = await fetch('http://localhost:8081/api/deliveryForm');
+            const response = await fetch(`${SERVER_URL}api/deliveryForm`);
             const deliveryForm = await response.json();
             if (response.ok) {
                 setDeliveryForms(deliveryForm.data)
@@ -300,7 +301,7 @@ const DeliveryForm = () => {
                 phone: Number(formData.phone) || 0, // Convierte a número
                 owner: user.email
             };
-            const response = await fetch(`http://localhost:8081/api/deliveryForm`, {
+            const response = await fetch(`${SERVER_URL}api/deliveryForm`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Indicamos que estamos enviando datos JSON
@@ -364,7 +365,7 @@ const DeliveryForm = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -413,7 +414,7 @@ const DeliveryForm = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -477,7 +478,7 @@ const DeliveryForm = () => {
         try {
             
             setLoadingDeleteId(addressId);
-            const response = await fetch(`http://localhost:8081/api/deliveryForm/${addressId}`, {
+            const response = await fetch(`${SERVER_URL}api/deliveryForm/${addressId}`, {
                 method: 'DELETE',
             });
 
@@ -555,7 +556,6 @@ const DeliveryForm = () => {
                 isLoading={isLoading}
                 isLoadingAuth={isLoadingAuth}
                 user={user}
-                //setUser={setUser}
                 setSelectedAddress={setSelectedAddress}
                 isLoggedIn={user?.isLoggedIn || false}
                 role={user?.role || null}
@@ -782,9 +782,9 @@ const DeliveryForm = () => {
             <Footer
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

@@ -2,21 +2,30 @@ import React, {useState} from 'react'
 import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 import ConfirmationDeleteAdminTicketModal from './ConfirmationDeleteAdminTicketModal';
+import ConfirmationDeleteUserTicketModal from './ConfirmationDeleteUserTicketModal';
 
 const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
     const [loading, setLoading] = useState(false);
     const [showConfirmationDeleteAdminTicketModal, setShowConfirmationDeleteAdminTicketModal] = useState(false);
     const [textConfirmationDeleteModal, setTextConfirmationDeleteAdminTicketModal] = useState('');
 
+    const [showConfirmationDeleteUserTicketModal, setShowConfirmationDeleteUserTicketModal] = useState(false);
+    const [textConfirmationDeleteUserTicketModal, setTextConfirmationDeleteUserTicketModal] = useState('');
+
     const handleBtnDeleteTicket = async () => {
-        setTextConfirmationDeleteAdminTicketModal(`la venta con los siguientes datos:\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
+        setTextConfirmationDeleteAdminTicketModal(`la venta con los siguientes datos?\n- Fecha: ${fechaHora}\n- Codigo: ${ticket.code}\n- Realizada por ${ticket.payer_email}`)
         setShowConfirmationDeleteAdminTicketModal(true);
+    };
+
+    const handleBtnDeleteUserTicket = async () => {
+        setTextConfirmationDeleteUserTicketModal(`la compra con los siguientes datos?\n- Fecha: ${fechaHora}\n- Codigo: ${ticket.code}\n- Realizada por ${ticket.payer_email}`)
+        setShowConfirmationDeleteUserTicketModal(true);
     };
 
     const handleBtnHiddenProduct = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8081/api/tickets/${ticket._id}`, {
+            const res = await fetch(`${SERVER_URL}api/tickets/${ticket._id}`, {
                 method: 'PUT'
             });
             if (res.ok) {
@@ -89,7 +98,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                             const variantCampos = item.selectedVariant?.campos || snapshot?.variant?.campos;
 
                             const imageUrl = relativePath
-                                ? `http://localhost:8081/${relativePath}`  // <-- reemplazá con tu dominio real
+                                ? `${SERVER_URL}${relativePath}`  // <-- reemplazá con tu dominio real
                                 : '/default-image.jpg';
 
                             return (
@@ -202,7 +211,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                             //  console.log(snapshot)
 
                             const imageUrl = relativePath
-                                ? `http://localhost:8081/${relativePath}` // reemplazá con tu dominio real
+                                ? `${SERVER_URL}${relativePath}` // reemplazá con tu dominio real
                                 : '/default-image.jpg';
 
                             const handleLinkToProductDetail = () => {
@@ -273,7 +282,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                             </button>
                         ) : role == 'user' && (
                             <button
-                            onClick={handleBtnHiddenProduct}
+                            onClick={handleBtnDeleteUserTicket}
                             className='myPurchasesContainer__purchasesTable__itemContainer__btnsContainer__btn'
                             >
                             Borrar
@@ -290,6 +299,19 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                 text={textConfirmationDeleteModal}
                 ticketId={ticket._id}
                 setShowConfirmationDeleteAdminTicketModal={setShowConfirmationDeleteAdminTicketModal}
+                fetchTickets={fetchTickets}
+                selectedDate={selectedDate}
+                setSelectedTickets={setSelectedTickets}
+                />
+            }
+
+            {
+                showConfirmationDeleteUserTicketModal &&
+                <ConfirmationDeleteUserTicketModal
+                text={textConfirmationDeleteUserTicketModal}
+                ticketId={ticket._id}
+                email={email}
+                setShowConfirmationDeleteUserTicketModal={setShowConfirmationDeleteUserTicketModal}
                 fetchTickets={fetchTickets}
                 selectedDate={selectedDate}
                 setSelectedTickets={setSelectedTickets}

@@ -11,7 +11,8 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
         setSelectedVariantsMap,
         resetSale
     } = useContext(SalesContext);
-    const [selectedField, setSelectedField] = useState('title');
+    const [showConfirmationConfirmSaleModal, setShowConfirmationDeleteAllTicketsSelectedModal] = useState(false);
+    const [selectedField, setSelectedField] = useState('all');
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectedProductData, setSelectedProductData] = useState([]); // Objetos completos
@@ -26,6 +27,8 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
     const [totalQuantity, setTotalQuantity] = useState('');
     const [totalWithDiscount, setTotalWithDiscount] = useState('');
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
+
+    //const products = []
 
     const handleBtnCloseCreateSaleModal = () => {
         setCreateSaleModal(false)
@@ -170,7 +173,6 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                 body: JSON.stringify(newTicket)
             })
             const data = await response.json();
-            console.log(data)
             if (response.ok) {
                 toast('Has registrado la venta con éxito!', {
                     position: "top-right",
@@ -541,6 +543,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                         stock,
                         quantity: 1,
                         camposSeleccionados,
+                        selectedVariant: varianteSeleccionada || null,
                         _uniqueKey: productKey,
                     });
                 }
@@ -561,6 +564,99 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
         setSelectedProducts([]);
         setSelectedProductData([]);
     };
+
+    const ConfirmationConfirmSale = () => {
+        const [loading, setLoading] = useState(false);
+
+        const handleMassDelete = async () => {
+
+            try {
+                setLoading(true);
+                const res = await fetch('http://localhost:8081/api/tickets/mass-delete', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: selectedTickets })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    setSelectedTickets([]);
+                    fetchTickets(1,inputFilteredTickets, selectedField, selectedDate)
+                    toast('Tickets eliminados correctamente', {
+                        position: "top-right",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        className: "custom-toast",
+                    });
+                    setShowConfirmationDeleteAllTicketsSelectedModal(false)
+                } 
+            } catch (error) {
+                console.error(error);
+                toast('Error al eliminar tickets', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        return (
+            
+            <>
+
+                <div className='confirmationDeleteModalContainer'>
+
+                    <div className='confirmationDeleteModalContainer__confirmationModal'>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
+                            <div onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
+                        </div>
+                        
+                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar todas las ventas({selectedTickets.length}) seleccionadas?</div>
+                        </div>
+
+                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
+                            {loading ? (
+                                <button
+                                disabled
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                <Spinner/>
+                                </button>
+                            ) : (
+                                <button
+                                onClick={handleMassDelete}
+                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
+                                >
+                                Si
+                                </button>
+                            )}
+                            <button onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
+                        </div>
+
+                    </div>
+            
+                </div>
+
+            </>
+            
+        )
+
+    }
 
 
     return (
@@ -747,7 +843,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                                         </div>
 
                                         <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.category}</div>
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.category.name}</div>
                                         </div>
 
                                         <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer'>
@@ -994,7 +1090,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
 
 
                                             <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category}</div>
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category.name}</div>
                                             </div>
 
                                             <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
@@ -1052,6 +1148,11 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                 </div>
 
             </div>
+
+            {
+                showConfirmationConfirmSaleModal &&
+                <ConfirmationConfirmSale/>
+            }
 
         </>
 

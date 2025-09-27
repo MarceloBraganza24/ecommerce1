@@ -2,15 +2,14 @@ import { useState, useEffect } from "react";
 
 export default function CategorySidebar({ onSelectCategory }) {
   const [categoriesTree, setCategoriesTree] = useState([]);
-  console.log(categoriesTree)
-  const SERVER_URL = "http://localhost:8081";
+  const SERVER_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`${SERVER_URL}/api/categories/combined`);
+        const res = await fetch(`${SERVER_URL}api/categories/combined`);
         const data = await res.json();
-        if (res.ok) setCategoriesTree(data.tree || []);
+        if (res.ok) setCategoriesTree(data.payload || []);
       } catch (err) {
         console.error("Error al cargar categorías:", err);
       }

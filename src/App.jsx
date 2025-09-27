@@ -15,7 +15,6 @@ import About from './components/About.jsx';
 import Contact from './components/Contact.jsx';
 import Cart from './components/Cart.jsx';
 import ItemDetailContainer from './components/ItemDetailContainer.jsx';
-import CategoryContainer from './components/CategoryContainer.jsx';
 import Shipping from './components/Shipping.jsx';
 import DeliveryForm from './components/DeliveryForm.jsx';
 import CPanelProducts from './components/CPanelProducts.jsx';
@@ -31,6 +30,8 @@ import { CPanelSalesContext } from './context/CPanelSalesContext.jsx';
 import { ShoppingCartContext } from './context/ShoppingCartContext.jsx';
 import ProductsContainer from './components/ProductsContainer.jsx';
 
+import { setFavicon } from "./hooks/setFavicon.js";
+
 function AppContent() {
   const { setToken, fetchCurrentUser,logout } = useAuth();
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -38,7 +39,7 @@ function AppContent() {
   const countdownIntervalRef = useRef(null);
   const logoutTimeoutRef = useRef(null);
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const SERVER_URL = import.meta.env.VITE_API_URL;
   const [storeSettings, setStoreSettings] = useState({});
   const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(false);
@@ -53,9 +54,10 @@ function AppContent() {
   const fetchStoreSettings = async () => {
     try {
         setIsLoadingStoreSettings(true);
-        const response = await fetch('http://localhost:8081/api/settings');
+        const response = await fetch(`${SERVER_URL}api/settings`);
         const data = await response.json();
         if (response.ok) {
+          setFavicon(data.siteImages.favicon)
           setStoreSettings(data); 
         } else {
             toast('Error al cargar configuraciones', {
@@ -138,7 +140,7 @@ function AppContent() {
   const handleExtendSession = async () => {
     cancelCountdown();
 
-    const res = await fetch(`${apiUrl}/api/sessions/refresh`, {
+    const res = await fetch(`${SERVER_URL}api/sessions/refresh`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -205,7 +207,6 @@ function AppContent() {
         <Route exact path="/signIn" element={<SignIn/>}/>
         <Route exact path="/cart" element={<Cart/>}/>
         <Route exact path="/item/:id" element={<ItemDetailContainer/>}/>
-        <Route exact path="/category/:category" element={<CategoryContainer/>}/>
         <Route exact path="/shipping" element={<Shipping/>}/>
         <Route exact path="/deliveryForm" element={<DeliveryForm/>}/>
         <Route exact path="/cpanel/products" element={<CPanelProducts/>}/>

@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Contact = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [categories, setCategories] = useState([]);
@@ -22,6 +22,7 @@ const Contact = () => {
         email: '',
         message: ''
     });
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     
     const [selectedAddress, setSelectedAddress] = useState(null);
 
@@ -71,7 +72,7 @@ const Contact = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -98,7 +99,7 @@ const Contact = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -147,7 +148,7 @@ const Contact = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -183,7 +184,7 @@ const Contact = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -227,7 +228,7 @@ const Contact = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/contact', {
+            const response = await fetch(`${SERVER_URL}api/contact`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -300,7 +301,7 @@ const Contact = () => {
                 storeName={storeSettings?.storeName || ""}
                 />
             </div>
-            <div className="contactContainer" style={{backgroundImage: `url(http://localhost:8081/${storeSettings?.siteImages?.contactImage || ''})`}}>
+            <div className="contactContainer" style={{backgroundImage: `url(${storeSettings?.siteImages?.contactImage || ''})`}}>
 
                 <div className='contactContainer__title'>
                     <div className='contactContainer__title__prop'>Contacto</div>
@@ -411,10 +412,10 @@ const Contact = () => {
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
-            copyrightText={storeSettings.copyrightText}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
+            copyrightText={storeSettings?.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

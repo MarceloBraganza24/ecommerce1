@@ -3,25 +3,11 @@ import { Link,useLocation, useNavigate } from 'react-router-dom'
 import SmartLink from './SmartLink';
 
 const Footer = ({isLoggedIn,copyrightText,sellerAddresses,socialNetworks,logo_store,aboutText,phoneNumbers,contactEmail}) => {
-    // const navigate = useNavigate();
-    // const location = useLocation();
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleGoToUrl = (url) => {
         window.open(url, "_blank");
     }
-
-    /* const handleGoToCatalog = (e) => {
-        e.preventDefault();
-        if (location.pathname === '/') {
-            const el = document.getElementById('catalogContainer');
-            if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-            }
-        } else {
-            sessionStorage.setItem('scrollToId', 'catalogContainer');
-            navigate('/');
-        }
-    }; */
 
     return (
 
@@ -37,7 +23,7 @@ const Footer = ({isLoggedIn,copyrightText,sellerAddresses,socialNetworks,logo_st
                             {logo_store ? (
                                 <img
                                 className='footerContainer__logoPhraseContainer__logoPhrase__logo__prop'
-                                src={`http://localhost:8081/${logo_store}`}
+                                src={`${logo_store}`}
                                 alt="logo_tienda"
                                 />
                             ) : null}
@@ -142,7 +128,7 @@ const Footer = ({isLoggedIn,copyrightText,sellerAddresses,socialNetworks,logo_st
                             <div className='footerContainer__socialNetworks__list__socialNetwork'>
 
                                 <div className='footerContainer__socialNetworks__list__socialNetwork__logo'>
-                                    <img onClick={() => handleGoToUrl(url)} class="footerContainer__socialNetworks__list__socialNetwork__logo__prop" src={`http://localhost:8081/${logo}`} alt={'.'}/>
+                                    <img onClick={() => handleGoToUrl(url)} class="footerContainer__socialNetworks__list__socialNetwork__logo__prop" src={`${logo}`} alt={'network'}/>
                                 </div>
 
                                 <div className='footerContainer__socialNetworks__list__socialNetwork__labelContainer'>

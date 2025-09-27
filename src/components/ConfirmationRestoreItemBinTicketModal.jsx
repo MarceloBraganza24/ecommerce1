@@ -4,11 +4,12 @@ import Spinner from './Spinner';
 
 const ConfirmationRestoreItemBinTicketModal = ({text,setShowConfirmationRestoreItemBinTicketModal,ticketId,fetchDeletedTickets,setSelectedTickets}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleBtnRestoreTicket = async () => {
         try {
             setLoading(true);
-            const res = await fetch(`http://localhost:8081/api/tickets/${ticketId}/restore`, {
+            const res = await fetch(`${SERVER_URL}api/tickets/${ticketId}/restore`, {
                 method: 'PUT',
             });
 

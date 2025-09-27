@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 
 import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import { useAuth } from '../context/AuthContext';
 import CategoriesPage from './CategoriesPage.jsx';
 import OffersSlider from './OffersSlider.jsx';
@@ -20,8 +19,13 @@ import "swiper/css/grid";
 import { Navigation, Pagination,Autoplay,Grid  } from "swiper/modules";
 
 const Home = () => {
+    const [brands, setBrands] = useState([]);
+    const [activeBrand, setActiveBrand] = useState("");
+    const [brandProducts, setBrandProducts] = useState([]);
+
     const scrollRef = useRef(null);
     const scrollRefLatestNews = useRef(null);
+    const scrollRefBrands = useRef(null);
     const navigate = useNavigate();
 
     const [featured, setFeatured] = useState({});
@@ -38,9 +42,7 @@ const Home = () => {
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
     const [isLoadingLatestNews, setIsLoadingLatestNews] = useState(false);
-    const [shouldScrollToHash, setShouldScrollToHash] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
-    const [inputFilteredProducts, setInputFilteredProducts] = useState('');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [isVisible, setIsVisible] = useState(false);
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
@@ -63,10 +65,32 @@ const Home = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
-    const SERVER_URL = "http://localhost:8081/";
-    const [selectedField, setSelectedField] = useState('title');
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     
     const location = useLocation();
+
+    const fetchBrands = async () => {
+        const res = await fetch(`${SERVER_URL}api/products/brands`);
+        const data = await res.json();
+        if (res.ok) {
+            setBrands(data.payload || []);
+            setActiveBrand(data.payload[0] || ""); // primera marca activa
+        }
+    };
+
+    const fetchProductsByBrand = async (brand) => {
+        const res = await fetch(`${SERVER_URL}api/products/by-brand/${encodeURIComponent(brand)}`);
+        const data = await res.json();
+        if (res.ok) setBrandProducts(data.payload || []);
+    };
+
+    useEffect(() => {
+        fetchBrands();
+    }, []);
+
+    useEffect(() => {
+        if (activeBrand) fetchProductsByBrand(activeBrand);
+    }, [activeBrand]);
 
     useEffect(() => {
         if (categoriesTree && categoriesTree.length > 0) {
@@ -77,13 +101,18 @@ const Home = () => {
     }, [categoriesTree]);
 
     const fetchCategories = async () => {
-      try {
-        const res = await fetch(`${SERVER_URL}api/categories/combined`);
-        const data = await res.json();
-        if (res.ok) setCategoriesTree(data.tree || []);
-      } catch (err) {
-        console.error("Error al cargar categorías:", err);
-      }
+        try {
+            const res = await fetch(`${SERVER_URL}api/categories/combined`);
+            const data = await res.json();
+
+            if (res.ok && data.status === "success") {
+            setCategoriesTree(data.payload || []); // 🔹 ahora usamos payload en vez de tree
+            } else {
+            console.error("Error al cargar categorías:", data.message || data);
+            }
+        } catch (err) {
+            console.error("Error al cargar categorías:", err);
+        }
     };
 
     useEffect(() => {
@@ -124,7 +153,7 @@ const Home = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
             if (!response.ok) {
                 console.error("Error al obtener el carrito:", data);
@@ -172,7 +201,7 @@ const Home = () => {
 
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
             const productsAll = await response.json();
             setTotalProducts(productsAll.data.totalDocs)
             setProducts(productsAll.data.docs)
@@ -194,10 +223,9 @@ const Home = () => {
     const fetchFeatured = async () => {
         try {
             setIsLoadingFeatured(true);
-            const response = await fetch(`http://localhost:8081/api/products/featured`)
+            const response = await fetch(`${SERVER_URL}api/products/featured`)
             const productsAll = await response.json();
             if(response.ok) {
-                //console.log("Productos destacados crudos:", productsAll.payload);
                 setFeatured(productsAll.payload)
                 setActiveTab(Object.keys(productsAll.payload)[0] || "");
             }
@@ -209,16 +237,21 @@ const Home = () => {
     };
 
     const fetchLatestNews = async () => {
+        setIsLoadingLatestNews(true);
         try {
-            setIsLoadingLatestNews(true);
-            const response = await fetch(`http://localhost:8081/api/products/latest-news`)
-            const productsAll = await response.json();
-            if(response.ok) {
-                setLatestNews(productsAll.payload)
-                setActiveTabLatestNews(Object.keys(productsAll.payload)[0] || "");
+            const response = await fetch(`${SERVER_URL}api/products/latest-news`);
+
+            // Intentamos parsear JSON aunque sea un error
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok && data.status === "success") {
+            setLatestNews(data.payload);
+            setActiveTabLatestNews(Object.keys(data.payload)[0] || "");
+            } else {
+            console.error("Error al obtener productos:", data.message || data);
             }
         } catch (error) {
-            console.error('Error al obtener datos:', error);
+            console.error('Error de fetch o network:', error);
         } finally {
             setIsLoadingLatestNews(false);
         }
@@ -251,7 +284,7 @@ const Home = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -278,7 +311,7 @@ const Home = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -305,7 +338,7 @@ const Home = () => {
 
     const fetchProductsByCategory = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/products/grouped-by-category');
+            const response = await fetch(`${SERVER_URL}api/products/grouped-by-category`);
             const data = await response.json();
             if (response.ok) {
                 setProductsByCategory(data.data); 
@@ -396,7 +429,7 @@ const Home = () => {
 
                 <div className="product-card__img">
                     <img
-                    src={`http://localhost:8081/${product.images[0]}`}
+                    src={`${SERVER_URL}${product.images[0]}`}
                     alt={product.title}
                     className="product-card__img__prop"
                     onClick={handleRedirectToItemDetailProduct}
@@ -446,6 +479,10 @@ const Home = () => {
         navigate("/products", { state: { category } });
     }
 
+    const handleRedirectToBrand = (brand) => {
+        navigate("/products", { state: { brand } });
+    }
+
     return (
 
         <>
@@ -485,7 +522,7 @@ const Home = () => {
                         <div className="slider-logos__logo-slider__slider-track">
                             {storeSettings?.sliderLogos?.concat(storeSettings?.sliderLogos).map((logo, index) => (
                                 <div key={index} className="slider-logos__logo-slider__slider-track__slide">
-                                <img className="slider-logos__logo-slider__slider-track__slide__img" src={`${SERVER_URL}${logo}`} alt={logo.alt} />
+                                <img className="slider-logos__logo-slider__slider-track__slide__img" src={`${logo}`} alt={logo.alt} />
                             </div>
                             ))}
                         </div>
@@ -498,9 +535,9 @@ const Home = () => {
 
                 isLoadingFeatured ? 
                 <>
-                <div style={{backgroundColor:'#EFEFEF',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <Spinner/>
-                </div>
+                    <div style={{backgroundColor:'#EFEFEF',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <Spinner/>
+                    </div>
                 </>
                 :
                 <>
@@ -580,7 +617,7 @@ const Home = () => {
                         <div
                             className="linkToAboutPagContainer__imgContainer"
                             style={{
-                                backgroundImage: `url("http://localhost:8081/${storeSettings?.siteImages?.aboutImage}")`,
+                                backgroundImage: `url("${storeSettings?.siteImages?.aboutImage}")`,
                                 backgroundSize: "cover",
                                 backgroundPosition: "center"
                             }}
@@ -603,7 +640,7 @@ const Home = () => {
 
                             <div className="categoriesExplored__grid__left">
                                 <div className="categoriesExplored__grid__left__categoryImg">
-                                    <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`http://localhost:8081${rootCategories[0]?.image}`} alt="category" />
+                                    <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`${rootCategories[0]?.image}`} alt="category" />
                                 </div>
                             </div>
 
@@ -625,7 +662,7 @@ const Home = () => {
                                             <div className="categoriesExplored__grid__right__category">
                                                 <img
                                                 className="categoriesExplored__grid__right__category__img"
-                                                src={`http://localhost:8081${category.image}`}
+                                                src={`${category.image}`}
                                                 alt={category.name}
                                                 onClick={()=>handleRedirectToProducts(category)}
                                                 />
@@ -650,7 +687,7 @@ const Home = () => {
                             <div key={i} className="informationStrip__grid__box">
 
                                 <div className="informationStrip__grid__box__img">
-                                    {box.icon && <img className="informationStrip__grid__box__img__prop" src={`${SERVER_URL}${box.icon}`} alt="" />}
+                                    {box.icon && <img className="informationStrip__grid__box__img__prop" src={`${box.icon}`} alt="" />}
                                 </div>
                                 <div className="informationStrip__grid__box__info">
                                     <h4 className="informationStrip__grid__box__info__h4">{box.title}</h4>
@@ -734,26 +771,112 @@ const Home = () => {
                                 )}
                             </div>
                         </div>
+
+                        <div className="separatorWhite"></div>
+
+                        <div className="brandsExplored">
+
+                            <div className="brandsExplored__title">
+                                <div className="brandsExplored__title__prop">Descubrí las <strong>mejores marcas</strong></div>
+                            </div>
+
+                            <div className="tabsContainer">
+
+                                <div className="tabsContainer__tabs">
+
+                                    <button
+                                        style={{paddingRight:'1.5vh'}}
+                                        className="tabsContainer__tabs__scrollButton left"
+                                        onClick={() => {
+                                        scrollRefBrands.current.scrollBy({ left: -200, behavior: "smooth" });
+                                        }}
+                                    >
+                                        ◀
+                                    </button>
+
+                                    <div className="tabsContainer__tabs__buttonContainer" ref={scrollRefBrands}>
+                                        {brands.map((brand) => (
+                                        <button
+                                            key={brand}
+                                            className={activeBrand === brand ? "active" : ""}
+                                            onClick={() => setActiveBrand(brand)}
+                                        >
+                                            {brand}
+                                        </button>
+                                        ))}
+                                    </div>
+
+                                    <button
+                                        style={{paddingLeft:'1.5vh'}}
+                                        className="tabsContainer__tabs__scrollButton right"
+                                        onClick={() => {
+                                        scrollRefBrands.current.scrollBy({ left: 200, behavior: "smooth" });
+                                        }}
+                                    >
+                                        ▶
+                                    </button>
+                                    
+                                </div>
+
+                            </div>
+
+                            <div className="brandsExplored__grid">
+
+                                <div className="brandsExplored__grid__left">
+                                    <div className="brandsExplored__grid__left__categoryImg">
+                                        <img className="brandsExplored__grid__left__categoryImg__prop" onClick={() => handleRedirectToBrand(activeBrand)} src={`${SERVER_URL}${brandProducts[0]?.images?.[0]}`} alt={brandProducts[0]?.title || "producto"} />
+                                    </div>
+                                </div>
+
+                                <div className="brandsExplored__grid__right">
+                                    {brandProducts.length > 0 && (
+                                        <Swiper
+                                        modules={[Navigation, Pagination, Autoplay]}
+                                        navigation
+                                        autoplay={{ delay: 3000, disableOnInteraction: true }}
+                                        pagination={{ clickable: true }}
+                                        spaceBetween={150}
+                                        slidesPerView={4}    // cantidad de productos visibles
+                                        slidesPerGroup={1}   // avanza de a 1
+                                        >
+                                        {brandProducts.map((product) => (
+                                            <SwiperSlide key={product._id}>
+                                                <ItemProduct
+                                                user={user} 
+                                                fetchCartByUserId={fetchCartByUserId}
+                                                id={product._id}
+                                                stock={product.stock}
+                                                images={product.images}
+                                                title={product.title}
+                                                description={product.description}
+                                                price={product.price}
+                                                variantes={product.variantes}
+                                                userCart={userCart}
+                                                />
+                                            </SwiperSlide>
+                                        ))}
+                                        </Swiper>
+                                    )}
+                                </div>
+
+
+                            </div>
+                        
+                        </div>
+
                     </div>
 
                 </>
             }
 
-
-            
-
-            {/* <div className="separatorFooter">
-                <div className="separatorFooter__prop"></div>
-            </div> */}
-
             <Footer
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
-            copyrightText={storeSettings.copyrightText}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
+            copyrightText={storeSettings?.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

@@ -7,8 +7,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const MyPurchases = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [isLoading, setIsLoading] = useState(true);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [categories, setCategories] = useState([]);
@@ -60,7 +61,7 @@ const MyPurchases = () => {
 
     useEffect(() => {
         const delay = setTimeout(() => {
-            fetchTickets(1, inputFilteredPurchases, user.email);
+            fetchTickets(1, inputFilteredPurchases, user?.email);
         }, 300); // debounce
 
         return () => clearTimeout(delay);
@@ -72,7 +73,7 @@ const MyPurchases = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -99,7 +100,7 @@ const MyPurchases = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -148,7 +149,7 @@ const MyPurchases = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -190,7 +191,7 @@ const MyPurchases = () => {
 
     const fetchTickets = async (page = 1, search = "", email = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/tickets/byPageAndEmail?page=${page}&search=${search}&email=${email}`)
+            const response = await fetch(`${SERVER_URL}api/tickets/byPageAndEmail?page=${page}&search=${search}&email=${email}`)
             const ticketsAll = await response.json();
             //console.log(ticketsAll.data)
             if (response.ok) {
@@ -392,7 +393,7 @@ const MyPurchases = () => {
                                 <div>Aún no existen compras</div>
                                 {
                                     ticketsByVisibilityTrue.length == 0 &&
-                                    <Link to={'/#catalog'} className='myPurchasesContainer__purchasesTable__isLoadingLabel__label'>
+                                    <Link to={'/products'} className='myPurchasesContainer__purchasesTable__isLoadingLabel__label'>
                                         Ir a comprar
                                     </Link>
                                 }

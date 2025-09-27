@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
 const Shipping = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [loadingCheckOut, setLoadingCheckOut] = useState(false);
     const [showLabelAddCoupon, setShowLabelAddCoupon] = useState(true);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
@@ -79,7 +80,7 @@ const Shipping = () => {
     const handleCheckout = async () => {
         setLoadingCheckOut(true)
         try {
-            const response = await fetch(`http://localhost:8081/api/payments/create-preference-purchase`, {
+            const response = await fetch(`${SERVER_URL}api/payments/create-preference-purchase`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -150,7 +151,7 @@ const Shipping = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -177,7 +178,7 @@ const Shipping = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
             if (!response.ok) {
                 console.error("Error al obtener el carrito:", data);
@@ -224,7 +225,7 @@ const Shipping = () => {
 
     const fetchDeliveryForm = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/deliveryForm');
+            const response = await fetch(`${SERVER_URL}api/deliveryForm`);
             const deliveryForm = await response.json();
             if (response.ok) {
                 setDeliveryForms(deliveryForm.data)
@@ -250,7 +251,7 @@ const Shipping = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -357,7 +358,7 @@ const Shipping = () => {
         }
         try {
             setIsLoadingValidateCoupon(true)
-            const response = await fetch("http://localhost:8081/api/coupons/validate-coupon", {
+            const response = await fetch(`${SERVER_URL}api/coupons/validate-coupon`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ codeCoupon: inputCoupon }),
@@ -477,7 +478,7 @@ const Shipping = () => {
                     {storeSettings?.siteImages?.logoStore && 
                         <img
                         className='headerPurchase__logo__prop'
-                        src={`http://localhost:8081/${storeSettings?.siteImages?.logoStore}`}
+                        src={`${SERVER_URL}${storeSettings?.siteImages?.logoStore}`}
                         alt="logo_tienda"
                         />
                     }
@@ -605,7 +606,6 @@ const Shipping = () => {
                                 Ir a pagar
                                 </button>
                         }
-
                     </div>
 
                 </div>

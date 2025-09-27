@@ -9,6 +9,7 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
     const [showItemBinProductModal, setShowItemBinProductModal] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     
     const [showConfirmationRestoreItemBinProductModal, setShowConfirmationRestoreItemBinProductModal] = useState(false);
@@ -52,7 +53,7 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
 
 
                 <div className="binContainer__productsTable__itemContainer__item">
-                    <img className="binContainer__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
+                    <img className="binContainer__productsTable__itemContainer__item__img" src={`${SERVER_URL}${product.images[0]}`} alt="" />
                 </div>
 
                 <div className="binContainer__productsTable__itemContainer__item">

@@ -14,9 +14,10 @@ import { useAuth } from '../context/AuthContext';
 
 const Favorites = () => {
     const firstRender = useRef(true);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [loadingClearAll, setLoadingClearAll] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -96,7 +97,7 @@ const Favorites = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -123,7 +124,7 @@ const Favorites = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -172,7 +173,7 @@ const Favorites = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -212,7 +213,7 @@ const Favorites = () => {
 
     const fetchDeliveryForm = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/deliveryForm');
+            const response = await fetch(`${SERVER_URL}api/deliveryForm`);
             const deliveryForm = await response.json();
             if (response.ok) {
                 setDeliveryForms(deliveryForm.data)
@@ -238,7 +239,7 @@ const Favorites = () => {
 
     const fetchProducts = async (page = 1) => {
         try {
-            const url = new URL(`http://localhost:8081/api/products/by`, window.location.origin);
+            const url = new URL(`${SERVER_URL}api/products/by`, window.location.origin);
             const params = new URLSearchParams();
 
             if (category) params.append("category", category);
@@ -279,7 +280,7 @@ const Favorites = () => {
     const fetchStoreSettings = async () => {
         try {
             setIsLoadingStoreSettings(true)
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             //console.log(data)
             if (response.ok) {
@@ -373,7 +374,7 @@ const Favorites = () => {
                     </div>
                 ) : (
                     <>
-                        {favorites.length > 0 ? (
+                        {favorites?.length > 0 ? (
                             <div className='favoritesContiner__gridContainer'>
                                 <div className='favoritesContiner__gridContainer__btn'>
                                     <button
@@ -389,7 +390,7 @@ const Favorites = () => {
                                     </button>
                                 </div>
                                 <div className='favoritesContiner__gridContainer__grid'>
-                                    {favorites.map((product) => (
+                                    {favorites?.map((product) => (
                                         <ItemProduct
                                             key={product._id}
                                             fetchContextFavorites={fetchContextFavorites}
@@ -425,10 +426,10 @@ const Favorites = () => {
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
-            copyrightText={storeSettings.copyrightText}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
+            copyrightText={storeSettings?.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

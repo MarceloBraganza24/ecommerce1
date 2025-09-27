@@ -5,18 +5,13 @@ import { Link, useLocation,useParams } from "react-router-dom";
 import Footer from "./Footer";
 import { toast } from 'react-toastify';
 
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Pagination,Autoplay  } from "swiper/modules";
 import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
-import { IsLoggedContext } from '../context/IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import { useAuth } from '../context/AuthContext';
-import CategoriesPage from './CategoriesPage.jsx';
 import CategorySidebar from "./CategorySidebar";
-import Slider from 'rc-slider';
 
 const ProductsContainer = () => {
     const location = useLocation();
@@ -25,18 +20,28 @@ const ProductsContainer = () => {
     const DEFAULT_MAX = 100000;
 
     const [priceRange, setPriceRange] = useState({ min: DEFAULT_MIN, max: DEFAULT_MAX });
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [appliedFilters, setAppliedFilters] = useState({});
     const [sortOrder, setSortOrder] = useState("desc");
-
+    
     const [sort, setSort] = useState("asc"); // asc | desc
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(100000);
 
+    const [selectedCategory, setSelectedCategory] = useState(
+        location.state?.category || null
+    );
+    const [appliedFilters, setAppliedFilters] = useState(() => {
+        if (location.state?.filters) {
+            return location.state.filters;
+        } else if (location.state?.brand) {
+            return { marca: Array.isArray(location.state.brand) ? location.state.brand : [location.state.brand] };
+        }
+        return {};
+    });
+
 
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [isVisible, setIsVisible] = useState(false);
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
@@ -54,64 +59,22 @@ const ProductsContainer = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [userCart, setUserCart] = useState({});
-    const SERVER_URL = "http://localhost:8081/";
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     
     const [products, setProducts] = useState([]);
     const [availableFilters, setAvailableFilters] = useState({});
     
     const [categories, setCategories] = useState([]);
+    //console.log(categories)
 
     // 📌 Paginación
     const [page, setPage] = useState(1);
-    const [limit] = useState(8);
+    const [limit] = useState(12);
     const [totalPages, setTotalPages] = useState(1);
 
     const [breadcrumb, setBreadcrumb] = useState([]);
-
-    useEffect(() => {
-        if (location.state?.filters) {
-            const { category, ...rest } = location.state.filters;
-
-            if (category) {
-                setSelectedCategory(typeof category === "object" ? category : category);
-            } else {
-                setSelectedCategory(null);
-            }
-
-            const normalizedFilters = {};
-            for (const [key, value] of Object.entries(rest)) {
-                const keyLower = key.trim().toLowerCase();
-                if (typeof value === "string") {
-                    normalizedFilters[keyLower] = value
-                        .split(",")
-                        .map(v => v.trim().toLowerCase());
-                } else {
-                    normalizedFilters[keyLower] = value.map(v =>
-                        v.trim().toLowerCase()
-                    );
-                }
-            }
-
-            setAppliedFilters(normalizedFilters);
-
-        } else if (location.state?.category) {
-            const category = location.state.category;
-
-            if (category) {
-                setSelectedCategory(typeof category === "object" ? category : category);
-            } else {
-                setSelectedCategory(null);
-            }
-
-            setAppliedFilters({}); // 🔹 aseguro que no herede filtros viejos
-
-        } else {
-            setAppliedFilters({});
-            setSelectedCategory(null);
-        }
-    }, [location.state]);
-
+   
     function findCategoryPath(tree, targetId, path = []) {
         for (const node of tree) {
             const newPath = [...path, node];
@@ -141,9 +104,14 @@ const ProductsContainer = () => {
 
     const fetchCategoriesTree = async () => {
         try {
-            const res = await fetch("http://localhost:8081/api/categories/combined");
+            const res = await fetch(`${SERVER_URL}api/categories/combined`);
             const data = await res.json();
-            if (res.ok) setCategories(data.tree || []);
+
+            if (res.ok && data.status === "success") {
+            setCategories(data.payload || []); // 🔹 ahora usamos payload en vez de tree
+            } else {
+            console.error("Error al cargar categorías:", data.message || data);
+            }
         } catch (err) {
             console.error("Error al cargar categorías:", err);
         }
@@ -170,7 +138,7 @@ const ProductsContainer = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
             if (!response.ok) {
                 console.error("Error al obtener el carrito:", data);
@@ -227,10 +195,11 @@ const ProductsContainer = () => {
                 sort: sortOrder || null,
                 page: pageNumber,
                 limit: limit,
-                filters: appliedFilters 
+                filters: appliedFilters,
+                //brand: appliedFilters?.marca || null, 
             };
 
-            const res = await fetch("http://localhost:8081/api/products/search", {
+            const res = await fetch(`${SERVER_URL}api/products/search`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
@@ -297,7 +266,7 @@ const ProductsContainer = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -324,7 +293,7 @@ const ProductsContainer = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -594,10 +563,10 @@ const ProductsContainer = () => {
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
-            copyrightText={storeSettings.copyrightText}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
+            copyrightText={storeSettings?.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

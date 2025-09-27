@@ -3,12 +3,12 @@ import NavBar from './NavBar'
 import { useNavigate } from 'react-router-dom'
 import ItemCPanelProduct from './ItemCPanelProduct';
 import CreateProductModal from './CreateProductModal';
-import {IsLoggedContext} from '../context/IsLoggedContext';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 
 const CPanelProducts = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [categoriesTree, setCategoriesTree] = useState([]);
     const [showConfirmationUpdatePricesModal, setShowConfirmationUpdatePricesModal] = useState(false);
     const [showConfirmationRestoreOriginalPricesModal, setShowConfirmationRestoreOriginalPricesModal] = useState(false);
@@ -17,10 +17,9 @@ const CPanelProducts = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
-    //console.log(products)
     const [totalProducts, setTotalProducts] = useState("");
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [storeSettings, setStoreSettings] = useState({});
@@ -37,7 +36,7 @@ const CPanelProducts = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [categories, setCategories] = useState([]);
     const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-    const [selectedField, setSelectedField] = useState('title');
+    const [selectedField, setSelectedField] = useState('all');
 
     const [inputFilteredProducts, setInputFilteredProducts] = useState('');
     const [showCreateProductModal, setShowCreateProductModal] = useState(false);
@@ -47,14 +46,24 @@ const CPanelProducts = () => {
 
     const fetchCategoriesTree = async () => {
         try {
-            const res = await fetch("http://localhost:8081/api/categories/combined");
+            const res = await fetch(`${SERVER_URL}api/categories/combined`);
             const data = await res.json();
-            if (res.ok) setCategoriesTree(data.tree || []);
+            if (res.ok) setCategoriesTree(data.payload || []);
         } catch (err) {
             console.error("Error al cargar categorías:", err);
+        } finally {
+            setIsLoadingCategories(false)
         }
     };
     
+    useEffect(() => {
+        if (!isLoadingAuth) {
+            if (!user || user.role !== 'admin') {
+                navigate('/');
+            }
+        }
+    }, [user, isLoadingAuth, navigate]);
+
     useEffect(() => {
         if (user?.isLoggedIn) {
             fetchCartByUserId(user._id)
@@ -120,7 +129,7 @@ const CPanelProducts = () => {
 
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
             const productsAll = await response.json();
             setTotalProducts(productsAll.data.totalDocs)
             setProducts(productsAll.data.docs)
@@ -141,7 +150,7 @@ const CPanelProducts = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -166,47 +175,9 @@ const CPanelProducts = () => {
         }
     };
 
-    const fetchCategories = async () => {
-        /* try {
-            const response = await fetch('http://localhost:8081/api/categories');
-            const data = await response.json();
-            if (response.ok) {
-                setCategories(data.data); 
-            } else {
-                toast('Error al cargar categorías', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-
-        } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } finally {
-            setIsLoadingCategories(false)
-        } */
-    };
-
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -258,7 +229,6 @@ const CPanelProducts = () => {
         fetchProducts(1, inputFilteredProducts, selectedField);
         fetchStoreSettings();
         fetchCategoriesTree();
-        fetchCategories();
         window.scrollTo(0, 0);
     }, []);
 
@@ -272,6 +242,7 @@ const CPanelProducts = () => {
     }
 
     const [selectedCategories, setSelectedCategories] = useState([]);
+    //console.log(selectedCategories)
     const [percentage, setPercentage] = useState('');
 
     const handleCheckboxChange = (id) => {
@@ -342,7 +313,7 @@ const CPanelProducts = () => {
         const handleMassDelete = async () => {
             try {
                 setLoading(true);
-                const res = await fetch('http://localhost:8081/api/products/mass-delete', {
+                const res = await fetch(`${SERVER_URL}api/products/mass-delete`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ ids: selectedProducts })
@@ -431,17 +402,19 @@ const CPanelProducts = () => {
     const ConfirmationUpdatePricesModal = () => {
         const [loading, setLoading] = useState(false);
 
-        const categoriasSeleccionadasNames = categories
+        const categoriasSeleccionadasNames = categoriesTree
             .filter(cat => selectedCategories.includes(cat._id))
             .map(cat => cat.name);
+
         const handleSubmitUpdatedPrices = async () => {
             try {
-                const response = await fetch('http://localhost:8081/api/products/update-prices-category', {
+                setLoading(true);
+                const response = await fetch(`${SERVER_URL}api/products/update-prices-category`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         percentage: Number(percentage),
-                        categories: categoriasSeleccionadasNames
+                        categories: selectedCategories
                     })
                 });
 
@@ -541,17 +514,17 @@ const CPanelProducts = () => {
     const ConfirmationRestoreOriginalPricesModal = () => {
         const [loading, setLoading] = useState(false);
 
-        const categoriasSeleccionadasNames = categories
+        const categoriasSeleccionadasNames = categoriesTree
             .filter(cat => selectedCategories.includes(cat._id))
             .map(cat => cat.name);
 
         const handleRestorePricesByCategory = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:8081/api/products/restore-prices-category', {
+                const response = await fetch(`${SERVER_URL}api/products/restore-prices-category`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ categories: categoriasSeleccionadasNames })
+                    body: JSON.stringify({ categories: selectedCategories })
                 });
 
                 const result = await response.json();
@@ -740,17 +713,19 @@ const CPanelProducts = () => {
                                         </div>
                                     </>
                                 :
-                                categories.map(categoria => (
-                                    <label className='cPanelProductsContainer__formUpdatePrices__categories__labelInput' key={categoria._id}>
+                                categoriesTree.map((categoria) => (
+                                    <label
+                                    className='cPanelProductsContainer__formUpdatePrices__categories__labelInput'
+                                    key={categoria._id}
+                                    >
                                         <input
-                                        className='cPanelProductsContainer__formUpdatePrices__categories__labelInput__input'
-                                        type="checkbox"
-                                        value={categoria._id}
-                                        checked={selectedCategories.includes(categoria._id)}
-                                        onChange={() => handleCheckboxChange(categoria._id)}
+                                            type="checkbox"
+                                            value={categoria._id}
+                                            checked={selectedCategories.includes(categoria._id)}
+                                            onChange={() => handleCheckboxChange(categoria._id)}
                                         />
                                         <div className='cPanelProductsContainer__formUpdatePrices__categories__labelInput__label'>
-                                            {capitalizeFirstLetter(categoria.name)}
+                                            {categoria.name}
                                         </div>
                                     </label>
                                 ))

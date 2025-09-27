@@ -9,13 +9,14 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showConfirmationDeleteCPanelProductModal, setShowConfirmationDeleteCPanelProductModal] = useState(false);
     const [textConfirmationDeleteModal, setTextConfirmationDeleteCPanelProductModal] = useState('');
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
     const handleBtnDeleteProduct = async () => {
-        setTextConfirmationDeleteCPanelProductModal(`el siguiente producto:\n Título: ${capitalizeFirstLetter(product.title)}\n Descripción: ${capitalizeFirstLetter(product.description)}`)
+        setTextConfirmationDeleteCPanelProductModal(`el siguiente producto?\n - Título: ${capitalizeFirstLetter(product.title)}\n - Descripción: ${capitalizeFirstLetter(product.description)}`)
         setShowConfirmationDeleteCPanelProductModal(true);
     };
 
@@ -33,7 +34,7 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
 
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                    <img className="cPanelProductsContainer__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
+                    <img className="cPanelProductsContainer__productsTable__itemContainer__item__img" src={`${SERVER_URL}${product.images[0]}`} alt="" />
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">

@@ -6,6 +6,7 @@ const OffersSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
   const [isPaused, setIsPaused] = useState(false);
+  const SERVER_URL = import.meta.env.VITE_API_URL;
 
   // autoplay que respeta isPaused
   useEffect(() => {
@@ -24,9 +25,9 @@ const OffersSlider = () => {
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const res = await fetch("http://localhost:8081/api/settings");
+        const res = await fetch(`${SERVER_URL}api/settings`);
         const data = await res.json();
-        setOffers(data.offersSlider || []);
+        setOffers(data?.offersSlider || []);
       } catch (err) {
         console.error("Error cargando ofertas:", err);
       }
@@ -62,7 +63,7 @@ const OffersSlider = () => {
             {offers.map((offer) => (
               <img
                 key={offer._id}
-                src={`http://localhost:8081/${offer.image}`}
+                src={`${offer.image}`}
                 alt="Oferta"
                 onClick={() => handleOfferClick(offer.filters)}
                 className="offersContainer__offersSlider__img"

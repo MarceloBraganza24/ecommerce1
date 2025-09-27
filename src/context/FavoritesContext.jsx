@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { IsLoggedContext } from './IsLoggedContext'; // ⚠️ ajustá la ruta según tu estructura
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -8,6 +7,7 @@ export const FavoritesContext = createContext();
 export const useFavorites = () => useContext(FavoritesContext);
 
 export const FavoritesProvider = ({ children }) => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [favorites, setFavorites] = useState([]);
     const { user,loadingUser } = useAuth();
     const [isLoadingFavorites, setIsLoadingFavorites] = useState(true);
@@ -15,10 +15,10 @@ export const FavoritesProvider = ({ children }) => {
     const fetchContextFavorites = async () => {
         setIsLoadingFavorites(true);
         try {
-            const res = await fetch(`http://localhost:8081/api/favorites/user/${user._id}`);
+            const res = await fetch(`${SERVER_URL}api/favorites/user/${user._id}`);
             const data = await res.json();
             if (res.ok) {
-                setFavorites(data.data.products);
+                setFavorites(data.data?.products);
             } 
         } catch (err) {
             console.error("Error al obtener favoritos:", err);
@@ -29,7 +29,7 @@ export const FavoritesProvider = ({ children }) => {
 
     const clearAllFavorites = async (userId) => {
         try {
-            const res = await fetch(`http://localhost:8081/api/favorites/clear`, {
+            const res = await fetch(`${SERVER_URL}api/favorites/clear`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId })
@@ -67,7 +67,7 @@ export const FavoritesProvider = ({ children }) => {
 
     const addToFavorites = async (userId, productId) => {
         try {
-            const res = await fetch(`http://localhost:8081/api/favorites/add`, {
+            const res = await fetch(`${SERVER_URL}api/favorites/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, productId })
@@ -94,7 +94,7 @@ export const FavoritesProvider = ({ children }) => {
 
     const removeFromFavorites = async (userId, productId) => {
         try {
-            const res = await fetch(`http://localhost:8081/api/favorites/remove`, {
+            const res = await fetch(`${SERVER_URL}api/favorites/remove`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, productId })

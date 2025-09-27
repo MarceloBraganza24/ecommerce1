@@ -14,6 +14,7 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
     const [localFavorite, setLocalFavorite] = useState(false);
     const [favoriteInitialized, setFavoriteInitialized] = useState(false);
     const [favoriteTransition, setFavoriteTransition] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         if (!isLoadingFavorites) {
@@ -48,19 +49,7 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
         }
         setLoadingFavorite(true);
         setFavoriteTransition(true);
-        /* try {
-            if (localFavorite) {
-                await removeFromFavorites(user._id, id);
-                setLocalFavorite(false);
-            } else {
-                await addToFavorites(user._id, id);
-                setLocalFavorite(true);
-            }
-        } catch (err) {
-            console.error("Error al actualizar favoritos", err);
-        } finally {
-            setLoadingFavorite(false);
-        } */
+        
         setTimeout(async () => {
             try {
                 if (localFavorite) {
@@ -117,8 +106,7 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
                         {images.map((img, index) => (
                         <SwiperSlide key={index}>
                             <img
-                            //src={img}
-                            src={`http://localhost:8081/${img}`}
+                            src={`${SERVER_URL}${img}`}
                             alt={`Imagen ${index + 1} de ${title}`}
                             className="itemProduct__imgContainer__img"
                             />

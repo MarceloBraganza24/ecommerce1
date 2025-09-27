@@ -4,11 +4,12 @@ import Spinner from './Spinner';
 
 const ConfirmationRestoreItemBinProductModal = ({text,setShowConfirmationRestoreItemBinProductModal,productId,fetchDeletedProducts,setSelectedProducts}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleBtnRestoreProduct = async () => {
         try {
             setLoading(true);
-            const res = await fetch(`http://localhost:8081/api/products/${productId}/restore`, {
+            const res = await fetch(`${SERVER_URL}api/products/${productId}/restore`, {
                 method: 'PUT',
             });
 

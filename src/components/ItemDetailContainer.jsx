@@ -10,6 +10,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 
 const ItemDetailContainer = () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const { favorites, addToFavorites, removeFromFavorites } = useFavorites();
     const [loadingFavorite, setLoadingFavorite] = useState(false);
     const [favoriteInitialized, setFavoriteInitialized] = useState(false);
@@ -189,7 +190,7 @@ const ItemDetailContainer = () => {
                     : [];
 
             if (images.length > 0) {
-                setSelectedImage(`http://localhost:8081/${images[0]}`);
+                setSelectedImage(`${SERVER_URL}${images[0]}`);
             } else {
                 setSelectedImage('/default-image.jpg');
             }
@@ -199,7 +200,7 @@ const ItemDetailContainer = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -226,7 +227,7 @@ const ItemDetailContainer = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -275,7 +276,7 @@ const ItemDetailContainer = () => {
 
     const fetchProducts = async (page = 1, search = "",field = "") => {
         try {
-            const response = await fetch(`http://localhost:8081/api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
             const productsAll = await response.json();
             setProducts(productsAll.data.docs)
         } catch (error) {
@@ -287,7 +288,7 @@ const ItemDetailContainer = () => {
     
     const fetchProductById = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/products/${id}`)
+            const response = await fetch(`${SERVER_URL}api/products/${id}`)
             const productById = await response.json();
             if(response.ok) {
                 setProductById(productById.data)
@@ -301,7 +302,7 @@ const ItemDetailContainer = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -337,7 +338,7 @@ const ItemDetailContainer = () => {
 
     const fetchDeliveryForm = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/deliveryForm');
+            const response = await fetch(`${SERVER_URL}api/deliveryForm`);
             const deliveryForm = await response.json();
             if (response.ok) {
                 setDeliveryForms(deliveryForm.data)
@@ -363,7 +364,7 @@ const ItemDetailContainer = () => {
 
     const fetchSellerAddresses = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -391,7 +392,6 @@ const ItemDetailContainer = () => {
     useEffect(() => {
         fetchCurrentUser();
         fetchCategories();
-        //fetchProductById();
         fetchProducts();
         fetchStoreSettings();
         fetchSellerAddresses();
@@ -500,10 +500,10 @@ const ItemDetailContainer = () => {
                                             <div className='itemDetailContainer__itemDetail__imgContainer__galery__imgContainer'>
                                                 <img
                                                 key={index}
-                                                src={`http://localhost:8081/${img}`}
+                                                src={`${SERVER_URL}${img}`}
                                                 alt={`Miniatura ${index + 1}`}
                                                 className='itemDetailContainer__itemDetail__imgContainer__galery__imgContainer__prop'
-                                                onClick={() => setSelectedImage(`http://localhost:8081/${img}`)}
+                                                onClick={() => setSelectedImage(`${SERVER_URL}${img}`)}
                                                 />
                                             </div>
 
@@ -674,10 +674,10 @@ const ItemDetailContainer = () => {
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
-            copyrightText={storeSettings.copyrightText}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
+            copyrightText={storeSettings?.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

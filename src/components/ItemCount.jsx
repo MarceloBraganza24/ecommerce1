@@ -10,6 +10,7 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
             Object.entries(campos).map(([k, v]) => [k.toLowerCase(), v])
         );
     };
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const selectedCamposNorm = normalizeCampos(selectedVariant?.campos);
 
@@ -154,7 +155,7 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
         };
     
         try {
-            const response = await fetch("http://localhost:8081/api/carts", {
+            const response = await fetch(`${SERVER_URL}api/carts`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ user_id, products: [newItem] }),

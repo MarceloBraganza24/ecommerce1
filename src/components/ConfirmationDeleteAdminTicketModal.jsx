@@ -4,11 +4,12 @@ import Spinner from './Spinner';
 
 const ConfirmationDeleteAdminTicketModal = ({text,setShowConfirmationDeleteAdminTicketModal,ticketId,fetchTickets,selectedDate,setSelectedTickets}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleBtnDeleteTicket = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8081/api/tickets/${ticketId}/soft-delete`, {
+            const res = await fetch(`${SERVER_URL}api/tickets/${ticketId}/soft-delete`, {
                 method: 'PUT',  // Usamos PUT o PATCH para actualizar, no DELETE
             });
 

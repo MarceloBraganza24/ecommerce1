@@ -17,12 +17,13 @@ function CategoryTree({ categories, onEdit, onDelete, level = 0 }) {
 
 function CategoryNode({ category, onEdit, onDelete, level }) {
   const [editing, setEditing] = useState(false);
-  const [expanded, setExpanded] = useState(true); // estado para abrir/cerrar hijos
+  const [expanded, setExpanded] = useState(false); // estado para abrir/cerrar hijos
   const [newName, setNewName] = useState(category.name);
   const [newParent, setNewParent] = useState(category.parent || "");
   const [newImage, setNewImage] = useState(null); 
+  const [preview, setPreview] = useState(null);
   const [optionsTree, setOptionsTree] = useState([]);
-  const SERVER_URL = "http://localhost:8081";
+  const SERVER_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (editing) {
@@ -32,10 +33,6 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
     }
   }, [editing, category._id]);
 
-  /* const handleSave = () => {
-    onEdit(category._id, { name: newName, parent: newParent || null });
-    setEditing(false);
-  }; */
   const handleSave = () => {
     const formData = new FormData();
     formData.append("name", newName);
@@ -94,37 +91,49 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
 
             {(!newParent) && (
               <>
-                {category.image && !newImage && (
+                {(preview || category.image) && (
                   <img
-                    src={`http://localhost:8081${category.image}`}
+                    src={preview || `${SERVER_URL}${category.image}`}
                     alt={category.name}
-                    style={{ width: "30px", height: "30px", marginRight: "8px" }}
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      marginRight: "8px",
+                      objectFit: "cover",
+                      borderRadius: "4px"
+                    }}
                   />
                 )}
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setNewImage(e.target.files[0])}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setNewImage(file);
+                      setPreview(URL.createObjectURL(file)); // 👈 preview temporal
+                    }
+                  }}
                   style={{ marginRight: "5px" }}
                 />
               </>
             )}
 
-            <button onClick={handleSave}>💾</button>
+            <button style={{margin:'0vh 1vh', cursor:'pointer'}} onClick={handleSave}>💾</button>
             <button onClick={() => setEditing(false)}>❌</button>
           </>
         ) : (
           <>
             {category.image && (
               <img 
-                src={`http://localhost:8081${category.image}`} 
+                src={category.image} 
                 alt={category.name} 
                 style={{ width: "30px", height: "30px", marginRight: "8px", objectFit: "cover", borderRadius: "4px" }}
               />
             )}
             {category.name}
-            <button onClick={() => setEditing(true)}>✏️</button>
-            <button onClick={() => onDelete(category._id)}>🗑️</button>
+            <button style={{margin:'0vh 1vh', cursor:'pointer'}} onClick={() => setEditing(true)}>✏️</button>
+            <button onClick={() => onDelete(category)}>🗑️</button>
           </>
         )}
       </div>

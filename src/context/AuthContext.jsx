@@ -6,13 +6,13 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [user, setUser] = useState(null);
-  const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [loadingFetchLogOut, setLoadingFetchLogOut] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const login = async (email, password) => {
-    const response = await fetch(`${apiUrl}/api/sessions/login`, {
+    const response = await fetch(`${apiUrl}api/sessions/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -32,43 +32,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /* const logout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
-    setUser(null);
-  }; */
-  /* const logout = async () => {
-    try {
-      setLoadingFetchLogOut(true);
-      const response = await fetchWithAuth('/api/sessions/logout', {
-          method: 'POST',
-      });
-
-      if (response) {
-          toast('Gracias por visitar nuestra página', {
-              position: "top-right",
-              autoClose: 1500,
-              theme: "dark",
-              className: "custom-toast",
-          });
-          localStorage.removeItem("token");
-          setTimeout(() => {
-              window.location.href = '/';
-          }, 2000);
-      }
-    } catch (error) {
-        toast('Ha ocurrido un error al intentar salir! Intente nuevamente', {
-            position: "top-right",
-            autoClose: 1500,
-            theme: "dark",
-            className: "custom-toast",
-        });
-    } 
-  }; */
   const logout = async () => {
     try {
       setLoadingFetchLogOut(true);
-      const response = await fetchWithAuth('/api/sessions/logout', {
+      const response = await fetchWithAuth('api/sessions/logout', {
           method: 'POST',
       });
       
@@ -92,12 +59,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const fetchCurrentUser = async () => {
+  /* const fetchCurrentUser = async () => {
     if (!token) return;
 
     try {
       setLoadingUser(true);
-      const response = await fetch(`${apiUrl}/api/sessions/current`, {
+      const response = await fetch(`${apiUrl}api/sessions/current`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -114,7 +81,37 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoadingUser(false);
     }
+  }; */
+  const fetchCurrentUser = async () => {
+    if (!token) {
+      setUser(null);       // 🔹 limpiar usuario
+      setLoadingUser(false); // 🔹 marcar fin de carga
+      return;
+    }
+
+    try {
+      setLoadingUser(true);
+      const response = await fetch(`${apiUrl}api/sessions/current`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data.data);
+      } else {
+        setUser(null);
+        logout();
+      }
+    } catch (error) {
+      setUser(null);
+      logout();
+    } finally {
+      setLoadingUser(false);
+    }
   };
+
 
   useEffect(() => {
     fetchCurrentUser();

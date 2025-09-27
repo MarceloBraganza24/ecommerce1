@@ -24,10 +24,11 @@ const SignIn = () => {
         number: false,
         specialChar: false
     });
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -108,7 +109,7 @@ const SignIn = () => {
         if (!validateForm()) return;
         try {
             setLoadingBtnSignin(true);
-            const response = await fetch(`http://localhost:8081/api/sessions/signIn`, {
+            const response = await fetch(`${SERVER_URL}api/sessions/signIn`, {
                 method: 'POST',         
                 headers: {
                     'Content-Type': 'application/json',
@@ -184,19 +185,19 @@ const SignIn = () => {
 
                         <div className='loginContainer__formContainer__form__inputContainer'>
                             <div className='loginContainer__formContainer__form__inputContainer__input'>
-                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.first_name} onChange={handleChange} placeholder='Nombre' name="first_name" id="" />
+                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.first_name} onChange={handleChange} placeholder='Nombre' name="first_name"  />
                             </div>
                         </div>
 
                         <div className='loginContainer__formContainer__form__inputContainer'>
                             <div className='loginContainer__formContainer__form__inputContainer__input'>
-                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.last_name} onChange={handleChange} placeholder='Apellido' name="last_name" id="" />
+                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.last_name} onChange={handleChange} placeholder='Apellido' name="last_name"  />
                             </div>
                         </div>
 
                         <div className='loginContainer__formContainer__form__inputContainer'>
                             <div className='loginContainer__formContainer__form__inputContainer__input'>
-                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="email" value={credentials.email} onChange={handleChange} placeholder='Email' name="email" id="" />
+                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="email" value={credentials.email} onChange={handleChange} placeholder='Email' name="email"  />
                             </div>
                         </div>
 
@@ -294,7 +295,7 @@ const SignIn = () => {
                         {storeSettings?.siteImages?.logoStore &&
                             <img
                             className='loginContainer__logoContainer__logo__prop'
-                            src={`http://localhost:8081/${storeSettings?.siteImages?.logoStore}`}
+                            src={`${storeSettings?.siteImages?.logoStore}`}
                             alt="logo_tienda"
                             />
                         }

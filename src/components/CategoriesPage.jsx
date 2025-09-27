@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import AddCategoryForm from "./AddCategoryForm.jsx";
 import CategoryTree from "./CategoryTree";
+import ConfirmationDeleteCPanelCategoryModal from "./ConfirmationDeleteCPanelCategoryModal.jsx";
 
 export default function CategoriesPage() {
   const [categoriesTree, setCategoriesTree] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
-    const SERVER_URL = "http://localhost:8081";
+  const [categoryId, setCategoryId] = useState("");
+  const [showConfirmationDeleteCPanelCategoryModal, setShowConfirmationDeleteCPanelCategoryModal] = useState(false);
+  const SERVER_URL = import.meta.env.VITE_API_URL;
 
   const fetchCategories = async () => {
-    const res = await fetch(`${SERVER_URL}/api/categories/combined`);
+    const res = await fetch(`${SERVER_URL}api/categories/combined`);
     const data = await res.json();
-    setCategoriesTree(data.tree);
+    setCategoriesTree(data.payload);
     setAllCategories(data.flat);
   };
 
@@ -19,13 +22,12 @@ export default function CategoriesPage() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que querés eliminar esta categoría?")) return;
-    await fetch(`${SERVER_URL}/api/categories/${id}`, { method: "DELETE" });
-    fetchCategories();
+    setCategoryId(id)
+    setShowConfirmationDeleteCPanelCategoryModal(true)
   };
 
   const handleEdit = async (id, formData) => {
-    await fetch(`${SERVER_URL}/api/categories/${id}`, {
+    await fetch(`${SERVER_URL}api/categories/${id}`, {
       method: "PUT",
       body: formData, // ✅ ahora se envía como multipart/form-data
     });
@@ -33,7 +35,7 @@ export default function CategoriesPage() {
   };
 
   const handleCreate = async (formData) => {
-    await fetch(`${SERVER_URL}/api/categories`, {
+    await fetch(`${SERVER_URL}api/categories`, {
       method: "POST",
       body: formData, // ✅ ahora va FormData
     });
@@ -41,14 +43,25 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <AddCategoryForm categories={categoriesTree} onCreate={handleCreate} />
-      <h2>Listado</h2>
-      <CategoryTree
-        categories={categoriesTree}
-        onDelete={handleDelete}
-        onEdit={handleEdit}
-      />
-    </div>
+    <>
+      <div style={{ padding: "20px" }}>
+        <AddCategoryForm categories={categoriesTree} onCreate={handleCreate} />
+        <h2>Listado</h2>
+        <CategoryTree
+          categories={categoriesTree}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+          />
+      </div>
+      {
+        showConfirmationDeleteCPanelCategoryModal &&
+        <ConfirmationDeleteCPanelCategoryModal
+        fetchCategories={fetchCategories}
+        setShowConfirmationDeleteCPanelCategoryModal={setShowConfirmationDeleteCPanelCategoryModal}
+        categoryId={categoryId}
+        />
+      }
+
+    </>
   );
 }

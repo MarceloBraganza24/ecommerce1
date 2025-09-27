@@ -11,7 +11,8 @@ import SmartLink from './SmartLink';
 import { useAuth } from '../context/AuthContext';
 
 const Cart = () => {
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_black.png');
+    const SERVER_URL = import.meta.env.VITE_API_URL;
+    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -112,7 +113,7 @@ const Cart = () => {
 
     const fetchStoreSettings = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
             if (response.ok) {
                 setStoreSettings(data); 
@@ -140,7 +141,7 @@ const Cart = () => {
     const fetchSellerAddresses = async () => {
         try {
             setIsLoadingSellerAddresses(true)
-            const response = await fetch('http://localhost:8081/api/sellerAddresses');
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses`);
             const data = await response.json();
             if (response.ok) {
                 setSellerAddresses(data.data); 
@@ -167,7 +168,7 @@ const Cart = () => {
 
     const fetchCartByUserId = async (user_id) => {
         try {
-            const response = await fetch(`http://localhost:8081/api/carts/byUserId/${user_id}`);
+            const response = await fetch(`${SERVER_URL}api/carts/byUserId/${user_id}`);
             const data = await response.json();
     
             if (!response.ok) {
@@ -219,7 +220,7 @@ const Cart = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/categories');
+            const response = await fetch(`${SERVER_URL}api/categories`);
             const data = await response.json();
             if (response.ok) {
                 setCategories(data.data); 
@@ -255,7 +256,7 @@ const Cart = () => {
 
     const fetchDeliveryForm = async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/deliveryForm');
+            const response = await fetch(`${SERVER_URL}api/deliveryForm`);
             const deliveryForm = await response.json();
             if (response.ok) {
                 setDeliveryForms(deliveryForm.data)
@@ -469,7 +470,7 @@ const Cart = () => {
                             <div className='noProductsContainer__phrase__prop'>No hay productos en el carrito</div>
                         </div>
                         <div className='noProductsContainer__link'>
-                            <SmartLink to={"/"} className='noProductsContainer__link__prop'>
+                            <SmartLink to={"/products"} className='noProductsContainer__link__prop'>
                                 ¡Ir al Catálogo!  
                             </SmartLink>
                         </div>
@@ -483,10 +484,10 @@ const Cart = () => {
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings.phoneNumbers}
-            contactEmail={storeSettings.contactEmail}
-            socialNetworks={storeSettings.socialNetworks}
-            copyrightText={storeSettings.copyrightText}
+            phoneNumbers={storeSettings?.phoneNumbers}
+            contactEmail={storeSettings?.contactEmail}
+            socialNetworks={storeSettings?.socialNetworks}
+            copyrightText={storeSettings?.copyrightText}
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}

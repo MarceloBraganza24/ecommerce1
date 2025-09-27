@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories,inputFilteredProducts,selectedField}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [formData, setFormData] = useState({
         images: [],
         title: '',
@@ -39,7 +40,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                 return {
                     type: 'backend',
                     name: cleanedPath.split('/').pop(),
-                    url: `http://localhost:8081/${cleanedPath}`
+                    url: `${SERVER_URL}${cleanedPath}`
                 };
             }) || [];
 
@@ -244,7 +245,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         setLoading(true);
     
         try {
-            const res = await fetch(`http://localhost:8081/api/products/${product._id}`, {
+            const res = await fetch(`${SERVER_URL}api/products/${product._id}`, {
                 method: 'PUT',
                 body: formToSend
             });
@@ -767,19 +768,11 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
                                     <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
-                                    {/* <input
-                                    className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
-                                    type="number"
-                                    placeholder="Stock"
-                                    value={nuevaVariante.stock}
-                                    onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
-                                    /> */}
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"
                                     placeholder="Stock"
                                     value={nuevaVariante.stock}
-                                    //onChange={(e) => setNuevaVariante({ ...nuevaVariante, stock: parseInt(e.target.value) || '' })}
                                     onChange={(e) => {
                                         const value = e.target.value;
                                         const parsed = parseInt(value, 10);

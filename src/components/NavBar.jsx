@@ -14,6 +14,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
     const [isLoadingUser, setIsLoadingUser] = useState(true);
     const [showCategories, setShowCategories] = useState(false);
     const [loadingBtnLogOut, setLoadingBtnLogOut] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -69,9 +70,8 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
 
         const fetchFilteredProducts = async () => {
             try {
-                const res = await fetch(`http://localhost:8081/api/products/navbar-search?search=${searchTerm}`)
+                const res = await fetch(`${SERVER_URL}api/products/navbar-search?search=${searchTerm}`)
                 const data = await res.json();
-                //console.log(data)
                 setFilteredProducts(data.data); // si usás paginación con mongoose-paginate
                 setShowDropdown(data.data.length > 0);
             } catch (err) {
@@ -128,92 +128,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
         } 
     }, []);
 
-    /* const handleBtnLogOut = async () => {
-        try {
-            setLoadingBtnLogOut(true);
-            const response = await fetch(`http://localhost:8081/api/sessions/logout`, {
-                method: 'POST',         
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include', // 👈 Esto es clave
-            })
-            const data = await response.json();
-            if(response.ok) {
-                toast('Gracias por visitar nuestra página', {
-                    position: "top-right",
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setUser&&setUser(null)
-                setSelectedAddress&&setSelectedAddress(null)
-                setTimeout(() => {
-                    navigate('/')
-                    window.location.reload()
-                }, 2000);
-            } else {
-                toast('Se ha producido un error al salir, intente nuevamente!', {
-                    position: "top-right",
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setLoadingBtnLogOut(false);
-            }
-        } catch (error) {
-            toast('Error en la conexión!', {
-                position: "top-right",
-                autoClose: 1500,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
-            setLoadingBtnLogOut(false);
-        }
-    } */
-    /* const handleBtnLogOut = async () => {
-        try {
-            setLoadingFetchLogOut(true);
-            const response = await fetchWithAuth('/api/sessions/logout', {
-                method: 'POST',
-            });
-
-            if (response) {
-                toast('Gracias por visitar nuestra página', {
-                    position: "top-right",
-                    autoClose: 1500,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                localStorage.removeItem("token");
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 2000);
-            }
-        } catch (error) {
-            toast('Ha ocurrido un error al intentar salir! Intente nuevamente', {
-                position: "top-right",
-                autoClose: 1500,
-                theme: "dark",
-                className: "custom-toast",
-            });
-        } 
-    } */
    const handleBtnLogOut = async () => {
         const success = await logout();
         if (success) {
@@ -224,9 +138,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                 theme: "dark",
                 className: "custom-toast",
             });
-            /* setTimeout(() => {
-                window.location.href = '/';
-            }, 2000); */
         }
     }
     
@@ -272,7 +183,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                                     >
                                         <div className='header__gridUp__inputSearch__productsListContainer__productItem__image'>
                                             <img
-                                            src={`http://localhost:8081/${product.images?.[0]}` || '/default-image.jpg'}
+                                            src={`${SERVER_URL}${product.images?.[0]}` || '/default-image.jpg'}
                                             alt={product.title}
                                             className='header__gridUp__inputSearch__productsListContainer__productItem__image__prop'
                                             />
@@ -296,11 +207,11 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                         {logo_store ? (
                             <img
                             className='header__gridUp__logoContainer__prop'
-                            src={`http://localhost:8081/${logo_store}`}
+                            src={`${logo_store}`}
                             alt='logo_tienda'
                             />
                         ) : null}
-                        <p className='header__gridUp__logoContainer__storeName'>{storeName}</p>
+                        {/* <p className='header__gridUp__logoContainer__storeName'>{storeName}</p> */}
                     </SmartLink>
 
                     <div className='header__gridUp__links'>
@@ -370,43 +281,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                     <Link to='/products' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/favorites' ? 'activeLink' : ''}`}>
                         PRODUCTOS
                     </Link>
-                    {/* 
-                    <div
-                    className='menuCategoriesWrapper'
-                    onMouseEnter={() => setShowCategories(true)}
-                    onMouseLeave={() => setShowCategories(false)}
-                    >
-                        <div className={`header__menu__item header__menu__itemBorder ${showCategories ? 'hoverLink' : ''} ${location.pathname.startsWith('/category') ? 'activeLink' : ''}`}>
-                            CATEGORÍAS
-                        </div>
-
-                        <div
-                            className='categoriesContainer'
-                            style={{ display: showCategories ? 'flex' : 'none' }}
-                        >
-                            <div className='categoriesContainer__grid'>
-                            {categories && categories.length > 0 ? (
-                                categories.map((category) => (
-                                <Link
-                                    key={category._id}
-                                    to={`/category/${category.name.toLowerCase()}`}
-                                    onClick={() => setShowCategories(false)}
-                                    className='categoriesContainer__grid__item'
-                                >
-                                    - {category.name.toUpperCase()}
-                                </Link>
-                                ))
-                            ) : (
-                                <>
-                                <p className='categoriesContainer__category'>Aún no hay categorías</p>
-                                <Link to='/cpanel' className='categoriesContainer__addCategoryLink'>
-                                    Agregar categoría
-                                </Link>
-                                </>
-                            )}
-                            </div>
-                        </div>
-                    </div> */}
                     <Link to='/about' className={`header__menu__item header__menu__itemBorder ${location.pathname === '/about' ? 'activeLink' : ''}`}>
                         SOBRE NOSOTROS
                     </Link>

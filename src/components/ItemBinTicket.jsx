@@ -8,6 +8,7 @@ import ConfirmationPermanentDeleteItemBinTicketModal from './ConfirmationPermane
 const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const [showConfirmationRestoreItemBinTicketModal, setShowConfirmationRestoreItemBinTicketModal] = useState(false);
     const [textConfirmationRestoreItemBinModal, setTextConfirmationRestoreItemBinTicketModal] = useState(''); 
@@ -68,7 +69,7 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                         const variantCampos = item.selectedVariant?.campos || snapshot?.variant?.campos;
 
                         const imageUrl = relativePath
-                            ? `http://localhost:8081/${relativePath}`  // <-- reemplazá con tu dominio real
+                            ? `${SERVER_URL}${relativePath}`  // <-- reemplazá con tu dominio real
                             : '/default-image.jpg';
 
                         return (

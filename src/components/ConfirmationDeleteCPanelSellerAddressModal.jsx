@@ -4,11 +4,12 @@ import Spinner from './Spinner';
 
 const ConfirmationDeleteCPanelSellerAddressModal = ({text,setShowConfirmationDeleteCPanelSellerAddressModal,sellerAddressId,fetchSellerAddresses}) => {
     const [loading, setLoading] = useState(false);
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleDeleteSellerAddress = async () => {
         try {
             setLoading(true)
-            const response = await fetch(`http://localhost:8081/api/sellerAddresses/${sellerAddressId}`, {
+            const response = await fetch(`${SERVER_URL}api/sellerAddresses/${sellerAddressId}`, {
                 method: 'DELETE',
             });
 

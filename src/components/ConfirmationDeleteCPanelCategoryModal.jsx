@@ -2,59 +2,21 @@ import React, {useState} from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 
-const ConfirmationDeleteCPanelCategoryModal = ({text,setShowConfirmationDeleteCPanelCategoryModal,categoryId,fetchCategories}) => {
+const ConfirmationDeleteCPanelCategoryModal = ({fetchCategories,setShowConfirmationDeleteCPanelCategoryModal,categoryId}) => {
     const [loading, setLoading] = useState(false);
-
-    const handleDeleteCategory = async () => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
+    const handleDelete = async () => {
         try {
-            setLoading(true);
-            const response = await fetch(`http://localhost:8081/api/categories/${categoryId}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                toast('Categoría eliminada', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
+            setLoading(true)
+            const res = await fetch(`${SERVER_URL}api/categories/${categoryId._id}`, { method: "DELETE" });
+            if(res.ok) {
                 fetchCategories();
-                setShowConfirmationDeleteCPanelCategoryModal(false);
-            } else {
-                toast('Error al eliminar la categoría', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
+                setShowConfirmationDeleteCPanelCategoryModal(false)
             }
-
         } catch (error) {
-            console.error(error);
-            toast('Error en la conexión', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: "custom-toast",
-            });
+            console.error('Error:', error);
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     };
 
@@ -70,7 +32,7 @@ const ConfirmationDeleteCPanelCategoryModal = ({text,setShowConfirmationDeleteCP
                 </div>
                 
                 <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar <br /> {text}?</div>
+                    <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas eliminar la categoría "{categoryId.name}"?</div>
                 </div>
 
                 <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
@@ -83,7 +45,7 @@ const ConfirmationDeleteCPanelCategoryModal = ({text,setShowConfirmationDeleteCP
                         </button>
                     ) : (
                         <button
-                        onClick={handleDeleteCategory}
+                        onClick={handleDelete}
                         className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
                         >
                         Si

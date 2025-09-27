@@ -25,8 +25,8 @@ h2 {
     background-color: var(--primary-color);
     color: var(--primary-text-color);
     &:hover {
-        //background-color: var(--secondary-color);
-        color: var(--secondary-color);
+        background-color: var(--primary-text-color);
+        color: var(--primary-color);
     }
 }
 .btn-expired-modal {
@@ -127,6 +127,7 @@ h2 {
     transition: transform 0.4s ease, opacity 0.4s ease;
     opacity: 1;
     overflow: visible;
+    box-shadow: 0 2px 10px var(--primary-text-color);
     &__hide {
         transform: translateY(-95%);
         opacity: 0.4;
@@ -154,7 +155,7 @@ h2 {
                 width: 100%;
                 height: 30px;
                 text-align: center;
-                border: 0.3vh solid white;
+                border: 0.1vh solid var(--primary-text-color);
                 border-radius: 0.5vh;
             }
             &__productsListContainer {
@@ -231,7 +232,7 @@ h2 {
                 width: 30%;
             }
             &__storeName {
-                color: white;
+                color: var(--primary-text-color);
                 font-size: 30px;
             }
         }
@@ -244,7 +245,7 @@ h2 {
                 width: 100%;
                 @include disFC();
                 font-size: 14px;
-                color: white;
+                color: var(--primary-text-color);
                 text-decoration: none;
                 cursor: pointer;
             }
@@ -252,8 +253,7 @@ h2 {
                 width: 100%;
                 @include disFC();
                 font-size: 16px;
-                color: white;
-                //margin-left: 2vh;
+                color: var(--primary-text-color);
                 padding: 0vh 2vh;
                 text-decoration: none;
                 cursor: pointer;
@@ -263,9 +263,9 @@ h2 {
                 @include disFC();
                 text-align: center;
                 font-size: 14px;
-                color: white;
+                color: var(--primary-text-color);
                 padding: 0vh 2vh;
-                border-right: 0.3vh solid white;
+                border-right: 0.3vh solid var(--primary-text-color);
             }
             &__itemCart {
                 width: 100%;
@@ -273,7 +273,7 @@ h2 {
                 padding: 0vh 2vh;
                 gap: 1vh;
                 //padding-left: 1vh;
-                border-right: 0.3vh solid white;
+                border-right: 0.3vh solid var(--primary-text-color);
                 &__logo {
                     width: 40%;
                     cursor: pointer;
@@ -301,7 +301,7 @@ h2 {
                 width: 100%;
                 @include disFC();
                 font-size: 14px;
-                color: white;
+                color: var(--primary-text-color);
                 text-decoration: none;
                 cursor: pointer;
                 padding: 0vh 1vh;
@@ -311,10 +311,10 @@ h2 {
                 padding: 0vh 1vh;
                 @include disFC();
                 font-size: 14px;
-                color: white;
+                color: var(--primary-text-color);
                 text-decoration: none;
                 cursor: pointer;
-                border-right: 0.3vh solid white;
+                border-right: 0.3vh solid var(--primary-text-color);
             }
         }
     }
@@ -323,23 +323,23 @@ h2 {
         @include disFC();
         gap: 1vh;
         &__item {
-            color: white;
+            color: var(--primary-text-color);
             text-decoration: none;
             padding: 0vh 2vh;
             &:hover {
                 padding: 1vh 2vh;
-                border-top: 2px solid white; // o cualquier color que combine
-                border-bottom: 2px solid white; // o cualquier color que combine
+                border-top: 2px solid var(--primary-text-color); // o cualquier color que combine
+                border-bottom: 2px solid var(--primary-text-color); // o cualquier color que combine
             }
         }
         &__itemBorder {
-            color: white;
+            color: var(--primary-text-color);
             padding: 0vh 2vh;
             cursor: pointer;
             &:hover {
                 padding: 1vh 2vh;
-                border-top: 2px solid white; // o cualquier color que combine
-                border-bottom: 2px solid white; // o cualquier color que combine
+                border-top: 2px solid var(--primary-text-color); // o cualquier color que combine
+                border-bottom: 2px solid var(--primary-text-color); // o cualquier color que combine
             }
         }
     }
@@ -351,8 +351,8 @@ h2 {
 }
 .hoverLink {
     padding: 1vh 2vh;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-top: 2px solid var(--primary-text-color);
+    border-bottom: 2px solid var(--primary-text-color);
 }
 .menuCategoriesWrapper {
     position: relative;
@@ -383,7 +383,7 @@ h2 {
         gap: 2vh;
         &__item {
             //@include disFC();
-            color: white;
+            color: var(--primary-text-color);
             text-decoration: none;
         }
     }
@@ -507,9 +507,14 @@ h2 {
         border-radius: 5vh;
     }
 }
+.separatorWhite {
+    background-color: white;
+    width: 100%;
+    height: 10vh;
+}
 .featured-products {
-    background-color: #EFEFEF;
-    padding-bottom: 5vh;
+    background-color: #dddddd; // blanco translúcido
+    //padding-bottom: 5vh;
     .swiper-button-next{
         color: black; // rojo, pon el color que quieras
         border-radius: 50%; // opcional, flechas redondas
@@ -525,7 +530,7 @@ h2 {
     &__title {
         width: 100%;
         @include disFC();
-        padding: 6vh 0vh 1vh 0vh;
+        padding: 8vh 0vh 1vh 0vh;
         &__prop {
             font-size: 25px;
             width: 70%;
@@ -599,6 +604,7 @@ h2 {
     .product-grid-container {
         @include disFC();
         width: 100%;
+        padding-bottom: 10vh;
         &__product-grid {
             width: 70%;
         }
@@ -676,6 +682,7 @@ h2 {
 }
 .linkToAboutPagContainer {
     //background-color: #EFEFEF;
+    background-color: #dddddd;
     padding: 6vh 0vh;
     @include disFC();
     &__imgContainer {
@@ -706,7 +713,7 @@ h2 {
     }
 }
 .categoriesExplored {
-    background-color: #EFEFEF;
+    background-color: #dddddd;
     @include disFC();
     flex-direction: column;
     &__title {
@@ -726,11 +733,79 @@ h2 {
             &__categoryImg {
                 width: 100%;
                 @include disFC();
+                overflow: hidden;
                 &__prop {
                     width: 95%;
                     object-fit: cover;
                     cursor: pointer;
                     border-radius: 8px;
+                    transition: transform 0.4s ease;
+                    &:hover {
+                        transform: scale(1.03);
+                    }
+                }
+            }
+        }
+        &__right {
+            width: 100%;
+            overflow: hidden; 
+            &__page {
+                display: flex;
+                flex-wrap: wrap; // que las categorías se acomoden en filas
+                justify-content: start;
+            }
+            &__category {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                overflow: hidden;
+                &__img {
+                    width: 100%;
+                    object-fit: cover;
+                    border-radius: 8px;
+                    transition: transform 0.2s ease;
+                    cursor: pointer;
+                    &:hover {
+                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                        transform: scale(1.05);
+                    }
+                }
+            }
+        }
+    }
+}
+.brandsExplored {
+    background-color: #dddddd;
+    @include disFC();
+    flex-direction: column;
+    &__title {
+        width: 70%;
+        padding: 6vh 0vh 0vh 0vh;
+        &__prop {
+            font-size: 25px;
+        }
+    }
+    &__grid {
+        width: 80%;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        padding: 2vh 0vh 4vh 0vh;
+        &__left {
+            @include disFC();
+            &__categoryImg {
+                width: 100%;
+                @include disFC();
+                overflow: hidden;
+                &__prop {
+                    width: 95%;
+                    object-fit: cover;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    transition: transform 0.4s ease;
+                    &:hover {
+                        transform: scale(1.03);
+                    }
                 }
             }
         }
@@ -792,18 +867,18 @@ h2 {
     }
 }
 .offersContainer {
-    background-color: #EFEFEF;
+    background-color: #dddddd; 
     width: 100%;
     height: 75vh;
     @include disFC();
-    padding-top: 25vh;
+    padding-top: 26vh;
     &__offersSlider {
         width: 75%;
         @include disFC();
         flex-direction: column;
         position: relative;
         overflow: hidden; 
-        border-radius: 5vh;
+        border-radius: 2vh;
         &__track {
             display: flex; // imágenes en fila
             transition: transform 0.5s ease-in-out; // efecto de deslizado
@@ -849,7 +924,6 @@ h2 {
                 border: none;
                 cursor: pointer;
                 transition: background 0.3s ease;
-
                 &.active {
                     background: var(--secondary-color); // color del indicador activo
                 }
@@ -862,7 +936,7 @@ h2 {
     }
 }
 .cPanelContainer {
-    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    background-color: #dddddd;// blanco translúcido
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -1138,10 +1212,167 @@ h2 {
             &__offers {
                 background-color: (rgba(183, 183, 183, 0.85));
                 height: auto;
-                max-height: 60vh;
+                max-height: 70vh;
                 padding: 2vh;
                 overflow: auto;
                 border-radius: 0.5vh;
+                &__offer {
+                    border: 1px solid black;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                    border-radius: 1vh;
+                    &__imgOffer {
+                        display: flex;
+                        align-items: center;
+                        gap: 2vh;
+                        padding-bottom: 1vh;
+                        &__label {
+                            font-size: 18px;
+                        }
+                        &__prop {
+                            width: 8%;
+                        }
+                    }
+                    &__labelInput {
+                        display: flex;
+                        padding-bottom: 4vh;
+                        &__label {
+                            width: 300px;
+                            font-size: 20px;    
+                        }
+                        &__input {
+                            width: 200px;
+                        }
+                    }
+                    &__filterRedirection {
+                        display: flex;
+                        flex-direction: column;
+                        &__label {
+                            font-size: 20px;
+                            padding-bottom: 1vh;
+                        }
+                        &__categorySelect {
+                            display: flex;
+                            gap: 1vh;
+                            padding-bottom: 1vh;
+                            &__label {
+                                font-size: 18px;
+                            }
+                            &__select {
+                                width: 200px;
+                                border-radius: 0.5vh;
+                            }
+                        }
+                        &__inputsBtn {
+                            padding: 0vh 0vh 0.5vh 0vh;
+                            &__input {
+                                text-align: center;
+                                border-radius: 0.3vh;
+                            }
+                            &__btn {
+                                @include btn();
+                                padding: 0.3vh 2vh;
+                                border-radius: 0.5vh;
+                            }
+                        }
+                        &__btnAddCondition {
+                            &__prop {
+                                @include btn();
+                                padding: 0.3vh 2vh;
+                                border-radius: 0.5vh;
+                            }
+                        }
+                    }
+                    &__btnDeleteOffer {
+                        width: 500px;
+                        padding-top: 1vh;
+                        &__prop {
+                            width: 40%;
+                            @include btn();
+                            padding: 0.5vh 2vh;
+                            border-radius: 0.5vh;
+                        }
+                    }
+                }
+                &__btnAddOffer {
+                    width: 500px;
+                    padding-bottom: 1vh;
+                    &__prop {
+                        width: 50%;
+                        cursor: pointer;
+                        @include btn();
+                        padding: 0.5vh 2vh;
+                        font-size: 16px;
+                        border-radius: 0.5vh;
+                    }
+                }
+            }
+            &__infoBlock {
+                width: 500px;
+                font-size: 30px;
+                font-weight: bold;
+            }
+            &__itemInfoBlockContainer {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4vh;
+                &__itemInfoBlock {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                    background-color: (rgba(183, 183, 183, 0.85));
+                    padding: 2vh 0vh;
+                    border-radius: 2vh;
+                    gap: 1vh;
+                    &__labelInput {
+                        width: 90%;
+                        display: flex;
+                        align-items: center;
+                        &__img {
+                            display: flex;
+                            align-items: center;
+                            gap: 1vh;
+                            &__prop {
+                                width: 40px;
+                                height: 40px;
+                                object-fit: contain;
+                            }
+                            &__inputFile {
+                                width: 200px;
+                            }
+                        }
+                        &__label {
+                            width: 40%;
+                            font-size: 20px;    
+                        }
+                        &__input {
+                            width: 250px;
+                        }
+                    }
+                    &__btn {
+                        width: 350px;
+                        @include disFC();
+                        padding-top: 1vh;
+                        &__prop {
+                            width: 50%;
+                            @include btn();
+                            border-radius: 0.5vh;
+                            padding: 0.5vh 0vh;
+                            cursor: pointer;
+                        }
+                    }
+                    &__btnAddBlock {
+                        @include disFC();
+                        width: 350px;
+                        &__prop {
+                            width: 80%;
+                            @include btn();
+                            border-radius: 0.5vh;
+                            padding: 0.5vh 0vh;
+                            cursor: pointer;
+                        }
+                    }
+                }
             }
             &__gridImages {
                 display: grid;
@@ -1241,7 +1472,7 @@ h2 {
             }
         }
     }
-    &__existingCategories {
+    /* &__existingCategories {
         background-color: white;
         width: 95%;
         padding: 4vh 2vh;
@@ -1332,6 +1563,61 @@ h2 {
                 font-size: 16px;
                 cursor: pointer;
                 @include btn();
+            }
+        }
+    } */
+    &__categoriesManagement {
+        background-color: white;
+        width: 95%;
+        padding: 4vh 2vh;
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+        border-radius: 1vh;
+        gap: 1vh;
+        margin-top: 4vh;
+        &__addCategoryForm {
+            display: flex;
+            flex-direction: column;
+            &__input {
+                width: 250px;
+                padding-bottom: 1vh;
+                &__prop {
+                    width: 100%;
+                    height: 25px;
+                    text-align: center;
+                }
+            }
+            &__select {
+                width: 254px;
+                height: 25px;
+                &__prop {
+                    width: 100%;
+                    height: 25px;
+                    text-align: center;
+                }
+            }
+            &__inputFileImg {
+                display: flex;
+                flex-direction: column;
+                padding-top: 1vh;
+                &__img {
+                    display: flex;
+                    align-items: center;
+                    &__prop {
+                        width: 40px;
+                        height: 40px;
+                    }
+                }
+            }
+            &__btn {
+                @include btn();
+                margin-top: 1vh;
+                width: 150px;
+                border-radius: 0.5vh;
+                padding: 0.3vh 1vh;
+                font-size: 14px;
+                cursor: pointer;
             }
         }
     }
@@ -1877,7 +2163,7 @@ h2 {
     }
 }
 .binContainer {
-    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    background-color: #dddddd; // blanco translúcido
     width: 100%;
     height: auto;
     display: flex;
@@ -2159,7 +2445,7 @@ h2 {
     }
 }
 .favoritesContiner {
-    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    background-color: #dddddd; // blanco translúcido
     width: 100%;
     padding: 28vh 0vh 5vh 0vh;
     &__gridContainer {
@@ -2220,7 +2506,7 @@ h2 {
     }
 }
 .cPanelProductsContainer {
-    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    background-color: #dddddd;// blanco translúcido
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -2309,8 +2595,8 @@ h2 {
         align-self: center;
         border-radius: 0.5vh;
         flex-direction: column;
-        border-bottom: 0.2vh solid black;
-        border-top: 0.2vh solid black;
+        //border-bottom: 0.2vh solid black;
+        border: 0.2vh solid black;
         &__title {
             font-size: 25px;
             padding-bottom: 2vh;
@@ -2463,7 +2749,7 @@ h2 {
     }
 }
 .cPanelSalesContainer {
-    background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+    background-color: #dddddd; // blanco translúcido
     width: 100%;
     height: auto;
     display: flex;
@@ -2923,6 +3209,7 @@ h2 {
         &__isLoadingLabel {
             @include disFC();
             padding-top: 2vh;
+            flex-direction: column;
             &__label {
                 font-size: 22px;
                 color: black;
@@ -4139,6 +4426,7 @@ h2 {
     }
 }
 .productsContainer {
+    //background-color: #dddddd; 
     width: 100%;
     display: flex;
     align-items: center;
@@ -4193,7 +4481,7 @@ h2 {
             position: relative;
             &__categories {
                 width: 100%;
-                background-color: #c8c7c7;
+                background-color: #dddddd; // blanco translúcido
                 display: flex;
                 flex-direction: column;
                 gap: 0.7vh;
@@ -4201,6 +4489,7 @@ h2 {
                 border-radius: 1vh;
                 position: sticky;
                 top: 30vh;
+                border: 0.2vh solid black;
                 &__tree {
                     display: flex;
                     flex-direction: column;
@@ -5547,13 +5836,20 @@ h2 {
         height: 90vh;
         @include disFC();
         &__phrase {
-            background-color: rgb(0, 0, 0, 0.7);
+            background-color: rgb(0, 0, 0, 0.8);
             width: 60%;
-            font-size: 25px;
-            text-align: justify;
-            padding: 10vh;
+            height: 50vh;
+            font-size: 22px;
+            text-align: left;
+            hyphens: auto;
+            white-space: pre-line;
+            padding: 6vh 10vh;
             color: white;
             border-radius: 4vh;
+            overflow-y: auto;
+            &::-webkit-scrollbar {
+                display: none;
+            }
         }
     }
     &__imgContainer {
@@ -5933,7 +6229,7 @@ h2 {
         width: 100%;
         @include disFC();
         &__form {
-            background-color: rgba(183, 183, 183, 0.85); // blanco translúcido
+            background-color: #dddddd; // blanco translúcido
             backdrop-filter: blur(6px); // desenfoque de fondo
             -webkit-backdrop-filter: blur(6px); // compatibilidad Safari
             width: 75%;
@@ -5954,7 +6250,7 @@ h2 {
             }
             &__forgotPass {
                 font-size: 16px;
-                color: var(--secondary-text-color);
+                color: black;
             }
             &__inputContainer {
                 width: 100%;
@@ -6085,14 +6381,15 @@ h2 {
     display: grid;
     grid-template-columns: 1fr 1fr 2fr;
     padding: 4vh 0vh 4vh 0vh;
+    box-shadow: 0 -2px 6px var(--primary-text-color);
     &__logoPhraseContainer {
         width: 100%;
         @include disFC();
         &__logoPhrase {
-            width: 60%;
+            width: 65%;
             display: flex;
             flex-direction: column;
-            gap: 2vh;
+            gap: 1vh;
             &__logo {
                 width: 100%;
                 &__prop {
@@ -6102,7 +6399,9 @@ h2 {
             &__phrase {
                 width: 100%;
                 &__prop {
-                    text-align: justify;
+                    text-align: left;
+                    hyphens: auto;
+                    white-space: pre-line;
                     color: var(--primary-text-color);
                 }
             }
@@ -6122,7 +6421,7 @@ h2 {
             &__links {
                 color: var(--primary-text-color);
                 text-decoration: none;
-                padding-top: 0.5vh;
+                padding-top: 0.7vh;
             }
         }
     }

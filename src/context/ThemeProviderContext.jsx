@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
+    const SERVER_URL = import.meta.env.VITE_API_URL;
     const [colorSelectFormData, setColorSelectFormData] = useState(() => {
         const savedColors = localStorage.getItem('themeColors');
         return savedColors
@@ -35,15 +36,15 @@ export const ThemeProvider = ({ children }) => {
         const fetchStoreSettings = async () => {
         try {
             setIsLoadingStoreSettings(true);
-            const response = await fetch('http://localhost:8081/api/settings');
+            const response = await fetch(`${SERVER_URL}api/settings`);
             const data = await response.json();
 
             if (response.ok) {
             setColorSelectFormData((prev) => ({
                 ...prev,
-                primaryColor: data.primaryColor || prev.primaryColor,
-                secondaryColor: data.secondaryColor || prev.secondaryColor,
-                accentColor: data.accentColor || prev.accentColor,
+                primaryColor: data?.primaryColor || prev.primaryColor,
+                secondaryColor: data?.secondaryColor || prev.secondaryColor,
+                accentColor: data?.accentColor || prev.accentColor,
             }));
             } else {
             toast('Error al cargar configuraciones', {

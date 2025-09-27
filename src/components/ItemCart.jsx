@@ -6,23 +6,14 @@ import { toast } from 'react-toastify';
 import isEqual from 'lodash.isequal';
 
 const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,price,selectedVariant,fetchCartByUserId}) => {
-    //console.log(selectedVariant)
 
     const {deleteItemCart,updateQuantity} = useContext(CartContext);
     const [loadingQuantity, setLoadingQuantity] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
-
-    /* const cantidadEnCarrito = userCart?.products?.reduce((acc, item) => {
-        const sameProduct = item.product._id === id;
-        const sameVariant = isEqual(item.selectedVariant?.campos, selectedVariant?.campos);
-        return sameProduct && sameVariant ? acc + item.quantity : acc;
-    }, 0);
-
-    const cantidadDisponible = (selectedVariant?.stock ?? stock) - cantidadEnCarrito; */
+    const SERVER_URL = import.meta.env.VITE_API_URL;
 
     const handleUpdateQuantity = async (newQuantity) => {
         setLoadingQuantity(true);
-        //await updateQuantity(user_id, id, newQuantity, fetchCartByUserId);
         await updateQuantity(user_id, id, newQuantity, selectedVariant, fetchCartByUserId);
         setLoadingQuantity(false);
     };
@@ -60,7 +51,7 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
             <div className='itemCart'>
 
                 <div className='itemCart__imgContainer'>
-                    <img className='itemCart__imgContainer__img' src={`http://localhost:8081/${img}`} alt="img" />
+                    <img className='itemCart__imgContainer__img' src={`${SERVER_URL}${img}`} alt="img" />
                 </div>
 
                 <div className='itemCart__title'>
