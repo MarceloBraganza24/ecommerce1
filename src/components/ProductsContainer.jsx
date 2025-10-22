@@ -12,12 +12,13 @@ import BtnGoUp from "./BtnGoUp";
 import Spinner from "./Spinner";
 import { useAuth } from '../context/AuthContext';
 import CategorySidebar from "./CategorySidebar";
+import NavbarMobile from "./NavbarMobile.jsx";
 
 const ProductsContainer = () => {
     const location = useLocation();
     
     const DEFAULT_MIN = 0;
-    const DEFAULT_MAX = 100000;
+    const DEFAULT_MAX = 5000000;
 
     const [priceRange, setPriceRange] = useState({ min: DEFAULT_MIN, max: DEFAULT_MAX });
     const [sortOrder, setSortOrder] = useState("desc");
@@ -26,21 +27,22 @@ const ProductsContainer = () => {
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(100000);
 
-    const [selectedCategory, setSelectedCategory] = useState(
-        location.state?.category || null
-    );
+    const initialCategoryId = location.state?.filters?.category || null;
+    const [selectedCategory, setSelectedCategory] = useState(initialCategoryId);
+
     const [appliedFilters, setAppliedFilters] = useState(() => {
         if (location.state?.filters) {
-            return location.state.filters;
-        } else if (location.state?.brand) {
-            return { marca: Array.isArray(location.state.brand) ? location.state.brand : [location.state.brand] };
+            const filters = { ...location.state.filters };
+            // Si venía category, lo sacamos de filters
+            if (filters.category) delete filters.category;
+            return filters;
         }
         return {};
     });
 
-
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [isVisible, setIsVisible] = useState(false);
     const [sellerAddresses, setSellerAddresses] = useState([]);
@@ -66,7 +68,6 @@ const ProductsContainer = () => {
     const [availableFilters, setAvailableFilters] = useState({});
     
     const [categories, setCategories] = useState([]);
-    //console.log(categories)
 
     // 📌 Paginación
     const [page, setPage] = useState(1);
@@ -74,6 +75,7 @@ const ProductsContainer = () => {
     const [totalPages, setTotalPages] = useState(1);
 
     const [breadcrumb, setBreadcrumb] = useState([]);
+    //console.log(breadcrumb)
    
     function findCategoryPath(tree, targetId, path = []) {
         for (const node of tree) {
@@ -91,12 +93,14 @@ const ProductsContainer = () => {
 
     useEffect(() => {
         if (selectedCategory && categories.length > 0) {
-            const path = findCategoryPath(categories, selectedCategory._id); // 👈 solo _id
+            const path = findCategoryPath(categories, selectedCategory);
             setBreadcrumb(path || []);
-        } else {
-            setBreadcrumb([]);
         }
     }, [selectedCategory, categories]);
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [pageInfo.page]);
 
     useEffect(() => {
         fetchProducts();
@@ -189,7 +193,7 @@ const ProductsContainer = () => {
             setIsLoadingProducts(true);
 
             const body = {
-                category: selectedCategory || null, // 🔹 siempre mando _id o null
+                category: selectedCategory || null, // categoría por separado
                 minPrice: priceRange.min,
                 maxPrice: priceRange.max,
                 sort: sortOrder || null,
@@ -230,27 +234,25 @@ const ProductsContainer = () => {
     };
 
     const handleFilterChange = (filterName, value, checked) => {
-        const filterKey = filterName.toLowerCase();
-        const filterValue = value.toLowerCase();
-
         setAppliedFilters((prev) => {
-            const prevValues = prev[filterKey] || [];
+            const prevValues = prev[filterName] || [];
 
             let newValues;
             if (checked) {
-                newValues = [...prevValues, filterValue];
+                newValues = [...prevValues, value];  // 👈 sin toLowerCase
             } else {
-                newValues = prevValues.filter((v) => v !== filterValue);
+                newValues = prevValues.filter((v) => v !== value);
             }
 
             if (newValues.length === 0) {
-                const { [filterKey]: _, ...rest } = prev;
+                const { [filterName]: _, ...rest } = prev;
                 return rest;
             }
 
-            return { ...prev, [filterKey]: newValues };
+            return { ...prev, [filterName]: newValues };
         });
     };
+
 
 
     // 🔹 Refrescar productos cada vez que cambia categoría, filtros, precio o sort
@@ -258,10 +260,17 @@ const ProductsContainer = () => {
         fetchProducts(1);
     }, [selectedCategory, appliedFilters, priceRange, sortOrder]);
 
-    // 🎯 Al seleccionar categoría
     const handleSelectCategory = (category) => {
-        setSelectedCategory(category);
-        setPriceRange({ min: 0, max: 100000 });
+        setSelectedCategory(category._id);
+        setPriceRange({ min: 0, max: 5000000 });
+    };
+
+    const handleBtnShowFilters = () => {
+        if(showFilters) {
+            setShowFilters(false)
+        } else {
+            setShowFilters(true)
+        }
     };
 
     const fetchSellerAddresses = async () => {
@@ -367,6 +376,7 @@ const ProductsContainer = () => {
         setPriceRange({ min: DEFAULT_MIN, max: DEFAULT_MAX });
         setSortOrder("desc");
         setAppliedFilters({});
+        setBreadcrumb([]);
     };
 
     const activeFiltersCount =
@@ -385,6 +395,25 @@ const ProductsContainer = () => {
             <BtnGoUp
             isVisible={isVisible}
             scrollToTop={scrollToTop}
+            />
+
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
             />
 
             <NavBar
@@ -408,6 +437,10 @@ const ProductsContainer = () => {
 
             {<div className='productsContainer' id="catalogContainer">
 
+                <div className="productsContainer__title">
+                    Productos
+                </div>
+
                 
                 <div className="productsContainer__routeSelect">
 
@@ -416,32 +449,28 @@ const ProductsContainer = () => {
                             breadcrumb.length > 0 &&
                             <span 
                             onClick={handleResetFilters} 
-                        className="breadcrumb__link"
-                        >
-                            Inicio
-                        </span>
+                            className="productsContainer__routeSelect__route__item"
+                            >
+                                Inicio
+                            </span>
                         }
                         
                         {breadcrumb.map((cat, index) => (
-                            <span key={cat._id} className="breadcrumb__item">
+                            <>
+                            <span key={cat._id} className="productsContainer__routeSelect__route__item">
                                 <span style={{ margin: "0 4px" }}>{'>'}</span>
                                 <span
                                     className="breadcrumb__link"
                                     // 👇 pasar el objeto completo al hacer click
-                                    onClick={() => setSelectedCategory(cat)}
+                                    onClick={() => setSelectedCategory(cat._id)}
                                     >
                                     {cat.name}
                                 </span>
                             </span>
+                            </>
                         ))}
                     </div>
 
-                    <div className='productsContainer__routeSelect__select'>
-                        <select className='productsContainer__routeSelect__select__prop' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-                            <option value="asc" className=''>Precio: menor a mayor</option>
-                            <option value="desc" className=''>Precio: mayor a menor</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div className="productsContainer__gridCategoriesProducts">
@@ -458,99 +487,130 @@ const ProductsContainer = () => {
                             <div>
                                 <CategorySidebar onSelectCategory={handleSelectCategory} />
                             </div>
+
+                            <div className="productsContainer__gridCategoriesProducts__btnShowFilters">
+                                <div onClick={handleBtnShowFilters} className="productsContainer__gridCategoriesProducts__btnShowFilters__btn">{!showFilters?"Mostrar filtros":"Ocultar filtros"}</div>
+                            </div>
+
+                            {
+                                showFilters &&
+
+                                <>
                             
-                            <div className='productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter'> 
-                                <div className='productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__title'>Filtrar por precio</div>
-                                <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs">
+                                    <div className='productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter'> 
+                                        <div className='productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__title'>Filtrar por precio</div>
+                                        <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs">
 
-                                    <input
-                                    className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs__input"
-                                    type="number"
-                                    placeholder="Precio mínimo"
-                                    value={priceRange.min}
-                                    onChange={(e) =>
-                                        setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) || DEFAULT_MIN }))
-                                    }
-                                    />
+                                            <input
+                                            className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs__input"
+                                            type="number"
+                                            placeholder="Precio mínimo"
+                                            value={priceRange.min}
+                                            onChange={(e) =>
+                                                setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) || DEFAULT_MIN }))
+                                            }
+                                            />
 
-                                    <input
-                                    className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs__input"
-                                    type="number"
-                                    placeholder="Precio máximo"
-                                    value={priceRange.max}
-                                    onChange={(e) =>
-                                        setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) || DEFAULT_MAX }))
-                                    }
-                                    />
+                                            <input
+                                            className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__inputs__input"
+                                            type="number"
+                                            placeholder="Precio máximo"
+                                            value={priceRange.max}
+                                            onChange={(e) =>
+                                                setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) || DEFAULT_MAX }))
+                                            }
+                                            />
+                                            
+                                        </div>
+                                        <p className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__label">Desde ${priceRange.min} hasta ${priceRange.max}</p>
+                                    </div>
+
+                                    {Object.entries(availableFilters || {}).map(([filterName, values]) => (
+                                    <div key={filterName} className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters">
+                                        <h4>{capitalizeFirstLetter(filterName)}</h4>
+                                        {Object.keys(values).map((val) => (
+                                        <label className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput" key={val}>
+                                            <input
+                                            className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput__input"
+                                            type="checkbox"
+                                            checked={appliedFilters[filterName]?.includes(val) || false}
+                                            onChange={(e) => handleFilterChange(filterName, val, e.target.checked)}
+                                            />
+                                            {val} ({values[val]})
+                                        </label>
+                                        ))}
+                                    </div>
+                                    ))}
                                     
-                                </div>
-                                <p className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__priceFilter__label">Desde ${priceRange.min} hasta ${priceRange.max}</p>
-                            </div>
+                                </>
+                            }
 
-                            {Object.entries(availableFilters || {}).map(([filterName, values]) => (
-                            <div key={filterName} className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters">
-                                <h4>{capitalizeFirstLetter(filterName)}</h4>
-                                {Object.keys(values).map((val) => (
-                                <label className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput" key={val}>
-                                    <input
-                                    className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput__input"
-                                    type="checkbox"
-                                    checked={appliedFilters[filterName]?.includes(val) || false}
-                                    onChange={(e) => handleFilterChange(filterName, val, e.target.checked)}
-                                    />
-                                    {val} ({values[val]})
-                                </label>
-                                ))}
-                            </div>
-                            ))}
 
                         </div>
 
                     </div>
 
+                    
+                    
                     <div className="productsContainer__gridCategoriesProducts__productsContainer">
 
+                        <div className='productsContainer__routeSelect__select'>
+                            <select className='productsContainer__routeSelect__select__prop' value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                                <option value="asc" className=''>Precio: menor a mayor</option>
+                                <option value="desc" className=''>Precio: mayor a menor</option>
+                            </select>
+                        </div>
                         <div className="productsContainer__gridCategoriesProducts__productsContainer__productsList">
                             {
-                                isLoadingProducts ?
-                                 <>
-                                    <div className="catalogContainer__grid__catalog__isLoadingLabel">
-                                        Cargando productos&nbsp;&nbsp;<Spinner/>
+                            isLoadingProducts ? (
+                                <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                                Cargando productos&nbsp;&nbsp;<Spinner />
+                                </div>
+                            ) : (
+                                products.length > 0 ? (
+                                <>
+                                    {products.map((product) => (
+                                    <ItemProduct
+                                        key={product._id}
+                                        user={user} 
+                                        fetchCartByUserId={fetchCartByUserId}
+                                        id={product._id}
+                                        stock={product.stock}
+                                        images={product.images}
+                                        title={product.title}
+                                        description={product.description}
+                                        price={product.price}
+                                        variantes={product.variantes}
+                                        userCart={userCart}
+                                    />
+                                    ))}
+                                    <div className='cPanelProductsContainer__btnsPagesContainer'>
+                                    <button
+                                        className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                        disabled={!pageInfo.hasPrevPage}
+                                        onClick={() => fetchProducts(pageInfo.prevPage)}
+                                    >
+                                        Anterior
+                                    </button>
+                                    
+                                    <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
+
+                                    <button
+                                        className='cPanelProductsContainer__btnsPagesContainer__btn'
+                                        disabled={!pageInfo.hasNextPage}
+                                        onClick={() => fetchProducts(pageInfo.nextPage)}
+                                    >
+                                        Siguiente
+                                    </button>
                                     </div>
                                 </>
-                                :
-                                products.map((product) => (
-                                    <ItemProduct
-                                    user={user} 
-                                    fetchCartByUserId={fetchCartByUserId}
-                                    id={product._id}
-                                    stock={product.stock}
-                                    images={product.images}
-                                    title={product.title}
-                                    description={product.description}
-                                    price={product.price}
-                                    variantes={product.variantes}
-                                    userCart={userCart}
-                                    />
-                                ))
+                                ) : (
+                                <div className="productsContainer__nonProducts">
+                                    Aún no hay productos con los filtros seleccionados
+                                </div>
+                                )
+                            )
                             }
-                            <div className='cPanelProductsContainer__btnsPagesContainer'>
-                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                    disabled={!pageInfo.hasPrevPage}
-                                    onClick={() => fetchProducts(pageInfo.prevPage)}
-                                    >
-                                    Anterior
-                                </button>
-                                
-                                <span>Página {pageInfo.page} de {pageInfo.totalPages}</span>
-
-                                <button className='cPanelProductsContainer__btnsPagesContainer__btn'
-                                    disabled={!pageInfo.hasNextPage}
-                                    onClick={() => fetchProducts(pageInfo.nextPage)}
-                                    >
-                                    Siguiente
-                                </button>
-                            </div>
                         </div>
 
                     </div>

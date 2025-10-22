@@ -4,6 +4,7 @@ import Footer from './Footer'
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { fetchWithAuth } from './FetchWithAuth.jsx';
+import NavbarMobile from './NavbarMobile.jsx';
 
 
 const About = () => {
@@ -205,6 +206,23 @@ const About = () => {
     return (
 
         <>
+
+            <NavbarMobile
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
 
             <div className='navbarContainer'>
                 <NavBar

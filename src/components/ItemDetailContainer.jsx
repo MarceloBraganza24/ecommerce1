@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
+import FeaturedProducts from './FeaturedProducts';
 
 const ItemDetailContainer = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -34,6 +36,7 @@ const ItemDetailContainer = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [deliveryAddressFormData, setDeliveryAddressFormData] = useState({
         street: "",
         street_number: "",
@@ -61,11 +64,11 @@ const ItemDetailContainer = () => {
     };
 
     useEffect(() => {
-        if (user && favorites.length > 0) {
-            const isFavorite = favorites.some(fav => String(fav._id) === String(id));
+        if (user && favorites?.length > 0) {
+            const isFavorite = favorites?.some(fav => String(fav._id) === String(id));
             setLocalFavorite(isFavorite);
             setFavoriteInitialized(true);
-        } else if (user && favorites.length === 0) {
+        } else if (user && favorites?.length === 0) {
             setLocalFavorite(false);
         }
     }, [favorites, id, user]);
@@ -190,7 +193,7 @@ const ItemDetailContainer = () => {
                     : [];
 
             if (images.length > 0) {
-                setSelectedImage(`${SERVER_URL}${images[0]}`);
+                setSelectedImage(`${images[0]}`);
             } else {
                 setSelectedImage('/default-image.jpg');
             }
@@ -446,6 +449,24 @@ const ItemDetailContainer = () => {
     return (
 
         <>
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
@@ -500,10 +521,10 @@ const ItemDetailContainer = () => {
                                             <div className='itemDetailContainer__itemDetail__imgContainer__galery__imgContainer'>
                                                 <img
                                                 key={index}
-                                                src={`${SERVER_URL}${img}`}
+                                                src={`${img}`}
                                                 alt={`Miniatura ${index + 1}`}
                                                 className='itemDetailContainer__itemDetail__imgContainer__galery__imgContainer__prop'
-                                                onClick={() => setSelectedImage(`${SERVER_URL}${img}`)}
+                                                onClick={() => setSelectedImage(`${img}`)}
                                                 />
                                             </div>
 
@@ -669,6 +690,8 @@ const ItemDetailContainer = () => {
                     </div>
 
             </div>
+
+            <FeaturedProducts/>
 
             <Footer
             isLoggedIn={user?.isLoggedIn}

@@ -37,7 +37,21 @@ const OffersSlider = () => {
 
   // Click en oferta → navegar a /products con filtros
   const handleOfferClick = (filters) => {
-    navigate("/products", { state: { filters } });
+    const appliedFilters = {};
+
+    // categoría
+    if (filters.category) {
+      appliedFilters.category = filters.category._id; // guardamos solo el _id
+    }
+
+    // otras propiedades dinámicas
+    for (const key in filters) {
+      if (key !== 'category') {
+        appliedFilters[key] = Array.isArray(filters[key]) ? filters[key] : [filters[key]];
+      }
+    }
+
+    navigate("/products", { state: { filters: appliedFilters } });
   };
 
   if (offers.length === 0) return null;

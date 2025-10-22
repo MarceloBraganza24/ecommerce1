@@ -53,7 +53,7 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
 
 
                 <div className="binContainer__productsTable__itemContainer__item">
-                    <img className="binContainer__productsTable__itemContainer__item__img" src={`${SERVER_URL}${product.images[0]}`} alt="" />
+                    <img className="binContainer__productsTable__itemContainer__item__img" src={`${product.images[0]}`} alt="" />
                 </div>
 
                 <div className="binContainer__productsTable__itemContainer__item">
@@ -118,6 +118,79 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
                         <button
                         onClick={handleBtnDeleteProduct}
                         className='binContainer__productsTable__itemContainer__btnsContainer__btn'
+                        >
+                        Borrar <br /> permanentemente
+                        </button>
+                    )}
+
+                </div>
+
+            </div>
+
+            <div className="binContainer__productsTable__itemContainerMobile">
+
+                <div className="binContainer__productsTable__itemContainerMobile__item">
+                    <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product._id)}
+                        onChange={() => {
+                        if (selectedProducts.includes(product._id)) {
+                            setSelectedProducts(selectedProducts.filter(id => id !== product._id));
+                        } else {
+                            setSelectedProducts([...selectedProducts, product._id]);
+                        }
+                        }}
+                    />
+                </div>
+
+
+                <div className="binContainer__productsTable__itemContainerMobile__item">
+                    <img className="binContainer__productsTable__itemContainerMobile__item__img" src={`${product.images[0]}`} alt="" />
+                </div>
+
+                <div className="binContainer__productsTable__itemContainerMobile__item">
+                    <div className="binContainer__productsTable__itemContainerMobile__item__label">{capitalizeFirstLetter(product.title)}</div>
+                </div>
+
+                <div className="cPanelProductsContainer__productsTable__itemContainer__item">
+                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
+                        {
+                            product.variantes && product.variantes.length != 0 ?
+                            <div onClick={() => setShowItemBinProductModal(true)} style={{cursor:'pointer',fontSize:'12px'}}>Ver stock</div>
+                            :
+                            product.stock 
+                        }
+                    </div>
+                </div>
+
+                <div className='binContainer__productsTable__itemContainerMobile__btnsContainer'>
+                    {loadingBtnRestore ? (
+                        <button
+                        disabled
+                        className='binContainer__productsTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        <Spinner/>
+                        </button>
+                    ) : (
+                        <button
+                        onClick={handleBtnRestoreProduct}
+                        className='binContainer__productsTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        Restaurar
+                        </button>
+                    )}
+
+                    {loading ? (
+                        <button
+                        disabled
+                        className='binContainer__productsTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        <Spinner/>
+                        </button>
+                    ) : (
+                        <button
+                        onClick={handleBtnDeleteProduct}
+                        className='binContainer__productsTable__itemContainerMobile__btnsContainer__btn'
                         >
                         Borrar <br /> permanentemente
                         </button>

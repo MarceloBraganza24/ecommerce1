@@ -4,6 +4,7 @@ import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
 
 const Contact = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
@@ -282,6 +283,24 @@ const Contact = () => {
     return (
 
         <>
+
+            <NavbarMobile
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
+
 
             <div className='navbarContainer'>
                 <NavBar

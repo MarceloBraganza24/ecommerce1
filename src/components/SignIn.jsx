@@ -173,38 +173,38 @@ const SignIn = () => {
 
         <>
 
-            <div className='loginContainer'>
+            <div className='signInContainer'>
 
-                <div className='loginContainer__formContainer'>
+                <div className='signInContainer__formContainer'>
 
-                    <div className='loginContainer__formContainer__form'>
+                    <div className='signInContainer__formContainer__form'>
 
-                        <div className='loginContainer__formContainer__form__title'>
-                            <div className='loginContainer__formContainer__form__title__prop'>Registro de usuario</div>
+                        <div className='signInContainer__formContainer__form__title'>
+                            <div className='signInContainer__formContainer__form__title__prop'>Registro de usuario</div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__inputContainer'>
-                            <div className='loginContainer__formContainer__form__inputContainer__input'>
-                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.first_name} onChange={handleChange} placeholder='Nombre' name="first_name"  />
+                        <div className='signInContainer__formContainer__form__inputContainer'>
+                            <div className='signInContainer__formContainer__form__inputContainer__input'>
+                                <input className='signInContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.first_name} onChange={handleChange} placeholder='Nombre' name="first_name"  />
                             </div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__inputContainer'>
-                            <div className='loginContainer__formContainer__form__inputContainer__input'>
-                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.last_name} onChange={handleChange} placeholder='Apellido' name="last_name"  />
+                        <div className='signInContainer__formContainer__form__inputContainer'>
+                            <div className='signInContainer__formContainer__form__inputContainer__input'>
+                                <input className='signInContainer__formContainer__form__inputContainer__input__prop' type="text" value={credentials.last_name} onChange={handleChange} placeholder='Apellido' name="last_name"  />
                             </div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__inputContainer'>
-                            <div className='loginContainer__formContainer__form__inputContainer__input'>
-                                <input className='loginContainer__formContainer__form__inputContainer__input__prop' type="email" value={credentials.email} onChange={handleChange} placeholder='Email' name="email"  />
+                        <div className='signInContainer__formContainer__form__inputContainer'>
+                            <div className='signInContainer__formContainer__form__inputContainer__input'>
+                                <input className='signInContainer__formContainer__form__inputContainer__input__prop' type="email" value={credentials.email} onChange={handleChange} placeholder='Email' name="email"  />
                             </div>
                         </div>
 
-                        <div className='loginContainer__formContainer__form__inputPassContainer'>
-                            <div className='loginContainer__formContainer__form__inputPassContainer__inputPass'>
+                        <div className='signInContainer__formContainer__form__inputPassContainer'>
+                            <div className='signInContainer__formContainer__form__inputPassContainer__inputPass'>
                                 <input
-                                    className='loginContainer__formContainer__form__inputPassContainer__inputPass__prop'
+                                    className='signInContainer__formContainer__form__inputPassContainer__inputPass__prop'
                                     type={passwordVisible ? 'text' : 'password'}
                                     placeholder='Contraseña'
                                     name="password"
@@ -212,11 +212,11 @@ const SignIn = () => {
                                     onChange={handleChange}
                                     />
                             </div>
-                            <div className='loginContainer__formContainer__form__inputPassContainer__inputPassEye'>
+                            <div className='signInContainer__formContainer__form__inputPassContainer__inputPassEye'>
                                 <button
                                     type="button"
                                     onClick={() => setPasswordVisible(!passwordVisible)}
-                                    className='loginContainer__formContainer__form__inputPassContainer__inputPassEye__propEye'
+                                    className='signInContainer__formContainer__form__inputPassContainer__inputPassEye__propEye'
                                     >
                                     {passwordVisible ? '👁️' : '👁️'}
                                 </button>
@@ -226,7 +226,7 @@ const SignIn = () => {
                         {
                             credentials.password &&
                             <>
-                                <div className='loginContainer__formContainer__form__passwordValidation'>
+                                <div className='signInContainer__formContainer__form__passwordValidation'>
                                     <p style={{ color: passwordValidation.length ? 'green' : 'red' }}>
                                         • Al menos 8 caracteres
                                     </p>
@@ -243,7 +243,7 @@ const SignIn = () => {
                                         • Un carácter especial (!@#$%)
                                     </p>
                                 </div>
-                                <div className="loginContainer__formContainer__form__passwordStrengthBar" style={{ height: '6px', backgroundColor: '#ccc', borderRadius: '4px' }}>
+                                <div className="signInContainer__formContainer__form__passwordStrengthBar" style={{ height: '6px', backgroundColor: '#ccc', borderRadius: '4px' }}>
                                     <div
                                         style={{
                                             width: `${getPasswordStrength() * 20}%`,
@@ -260,23 +260,23 @@ const SignIn = () => {
                             </>
                         }
 
-                        <div className='loginContainer__formContainer__form__btn'>
+                        <div className='signInContainer__formContainer__form__btn'>
                             {loadingBtnSignin ? (
                                 <button
                                 disabled
-                                className='loginContainer__formContainer__form__btn__prop'
+                                className='signInContainer__formContainer__form__btn__prop'
                                 >
                                 <Spinner/>
                                 </button>
                             ) : (
                                 <button
                                 onClick={handleSubmit}
-                                className='loginContainer__formContainer__form__btn__prop'
+                                className='signInContainer__formContainer__form__btn__prop'
                                 >
                                 Registrarse
                                 </button>
                             )}
-                            <Link to={"/logIn"} className='loginContainer__formContainer__form__btn__prop'>
+                            <Link to={"/logIn"} className='signInContainer__formContainer__form__btn__prop'>
                                 Iniciar sesión
                             </Link>
                         </div>
@@ -285,24 +285,24 @@ const SignIn = () => {
 
                 </div>
 
-                <div className='loginContainer__logoContainer'>
+                <div className='signInContainer__logoContainer'>
 
-                    <div className='loginContainer__logoContainer__title'>
-                        <div className='loginContainer__logoContainer__title__prop'>Bienvenidos/as a "{storeSettings?.storeName}"</div>
+                    <div className='signInContainer__logoContainer__title'>
+                        <div className='signInContainer__logoContainer__title__prop'>Bienvenidos/as a <br /> "{storeSettings?.storeName}"</div>
                     </div>
 
-                    <div className='loginContainer__logoContainer__logo'>
+                    <div className='signInContainer__logoContainer__logo'>
                         {storeSettings?.siteImages?.logoStore &&
                             <img
-                            className='loginContainer__logoContainer__logo__prop'
+                            className='signInContainer__logoContainer__logo__prop'
                             src={`${storeSettings?.siteImages?.logoStore}`}
                             alt="logo_tienda"
                             />
                         }
                     </div>  
 
-                    <div className='loginContainer__logoContainer__phrase'>
-                        <div className='loginContainer__logoContainer__phrase__prop'>"Registra tu cuenta y disfruta de una experiencia única con nuestros productos especialmente para ti"</div>
+                    <div className='signInContainer__logoContainer__phrase'>
+                        <div className='signInContainer__logoContainer__phrase__prop'>"Registra tu cuenta y disfruta de una experiencia única con nuestros productos especialmente para ti"</div>
                     </div>
 
                 </div>  

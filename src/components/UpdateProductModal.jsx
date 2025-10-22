@@ -19,6 +19,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
     });
     const [variantes, setVariantes] = useState([]); 
     const [nuevaVariante, setNuevaVariante] = useState({ campos: {}, price: '', stock: '' });
+    const [initialData, setInitialData] = useState(null);
 
     const [nuevoCampo, setNuevoCampo] = useState({ key: '', value: '' });
 
@@ -36,11 +37,11 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
     useEffect(() => {
         if (product) {
             const imagenesDelBackend = product.images?.map((imgPath) => {
-                const cleanedPath = imgPath.replace(/\\/g, '/'); // Normaliza la ruta a UNIX style
+                const cleanedPath = imgPath?.replace(/\\/g, '/');
                 return {
                     type: 'backend',
-                    name: cleanedPath.split('/').pop(),
-                    url: `${SERVER_URL}${cleanedPath}`
+                    name: cleanedPath?.split('/').pop(),
+                    url: `${cleanedPath}`
                 };
             }) || [];
 
@@ -50,19 +51,37 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                 value
             }));
 
-            setFormData({
+            const formValues = {
                 title: product.title || '',
                 description: product.description || '',
                 price: product.price || 0,
                 stock: product.stock || 0,
                 state: product.state || '',
-                category: product.category?._id || product.category || '', // 👈 soporta populate o ID
+                category: product.category?._id || product.category || '',
                 images: imagenesDelBackend,
                 camposDinamicos: camposDinamicosArray,
-                isFeatured: product.isFeatured || false  // 👈 acá
-            });
+                isFeatured: product.isFeatured || false
+            };
 
-            setVariantes(product.variantes || []);
+            setFormData(formValues);
+            //setVariantes(product.variantes || []);
+            const variantesValidas = (product.variantes || []).filter(
+                v =>
+                    v.campos &&
+                    Object.keys(v.campos).length > 0 &&
+                    // Chequeo extra: que el producto realmente tenga camposExtras
+                    Object.keys(product.camposExtras || {}).some(key =>
+                    Object.keys(v.campos).includes(key)
+                    )
+                );
+
+            setVariantes(variantesValidas);
+
+            // Guardamos snapshot inicial (para comparar luego)
+            setInitialData({
+                formData: formValues,
+                variantes: product.variantes || []
+            });
         }
     }, [product]);
 
@@ -115,7 +134,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         const keyTrimmed = nuevoCampo.key.trim();
         const valueTrimmed = nuevoCampo.value.trim();
 
-        const regex = /^[A-Za-z0-9 ,]+$/;
+        const regex = /^[A-Za-z0-9+& ,]+$/;
         if (!regex.test(keyTrimmed) || !regex.test(valueTrimmed)) {
             toast('Los campos solo deben contener letras, números y espacios.', {
                 position: "top-right",
@@ -205,16 +224,36 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             return;
         }
         //console.log(formData)
+
+        // 🔎 Comparación antes de enviar
+        if (initialData) {
+            const isEqual = 
+                JSON.stringify(initialData.formData) === JSON.stringify(formData) &&
+                JSON.stringify(initialData.variantes) === JSON.stringify(variantes);
+
+            if (isEqual) {
+                toast('No tienes cambios para guardar!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+                return;
+            }
+        }
     
         const formToSend  = new FormData();
         formToSend.append('title', formData.title);
         formToSend.append('description', formData.description);
-        if (variantes.length > 0) {
+        
+        const tieneVariantesValidas = Array.isArray(variantes) && variantes.length > 0;
+
+        if (tieneVariantesValidas) {
             formToSend.append('variantes', JSON.stringify(variantes));
         } else {
             formToSend.append('price', formData.price);
             formToSend.append('stock', formData.stock);
-            formToSend.append('variantes', JSON.stringify([])); 
+            formToSend.append('variantes', JSON.stringify([]));
         }
         formToSend.append('state', formData.state);
         formToSend.append('category', formData.category);
@@ -237,8 +276,8 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
         
         // Imágenes anteriores (solo los nombres, el backend sabrá que ya están)
         const imagenesAnteriores = formData.images
-        .filter((img) => img.type === 'backend')
-        .map((img) => img.name);
+            .filter((img) => img.type === 'backend')
+            .map((img) => img.url);
 
         formToSend.append('imagenesAnteriores', JSON.stringify(imagenesAnteriores));
     
@@ -303,7 +342,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
     const handleChangeNuevoCampo = (e) => {
         const { name, value } = e.target;
 
-        const regex = /^[A-Za-z0-9 ,]*$/;
+        const regex = /^[A-Za-z0-9+& ,]*$/;
         if (!regex.test(value)) {
             toast('Solo se permiten letras, números y espacios.', {
               position: "top-right",
@@ -592,26 +631,34 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                 {capitalizeFirstLetter(campo.key)}
                                 </div>
                                 <div className='updateProductModalContainer__updateProductModal__propsContainer__propProduct__input'>
-                                <input
-                                    placeholder={campo.key}
-                                    type="text"
-                                    value={campo.value}
-                                    onChange={(e) => {
-                                    const updatedCampos = [...formData.camposDinamicos];
-                                    updatedCampos[index].value = e.target.value;
-                                    setFormData({ ...formData, camposDinamicos: updatedCampos });
-                                    }}
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__prop"
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleEliminarCampo(index)}
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
-                                    style={{ marginLeft: '2vh' }}
-                                >
-                                    X
-                                </button>
+                                    <input
+                                        placeholder={campo.key}
+                                        type="text"
+                                        value={campo.value}
+                                        onChange={(e) => {
+                                        const updatedCampos = [...formData.camposDinamicos];
+                                        updatedCampos[index].value = e.target.value;
+                                        setFormData({ ...formData, camposDinamicos: updatedCampos });
+                                        }}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__propProduct__input__prop"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleEliminarCampo(index)}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__prop"
+                                        style={{ marginLeft: '2vh' }}
+                                    >
+                                        X
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleEliminarCampo(index)}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__propMobileField"
+                                        style={{ marginLeft: '2vh' }}
+                                    >
+                                        X
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -624,8 +671,8 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                 }
                                 {variantes.map((v, i) => (
                                     <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
-                                    <div style={{ marginBottom: '4px' }}>
-                                        {/* <strong>Variante:</strong>  */}{Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
+                                    <div style={{ marginBottom: '4px',whiteSpace: 'pre-line' }}>
+                                        {Object.entries(v.campos).map(([k, val]) => `${capitalizeFirstLetter(k)}: ${val}`).join('\n')}
                                     </div>
 
                                     <div style={{ marginBottom: '4px' }}>
@@ -666,14 +713,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                             nuevasVariantes.splice(i, 1);
                                             setVariantes(nuevasVariantes);
                                         }}
-                                        style={{
-                                        marginTop: '4px',
-                                        color: 'white',
-                                        background: 'red',
-                                        border: 'none',
-                                        padding: '4px 8px',
-                                        cursor: 'pointer',
-                                        }}
+                                        className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer__btn'
                                     >
                                         Eliminar
                                     </button>
@@ -702,13 +742,26 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                     onChange={handleChangeNuevoCampo}
                                     className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__input"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={handleAddCampo}
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
-                                >
-                                    +
-                                </button>
+                                <div className='updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn'>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCampo}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__propNewField"
+                                    >
+                                        +
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCampo}
+                                        className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__propMobile"
+                                    >
+                                        Agregar campo
+                                    </button>
+
+                                </div>
+
                             </div>
 
                         </div>
@@ -732,7 +785,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
 
                                         return (
                                         <div key={atributo} className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants'>
-                                            <div>{atributo}</div>
+                                            <div>{capitalizeFirstLetter(atributo)}</div>
                                             <select
                                                 className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants__input'
                                                 value={nuevaVariante.campos[atributo] || ''}
@@ -756,7 +809,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                     })
                                 }
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
-                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>precio</div>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>Precio</div>
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"
@@ -767,7 +820,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                 </div>
 
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
-                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>Stock</div>
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"

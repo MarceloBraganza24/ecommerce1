@@ -109,9 +109,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
         if(showHMenuOptions) {
             setShowHMenuOptions(false)
         } else {
-            if(showCategories) {
-                setShowCategories(false)
-            }
             setShowHMenuOptions(true)
         }
 
@@ -119,11 +116,8 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
 
     useEffect(() => {
         const handleScrollShowHMenuOptions = () => setShowHMenuOptions(false);
-        const handleScrollShowCategories = () => setShowCategories(false);
-        window.addEventListener("scroll", handleScrollShowCategories);
         window.addEventListener("scroll", handleScrollShowHMenuOptions);
         return () => {
-            window.removeEventListener("scroll", handleScrollShowCategories);
             window.removeEventListener("scroll", handleScrollShowHMenuOptions);
         } 
     }, []);
@@ -183,7 +177,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                                     >
                                         <div className='header__gridUp__inputSearch__productsListContainer__productItem__image'>
                                             <img
-                                            src={`${SERVER_URL}${product.images?.[0]}` || '/default-image.jpg'}
+                                            src={`${product.images?.[0]}` || '/default-image.jpg'}
                                             alt={product.title}
                                             className='header__gridUp__inputSearch__productsListContainer__productItem__image__prop'
                                             />
@@ -211,7 +205,6 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                             alt='logo_tienda'
                             />
                         ) : null}
-                        {/* <p className='header__gridUp__logoContainer__storeName'>{storeName}</p> */}
                     </SmartLink>
 
                     <div className='header__gridUp__links'>
@@ -305,15 +298,15 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
 
                 {role === 'admin' ? (
                     <>
-                        <Link to={`/cpanel/products`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PRODUCTOS</Link>
-                        <Link to={`/cpanel`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PANEL DE CONTROL</Link>
+                        <Link to={`/cpanel/products`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PANEL DE PRODUCTOS</Link>
                         <Link to={`/tickets`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- VENTAS</Link>
+                        <Link to={`/cpanel`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PANEL DE CONTROL</Link>
                         <Link to={`/bin`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PAPELERA</Link>
                     </>
                 ) :
                 role === 'premium' ? (
                     <>
-                        <Link to={`/cpanel/products`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PRODUCTOS</Link>
+                        <Link to={`/cpanel/products`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PANEL DE PRODUCTOS</Link>
                         <Link to={`/tickets`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- VENTAS</Link>
                         <Link to={`/bin`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PAPELERA</Link>
                     </>

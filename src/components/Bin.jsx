@@ -1,4 +1,4 @@
-import { useEffect,useState,useContext } from "react";
+import { useEffect,useState,useContext,useRef } from "react";
 import NavBar from './NavBar';
 import { useNavigate } from 'react-router-dom'
 import ItemBinProduct from "./ItemBinProduct";
@@ -6,6 +6,7 @@ import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import ItemBinTicket from "./ItemBinTicket";
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from "./NavbarMobile";
 
 const Bin = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -28,10 +29,37 @@ const Bin = () => {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [isLoadingTickets, setIsLoadingTickets] = useState(true);
     const [products, setProducts] = useState([]);
+    const [isScrollForced, setIsScrollForced] = useState(false);
+    const firstRender = useRef(true);
     const [tickets, setTickets] = useState([]);
     const navigate = useNavigate();
     const [productSearch, setProductSearch] = useState("");
     const [ticketSearch, setTicketSearch] = useState("");
+    const [pageInfo, setPageInfo] = useState({
+        page: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+        nextPage: null,
+        prevPage: null
+    });  
+
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+        setIsScrollForced(true);
+        const el = document.getElementById('catalogContainer');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+        const timeout = setTimeout(() => {
+            setIsScrollForced(false);
+        }, 1500);
+
+        return () => clearTimeout(timeout);
+    }, [pageInfo.page]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -241,7 +269,7 @@ const Bin = () => {
 
     useEffect(() => {
         if (!isLoadingAuth) {
-            if (!user || user.role !== 'admin') {
+            if (!user || (user.role !== 'admin' && user.role !== 'premium')) {
                 navigate('/');
             }
         }
@@ -745,6 +773,24 @@ const Bin = () => {
     return (
 
         <>
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
@@ -771,7 +817,7 @@ const Bin = () => {
                 </div>
 
                 <div className="binContainer__subTitle">
-                    <div className="binContainer__subTitle__prop">Productos eliminados:</div>
+                    <div className="binContainer__subTitle__prop">Productos eliminados</div>
                 </div>
 
                 <div className="binContainer__inputSearchDeletedProducts">
@@ -811,7 +857,7 @@ const Bin = () => {
                                 />
                                 <span>Seleccionar todos</span>
                             </div>
-                            <div className='binContainer__quantityProducts__prop'>Cantidad de productos: {products.length}</div>        
+                            <div className='binContainer__quantityProducts__prop'>Cantidad de productos {products.length}</div>        
                         </div>
                     </>
                 }
@@ -832,6 +878,15 @@ const Bin = () => {
 
                         </div>
 
+                        <div className="binContainer__headerTableContainer__headerTableMobile">
+
+                            <div className="binContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}></div>
+                            <div className="binContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Imagen</div>
+                            <div className="binContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Título</div>
+                            <div className="binContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Stock</div>
+
+                        </div>
+
                     </div>
                 }
 
@@ -840,7 +895,7 @@ const Bin = () => {
                     {
                         isLoadingProducts ? 
                             <>
-                                <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                                <div className="binContainer__isLoadingLabel">
                                     Cargando productos&nbsp;&nbsp;<Spinner/>
                                 </div>
                             </>
@@ -858,7 +913,7 @@ const Bin = () => {
                             ))
                         :
                         <>
-                            <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                            <div className="binContainer__isLoadingLabel">
                                 Aún no existen productos eliminados
                             </div>
                         </>
@@ -932,6 +987,15 @@ const Bin = () => {
 
                         </div>
 
+                        <div className="binContainer__headerSalesTableContainer__headerTableMobile">
+
+                            <div className="binContainer__headerSalesTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}></div>
+                            <div className="binContainer__headerSalesTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Fecha y hora</div>
+                            <div className="binContainer__headerSalesTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Código</div>
+                            <div className="binContainer__headerSalesTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Operador</div>
+
+                        </div>
+
                     </div>
                 }
 
@@ -940,7 +1004,7 @@ const Bin = () => {
                     {
                         isLoadingTickets ? 
                             <>
-                                <div className="cPanelSalesContainer__salesTable__isLoadingLabel">
+                                <div className="binContainer__isLoadingLabel">
                                     Cargando tickets&nbsp;&nbsp;<Spinner/>
                                 </div>
                             </>
@@ -975,7 +1039,7 @@ const Bin = () => {
 
                         :
                         <>
-                            <div className="catalogContainer__grid__catalog__isLoadingLabel">
+                            <div className="binContainer__isLoadingLabel">
                                 Aún no existen tickets eliminados   
                             </div>
                         </>
@@ -984,6 +1048,10 @@ const Bin = () => {
                 </div>
 
             </div>
+            {
+                tickets.length == 0 && products.length == 0 &&
+                <div style={{backgroundColor:'#dddddd',height:'30vh'}}></div>
+            }
             {
                 showConfirmationDeleteAllProductsSelectedModal &&
                 <ConfirmationDeleteAllProductsSelected/>

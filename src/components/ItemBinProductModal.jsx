@@ -25,7 +25,7 @@ const ItemBinProductModal = ({product,setShowItemBinProductModal,fetchProducts,c
                 return {
                 type: 'backend',
                 name: cleanedPath.split('/').pop(), // Si necesitás el nombre solo
-                url: `${SERVER_URL}${cleanedPath}` // Ruta correcta
+                url: `${cleanedPath}` // Ruta correcta
                 };
             });
       
@@ -241,7 +241,7 @@ const ItemBinProductModal = ({product,setShowItemBinProductModal,fetchProducts,c
                                 />
                                 <button
                                     type="button"
-                                    className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
+                                    className="updateProductModalContainer__updateProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__propMobileField"
                                     style={{ marginLeft: '2vh' }}
                                 >
                                     X
@@ -258,8 +258,8 @@ const ItemBinProductModal = ({product,setShowItemBinProductModal,fetchProducts,c
                                 }
                                 {variantes.map((v, i) => (
                                     <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
-                                    <div style={{ marginBottom: '4px' }}>
-                                        {Object.entries(v.campos).map(([k, val]) => `${k}: ${val}`).join(' | ')}
+                                    <div style={{ marginBottom: '4px',whiteSpace: 'pre-line' }}>
+                                        {Object.entries(v.campos).map(([k, val]) => `${capitalizeFirstLetter(k)}: ${val}`).join('\n')}
                                     </div>
 
                                     <div style={{ marginBottom: '4px' }}>
@@ -288,8 +288,9 @@ const ItemBinProductModal = ({product,setShowItemBinProductModal,fetchProducts,c
                                         style={{
                                         marginTop: '4px',
                                         color: 'white',
-                                        background: 'red',
+                                        background: 'black',
                                         border: 'none',
+                                        borderRadius:'0.5vh',
                                         padding: '4px 8px',
                                         cursor: 'pointer',
                                         }}

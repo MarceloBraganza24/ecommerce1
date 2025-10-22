@@ -26,6 +26,7 @@ const ConfirmationDeleteCPanelSellerAddressModal = ({text,setShowConfirmationDel
                     className: "custom-toast",
                 });
                 fetchSellerAddresses();
+                setShowConfirmationDeleteCPanelSellerAddressModal(false)
             } else {
                 toast('Error al eliminar la domicilio', {
                     position: "top-right",

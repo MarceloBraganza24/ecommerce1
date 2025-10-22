@@ -111,7 +111,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         const keyTrimmed = nuevoCampo.key.trim();
         const valueTrimmed = nuevoCampo.value.trim();
 
-        const regex = /^[A-Za-z0-9 ,]+$/;
+        const regex = /^[A-Za-z0-9+& ,]+$/;
         if (!regex.test(keyTrimmed) || !regex.test(valueTrimmed)) {
             toast('Los campos solo deben contener letras, números y espacios.', {
               position: "top-right",
@@ -180,6 +180,21 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
             return;
         }
+        if (
+            product.camposDinamicos.length == 0 &&
+            (
+                !product.price ||
+                !product.stock
+            )
+        ) {
+            toast('Debes completar el precio y el stock', {
+                position: "top-right",
+                autoClose: 2000,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         if(nuevoCampo.key != '' || nuevoCampo.value != '') {
             toast('Debes confirmar si quieres agregar un nuevo campo apretando en el boton +', {
                 position: "top-right",
@@ -224,11 +239,14 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
         const formData = new FormData();
         formData.append('title', product.title);
         formData.append('description', product.description);
-        if (variantes.length > 0) {
+        const tieneVariantesValidas = Array.isArray(variantes) && variantes.length > 0;
+
+        if (tieneVariantesValidas) {
             formData.append('variantes', JSON.stringify(variantes));
         } else {
             formData.append('price', product.price);
             formData.append('stock', product.stock);
+            formData.append('variantes', JSON.stringify([])); // 🔑 igual que en update
         }
         formData.append('state', product.state);
         formData.append('category', product.category);
@@ -256,6 +274,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
     
             const data = await res.json();
+            console.log(data)
             if(data.error === 'There is already a product with that title') {
                 toast('Ya existe un producto con ese título!', {
                     position: "top-right",
@@ -342,7 +361,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
     const handleChangeNuevoCampo = (e) => {
         const { name, value } = e.target;
 
-        const regex = /^[A-Za-z0-9 ,]*$/;
+        const regex = /^[A-Za-z0-9+& ,]*$/;
         if (!regex.test(value)) {
             toast('Solo se permiten letras, números y espacios.', {
               position: "top-right",
@@ -643,7 +662,15 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     <button
                                     type="button"
                                     onClick={() => handleEliminarCampo(index)} // Función para eliminar este campo
-                                    className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
+                                    className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__prop"
+                                    style={{marginLeft:'2vh'}}
+                                    >
+                                    X
+                                    </button>
+                                    <button
+                                    type="button"
+                                    onClick={() => handleEliminarCampo(index)} // Función para eliminar este campo
+                                    className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__propMobileField"
                                     style={{marginLeft:'2vh'}}
                                     >
                                     X
@@ -735,13 +762,22 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     onChange={handleChangeNuevoCampo}
                                     className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__input"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={handleAddCampo}
-                                    className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn"
-                                >
-                                    +
-                                </button>
+                                <div className='createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn'>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCampo}
+                                        className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__prop"
+                                    >
+                                        +
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCampo}
+                                        className="createProductModalContainer__createProductModal__propsContainer__addNewFieldContainer__inputsBtn__btn__propMobile"
+                                    >
+                                        Agregar campo
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
@@ -764,7 +800,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
 
                                         return (
                                         <div key={atributo} className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants'>
-                                            <div>{atributo}</div>
+                                            <div>{capitalizeFirstLetter(atributo)}</div>
                                             <select
                                                 className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__formVariants__input'
                                                 value={nuevaVariante.campos[atributo] || ''}
@@ -788,7 +824,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     })
                                 }
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
-                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>precio</div>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>Precio</div>
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"
@@ -798,7 +834,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                     />
                                 </div>
                                 <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput'>
-                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>stock</div>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__label'>Stock</div>
                                     <input
                                     className='createProductModalContainer__createProductModal__propsContainer__addVariantsContainer__labelInput__input'
                                     type="number"

@@ -1,4 +1,4 @@
-import React, {useContext,useState,useEffect} from 'react'
+import React, {useContext,useState,useEffect,useRef} from 'react'
 import NavBar from './NavBar';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
@@ -6,8 +6,12 @@ import ItemTicket from './ItemTicket';
 import { useNavigate } from 'react-router-dom';
 import CreateSaleModal from './CreateSaleModal';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
 
 const Tickets = () => {
+    const [billingInfo, setBillingInfo] = useState(null);
+    const [selectedBranchId, setSelectedBranchId] = useState("");
+
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const [showConfirmationDeleteAllTicketsSelectedModal, setShowConfirmationDeleteAllTicketsSelectedModal] = useState(false);
     const [selectedTickets, setSelectedTickets] = useState([]);
@@ -15,6 +19,7 @@ const Tickets = () => {
     const [createSaleModal, setCreateSaleModal] = useState(false);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [products, setProducts] = useState([]);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [totalProducts, setTotalProducts] = useState("");
     const [pageInfoProducts, setPageInfoProducts] = useState({
         page: 1,
@@ -51,6 +56,7 @@ const Tickets = () => {
 
     const [inputFilteredTickets, setInputFilteredTickets] = useState('');
     const [isLoadingTickets, setIsLoadingTickets] = useState(false);
+    const productsListRef = useRef(null); 
 
     const fieldLabels = {
         title: 'Título',
@@ -62,13 +68,39 @@ const Tickets = () => {
     };
 
     useEffect(() => {
+        setIsScrollForced(true);
+
+        if (productsListRef.current) {
+            productsListRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        const timeout = setTimeout(() => {
+            setIsScrollForced(false);
+        }, 1500);
+
+        return () => clearTimeout(timeout);
+    }, [pageInfo.page]);
+
+    useEffect(() => {
         setSelectAll(selectedProducts.length === products.length && products.length > 0);
     }, [selectedProducts, products]);
 
+    useEffect(() => {
+        if(user && user?._id) {
+            fetch(`${SERVER_URL}api/billing-info/${user?._id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    setBillingInfo(data);
+                    //setSelectedBranchId(data.activeBranch || data.branches?.[0]?._id || null);
+                }
+            })
+        }
+    }, [user]);
     
     useEffect(() => {
         if (!isLoadingAuth) {
-            if (!user || user.role !== 'admin') {
+            if (!user || (user.role !== 'admin' && user.role !== 'premium')) {
                 navigate('/');
             }
         }
@@ -469,7 +501,25 @@ const Tickets = () => {
 
     return (
 
-        <>
+        <>  
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
@@ -594,6 +644,15 @@ const Tickets = () => {
 
                         </div>
 
+                        <div className="cPanelSalesContainer__headerTableCPanelSalesContainer__headerTableMobile">
+
+                            <div className="cPanelSalesContainer__headerTableCPanelSalesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}></div>
+                            <div className="cPanelSalesContainer__headerTableCPanelSalesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Fecha y hora</div>
+                            <div className="cPanelSalesContainer__headerTableCPanelSalesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Código</div>
+                            <div className="cPanelSalesContainer__headerTableCPanelSalesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Operador</div>
+
+                        </div>
+
                     </div>
                 }
 
@@ -683,6 +742,9 @@ const Tickets = () => {
             {
                 createSaleModal &&
                 <CreateSaleModal
+                billingInfo={billingInfo}
+                setSelectedBranchId={setSelectedBranchId}
+                selectedBranchId={selectedBranchId}
                 setCreateSaleModal={setCreateSaleModal}
                 products={products}
                 user={user}

@@ -106,6 +106,7 @@ const Shipping = () => {
                     draggable: true,
                     progress: undefined,
                     theme: "dark",
+                    className: "custom-toast",
                 }); 
             }
         } catch (error) {
@@ -478,7 +479,7 @@ const Shipping = () => {
                     {storeSettings?.siteImages?.logoStore && 
                         <img
                         className='headerPurchase__logo__prop'
-                        src={`${SERVER_URL}${storeSettings?.siteImages?.logoStore}`}
+                        src={`${storeSettings?.siteImages?.logoStore}`}
                         alt="logo_tienda"
                         />
                     }
@@ -689,9 +690,9 @@ const Shipping = () => {
                                 </div>
                                 <div className='shippingContainer__accountSummaryContainer__accountSummary__itemGrid'>
 
-                                    <div className='shippingContainer__accountSummaryContainer__accountSummary__itemGrid__labelTotal'>TOTAL <span style={{fontSize:'14px'}}>(con descuento)</span></div>
+                                    <div className='shippingContainer__accountSummaryContainer__accountSummary__itemGrid__labelTotal'>TOTAL <span style={{fontSize:'12px'}}>(con descuento)</span></div>
 
-                                    <div className='shippingContainer__accountSummaryContainer__accountSummary__itemGrid__valueTotal'>$ {totalWithDiscount}</div>
+                                    <div className='shippingContainer__accountSummaryContainer__accountSummary__itemGrid__valueTotal' style={{fontSize:'20px'}}>$ {totalWithDiscount}</div>
 
                                 </div>
                             </>
@@ -699,7 +700,7 @@ const Shipping = () => {
                             <>
                                 <div className="shippingContainer__accountSummaryContainer__accountSummary__item">
 
-                                    <div className="shippingContainer__accountSummaryContainer__accountSummary__item__label">Pagás</div>
+                                    <div className="shippingContainer__accountSummaryContainer__accountSummary__item__label" style={{fontSize:'18px',fontWeight:'bold'}}>Pagás</div>
                                     <div className="shippingContainer__accountSummaryContainer__accountSummary__item__value">$ {total}</div>
 
                                 </div>

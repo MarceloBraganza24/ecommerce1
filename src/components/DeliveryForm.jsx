@@ -7,6 +7,7 @@ import Footer from './Footer'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
 
 const DeliveryForm = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -18,6 +19,8 @@ const DeliveryForm = () => {
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [deliveryFormsById, setDeliveryFormsById] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [products, setProducts] = useState([]);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [categories, setCategories] = useState([]);
     const [isLoadingDeliveryForm, setIsLoadingDeliveryForm] = useState(true);
     const [userCart, setUserCart] = useState({});
@@ -53,7 +56,7 @@ const DeliveryForm = () => {
         libraries:["places"]
     })
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (!user || !deliveryForms) return;
         if(user && deliveryForms) {
             const deliveryFormsById = deliveryForms.filter(deliveryForm => deliveryForm.owner == user.email)
@@ -78,7 +81,61 @@ const DeliveryForm = () => {
         }
 
 
+    }, [user, deliveryForms]); */
+    /* useEffect(() => {
+        if (!user || !deliveryForms) return;
+
+        const userForms = deliveryForms.filter(d => d.owner === user.email);
+        setDeliveryFormsById(userForms);
+
+        // 🔹 Evita sobreescribir si el usuario ya eligió algo
+        if (!selectedAddress) {
+            const matchedAddress = deliveryForms.find(item =>
+                item.street === user?.selected_addresses?.street &&
+                item.street_number === user?.selected_addresses?.street_number &&
+                item.locality === user?.selected_addresses?.locality
+            );
+
+            if (matchedAddress) {
+                setSelectedAddress(matchedAddress);
+                setDeliveryAddressFormData({
+                    street: matchedAddress.street,
+                    street_number: matchedAddress.street_number,
+                    locality: matchedAddress.locality
+                });
+            } else if (user?.selected_addresses) {
+                setSelectedAddress(user.selected_addresses);
+            }
+        }
+    }, [user, deliveryForms]); */
+    useEffect(() => {
+        if (!user || !deliveryForms?.length) return;
+
+        const userForms = deliveryForms.filter(form => form.owner === user.email);
+        setDeliveryFormsById(userForms);
+
+        // Solo marcar automáticamente si no hay selección manual todavía
+        if (!selectedAddress && user.selected_addresses) {
+            const selected = userForms.find(form =>
+                form._id === user.selected_addresses._id ||
+                (
+                    form.street?.toLowerCase().trim() === user.selected_addresses.street?.toLowerCase().trim() &&
+                    form.street_number?.toString().trim() === user.selected_addresses.street_number?.toString().trim() &&
+                    form.locality?.toLowerCase().trim() === user.selected_addresses.locality?.toLowerCase().trim()
+                )
+            );
+
+            if (selected) {
+                setSelectedAddress(selected);
+                setDeliveryAddressFormData({
+                    street: selected.street,
+                    street_number: selected.street_number,
+                    locality: selected.locality
+                });
+            }
+        }
     }, [user, deliveryForms]);
+
 
     useEffect(() => {
         if (user?.isLoggedIn) {
@@ -147,7 +204,9 @@ const DeliveryForm = () => {
                 },
                 body: JSON.stringify({ selected_addresses: cleanAddress }),
             });
+            const data = await response.json()
             if (response.ok) {
+                console.log(data)
                 toast('Domicilio actualizado con éxito', {
                     position: "top-right",
                     autoClose: 2000,
@@ -344,6 +403,7 @@ const DeliveryForm = () => {
                 })
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
+                console.log(data)
                 toast('Error al cargar formulario', {
                     position: "top-right",
                     autoClose: 2000,
@@ -550,6 +610,24 @@ const DeliveryForm = () => {
     return (
         
         <>
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
 
             <div className='navbarContainer'>
                 <NavBar
@@ -623,29 +701,29 @@ const DeliveryForm = () => {
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            Dirección: {corregirCapitalizacion(item.street)} {corregirCapitalizacion(item.street_number)}, {corregirCapitalizacion(item.locality)}, {corregirCapitalizacion(item.province)}, {corregirCapitalizacion(item.country)}
+                                                            <span className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address__spam'>Dirección:</span> {corregirCapitalizacion(item.street)} {corregirCapitalizacion(item.street_number)}, {corregirCapitalizacion(item.locality)}, {corregirCapitalizacion(item.province)}, {corregirCapitalizacion(item.country)}
                                                         </span>
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            Código postal: {corregirCapitalizacion(item.postal_code)}
+                                                            <span className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address__spam'>Código postal:</span> {corregirCapitalizacion(item.postal_code)}
                                                         </span>
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            Nombre: {corregirCapitalizacion(item.name)}
+                                                            <span className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address__spam'>Nombre:</span> {corregirCapitalizacion(item.name)}
                                                         </span>
                                                     </label>
                                                     <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                         <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                            Teléfono: {item.phone}
+                                                            <span className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address__spam'>Teléfono:</span> {item.phone}
                                                         </span>
                                                     </label>
                                                     {
                                                         item.indications && 
                                                         <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                             <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                                Indicaciones: {corregirCapitalizacion(item.indications)}
+                                                                <span className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address__spam'>Indicaciones:</span> {corregirCapitalizacion(item.indications)}
                                                             </span>
                                                         </label>
 
@@ -654,7 +732,7 @@ const DeliveryForm = () => {
                                                         item.dpto && 
                                                         <label className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__label">
                                                             <span className="deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address">
-                                                                Departamento: {corregirCapitalizacion(item.dpto)}
+                                                                <span className='deliveryFormContainer__deliveryForm__existingAddresses__itemAddressContainer__itemAddress__addressContainer__address__spam'>Departamento:</span> {corregirCapitalizacion(item.dpto)}
                                                             </span>
                                                         </label>
 
@@ -743,12 +821,12 @@ const DeliveryForm = () => {
                                 <textarea className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__inputContainer__textArea' value={formData.indications} onChange={handleInputChange} placeholder='Mensaje' name="indications" id=""></textarea>
                             </div>
                         </div>
-                        <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput'>
-                            <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__labelContactData'>Datos de contacto</div>
+                        <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInputContactData'>
+                            <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInputContactData__labelContactData'>Datos de contacto</div>
                         </div>
-                        <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput'>
-                            <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__label'></div>
-                        </div>
+                        {/* <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInputInvisible'>
+                            <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInputInvisible__label'></div>
+                        </div> */}
                         <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput'>
                             <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__label'>Nombre completo:</div>
                             <div className='deliveryFormContainer__deliveryForm__gridLabelInput__labelInput__inputContainer'>

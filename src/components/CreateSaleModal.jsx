@@ -2,8 +2,9 @@ import React, {useState,useEffect,useRef,useContext } from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import {SalesContext} from '../context/CPanelSalesContext'
+import ConfirmationBtnConfirmSaleModal from './ConfirmationBtnConfirmSaleModal';
 
-const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
+const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetchTickets,selectedDate,setCreateSaleModal,user,products,fetchProducts,isLoadingProducts,totalProducts,pageInfoProducts}) => {
     const {
         addedProducts,
         setAddedProducts,
@@ -27,11 +28,15 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
     const [totalQuantity, setTotalQuantity] = useState('');
     const [totalWithDiscount, setTotalWithDiscount] = useState('');
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
-
-    //const products = []
+    const SERVER_URL = import.meta.env.VITE_API_URL;
+    const [showConfirmationBtnConfirmSaleModal, setShowConfirmationBtnConfirmSaleModal] = useState(false);
 
     const handleBtnCloseCreateSaleModal = () => {
         setCreateSaleModal(false)
+    };
+
+    const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
     useEffect(() => {
@@ -124,103 +129,21 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
     };
 
     const handleBtnConfirmSale = async () => {
-        // ✅ Verificación previa de stock
-        for (let product of addedProducts) {
-            const camposSeleccionados = product.camposSeleccionados || {};
-
-            const varianteSeleccionada = product.variantes?.find(v =>
-                Object.entries(camposSeleccionados).every(
-                    ([key, val]) => v.campos[key] === val
-                )
-            );
-
-            const stockDisponible = varianteSeleccionada?.stock ?? product.stock;
-
-            if (product.quantity > stockDisponible) {
-                    toast(`No hay suficiente stock para ${product.title} (${Object.entries(camposSeleccionados).map(([key, val]) => `${key}: ${val}`).join(', ') || 'sin variante'})`, {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                return; // 👈 evita continuar con la venta
-            }
+        if (!selectedBranchId) {
+            toast('Debes seleccionar una sucursal', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
         }
-        
-        const purchase_datetime = new Date();
-
-        const newTicket = {
-            amount: showLabelDiscountApplied?totalWithDiscount:total,
-            payer_email: user.email,
-            items: addedProducts,
-            deliveryMethod: 'vendedor',
-            purchase_datetime,
-            user_role: user.role,
-        }
-        try {
-            setLoadingBtnConfirmSale(true)
-            const response = await fetch(`http://localhost:8081/api/tickets/save-admin-sale`, {
-                method: 'POST',         
-                credentials: 'include', // 👈 necesario para recibir cookies
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newTicket)
-            })
-            const data = await response.json();
-            if (response.ok) {
-                toast('Has registrado la venta con éxito!', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-                setTimeout(() => {
-                    setCreateSaleModal(false)
-                    setAddedProducts([])
-                    fetchTickets(1, "", "", selectedDate);
-                }, 2500);
-            } else if(data.error) {
-                toast('Variante no encontrada para el producto seleccionado', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            } else {
-                toast('Ha ocurrido un error, intente nuevamente!', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            setLoadingBtnConfirmSale(false)
-        } finally {
-            setLoadingBtnConfirmSale(false)
-        }
+        setShowConfirmationBtnConfirmSaleModal(true);
     }
 
     const getProductKey = (productId, camposSeleccionados = {}) => {
@@ -565,100 +488,6 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
         setSelectedProductData([]);
     };
 
-    const ConfirmationConfirmSale = () => {
-        const [loading, setLoading] = useState(false);
-
-        const handleMassDelete = async () => {
-
-            try {
-                setLoading(true);
-                const res = await fetch('http://localhost:8081/api/tickets/mass-delete', {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ids: selectedTickets })
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    setSelectedTickets([]);
-                    fetchTickets(1,inputFilteredTickets, selectedField, selectedDate)
-                    toast('Tickets eliminados correctamente', {
-                        position: "top-right",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        className: "custom-toast",
-                    });
-                    setShowConfirmationDeleteAllTicketsSelectedModal(false)
-                } 
-            } catch (error) {
-                console.error(error);
-                toast('Error al eliminar tickets', {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    className: "custom-toast",
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        return (
-            
-            <>
-
-                <div className='confirmationDeleteModalContainer'>
-
-                    <div className='confirmationDeleteModalContainer__confirmationModal'>
-
-                        <div className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal'>
-                            <div onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnCloseModal__btn'>X</div>
-                        </div>
-                        
-                        <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas borrar todas las ventas({selectedTickets.length}) seleccionadas?</div>
-                        </div>
-
-                        <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
-                            {loading ? (
-                                <button
-                                disabled
-                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
-                                >
-                                <Spinner/>
-                                </button>
-                            ) : (
-                                <button
-                                onClick={handleMassDelete}
-                                className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'
-                                >
-                                Si
-                                </button>
-                            )}
-                            <button onClick={()=>setShowConfirmationDeleteAllTicketsSelectedModal(false)} className='confirmationDeleteModalContainer__confirmationModal__btnContainer__btn'>No</button>
-                        </div>
-
-                    </div>
-            
-                </div>
-
-            </>
-            
-        )
-
-    }
-
-
     return (
 
         <>
@@ -675,7 +504,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                         <div className='createSaleModalContainer__createSaleModal__title__prop'>Crear venta</div>
                     </div>
 
-                    <div className='createSaleModalContainer__createSaleModal__inputSearchProduct'>
+                    {/* <div className='createSaleModalContainer__createSaleModal__inputSearchProduct'>
                         <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer'>
                             <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__label'>Buscar por:</div>
                             <select
@@ -691,7 +520,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                         <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__inputContainer'>
                             <input type="text" onChange={handleInputFilteredProducts} value={inputFilteredProducts} placeholder={`Buscar productos por ${fieldLabels[selectedField]}`} className='createSaleModalContainer__createSaleModal__inputSearchProduct__inputContainer__input' name="" id="" />
                         </div>
-                    </div>
+                    </div> */}
 
                     {
                         addedProducts.length > 0 && 
@@ -713,146 +542,292 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
 
                                 </div>
 
+                                <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTableMobile">
+
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Imagen</div>
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Título</div>
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Variantes</div>
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Stock</div>
+                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Cantidad</div>
+
+                                </div>
+
                             </div>
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__list'>
                                 {addedProducts.map(product => (
 
-                                    <div key={product._uniqueKey || product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer'>
+                                    <>
 
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <img className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
-                                        </div>
+                                        <div key={product._uniqueKey || product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer'>
 
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.title}</div>
-                                        </div>
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <img className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__img" src={`${product.images[0]}`} alt="" />
+                                            </div>
 
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__description">{product.description}</div>
-                                        </div>
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.title}</div>
+                                            </div>
 
-                                        {
-                                            product.variantes?.length > 0 ? (
-                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes">
-                                                {Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
-                                                    const opciones = opcionesStr.split(',').map(op => op.trim());
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__description">{product.description}</div>
+                                            </div>
 
-                                                    return (
-                                                    <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes'>
-                                                        <div>{atributo}:</div>
-                                                        <select
-                                                        className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes__select'
-                                                        value={product.camposSeleccionados?.[atributo] || ''}
-                                                        onChange={(e) => {
-                                                        const value = e.target.value;
+                                            {
+                                                product.variantes?.length > 0 ? (
+                                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes">
+                                                    {Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                        const opciones = opcionesStr.split(',').map(op => op.trim());
 
-                                                        setAddedProducts(prev => {
-                                                            const prevSinEste = prev.filter(p => p._uniqueKey !== product._uniqueKey);
+                                                        return (
+                                                        <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes'>
+                                                            <div>{atributo}:</div>
+                                                            <select
+                                                            className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes__select'
+                                                            value={product.camposSeleccionados?.[atributo] || ''}
+                                                            onChange={(e) => {
+                                                            const value = e.target.value;
 
-                                                            const nuevosCampos = {
-                                                                ...product.camposSeleccionados,
-                                                                [atributo]: value
-                                                            };
+                                                            setAddedProducts(prev => {
+                                                                const prevSinEste = prev.filter(p => p._uniqueKey !== product._uniqueKey);
 
-                                                            const newKey = getProductKey(product._id, nuevosCampos);
+                                                                const nuevosCampos = {
+                                                                    ...product.camposSeleccionados,
+                                                                    [atributo]: value
+                                                                };
 
-                                                            const yaExiste = prevSinEste.some(p => p._uniqueKey === newKey);
+                                                                const newKey = getProductKey(product._id, nuevosCampos);
 
-                                                            if (yaExiste) {
-                                                                toast('Ya has añadido este producto con esa variante.', {
-                                                                    position: "top-right",
-                                                                    autoClose: 2000,
-                                                                    theme: "dark",
-                                                                    className: "custom-toast",
-                                                                });
-                                                                return prev;
-                                                            }
+                                                                const yaExiste = prevSinEste.some(p => p._uniqueKey === newKey);
 
-                                                            const varianteSeleccionada = product.variantes.find(v =>
-                                                                Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val)
-                                                            );
+                                                                if (yaExiste) {
+                                                                    toast('Ya has añadido este producto con esa variante.', {
+                                                                        position: "top-right",
+                                                                        autoClose: 2000,
+                                                                        theme: "dark",
+                                                                        className: "custom-toast",
+                                                                    });
+                                                                    return prev;
+                                                                }
 
-                                                            const actualizado = {
-                                                                ...product,
-                                                                camposSeleccionados: nuevosCampos,
-                                                                price: varianteSeleccionada?.price ?? product.price,
-                                                                stock: varianteSeleccionada?.stock ?? product.stock,
-                                                                quantity: 1,
-                                                                _uniqueKey: newKey
-                                                            };
+                                                                const varianteSeleccionada = product.variantes.find(v =>
+                                                                    Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val)
+                                                                );
 
-                                                            return [...prevSinEste, actualizado];
-                                                        });
-                                                    }}
+                                                                const actualizado = {
+                                                                    ...product,
+                                                                    camposSeleccionados: nuevosCampos,
+                                                                    price: varianteSeleccionada?.price ?? product.price,
+                                                                    stock: varianteSeleccionada?.stock ?? product.stock,
+                                                                    quantity: 1,
+                                                                    _uniqueKey: newKey
+                                                                };
 
-                                                        >
-                                                        {opciones.map((op, idx) => (
-                                                            <option key={idx} value={op}>{op}</option>
-                                                        ))}
-                                                        </select>
+                                                                return [...prevSinEste, actualizado];
+                                                            });
+                                                        }}
+
+                                                            >
+                                                            {opciones.map((op, idx) => (
+                                                                <option key={idx} value={op}>{op}</option>
+                                                            ))}
+                                                            </select>
+                                                        </div>
+                                                        );
+                                                    })}
                                                     </div>
-                                                    );
-                                                })}
-                                                </div>
-                                            ) : (
-                                                <span className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__noVariants'>-</span>
-                                                )
-                                        }
+                                                ) : (
+                                                    <span className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__noVariants'>-</span>
+                                                    )
+                                            }
 
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
-                                                {
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
+                                                    {
+                                                        product.variantes?.length > 0
+                                                            ? (
+                                                                (() => {
+                                                                const selectedVariante = product.variantes.find(v =>
+                                                                    Object.entries(product.camposSeleccionados || {}).every(
+                                                                    ([key, val]) => v.campos[key] === val
+                                                                    )
+                                                                );
+                                                                return selectedVariante ? `$ ${selectedVariante.price}` : '-';
+                                                                })()
+                                                            )
+                                                            : `$ ${product.price}`
+                                                        }
+                                                </div>
+                                            </div>
+
+                                                {/* Stock */}
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
+                                                    {
                                                     product.variantes?.length > 0
                                                         ? (
-                                                            (() => {
-                                                            const selectedVariante = product.variantes.find(v =>
-                                                                Object.entries(product.camposSeleccionados || {}).every(
-                                                                ([key, val]) => v.campos[key] === val
-                                                                )
-                                                            );
-                                                            return selectedVariante ? `$ ${selectedVariante.price}` : '-';
-                                                            })()
+                                                        product.variantes.find(v =>
+                                                            Object.entries(product.camposSeleccionados || {}).every(([key, val]) => v.campos[key] === val)
+                                                        )?.stock ?? '-'
                                                         )
-                                                        : `$ ${product.price}`
+                                                        : product.stock
                                                     }
+                                                </div>
                                             </div>
+
+
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity">
+                                                    <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleDecreaseQuantity(product._uniqueKey)}>-</button>
+                                                    <span>{product.quantity}</span>
+                                                    <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleIncreaseQuantity(product._uniqueKey)}>+</button>
+                                                </div>
+                                            </div>
+
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.category.name}</div>
+                                            </div>
+
+                                            <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer'>
+
+                                                <button onClick={() => handleRemoveProduct(product._uniqueKey)} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer__btn'>Borrar</button>
+
+                                            </div>
+
                                         </div>
 
-                                            {/* Stock */}
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">
-                                                {
-                                                product.variantes?.length > 0
-                                                    ? (
-                                                    product.variantes.find(v =>
-                                                        Object.entries(product.camposSeleccionados || {}).every(([key, val]) => v.campos[key] === val)
-                                                    )?.stock ?? '-'
+                                        <div key={product._uniqueKey || product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile'>
+
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item">
+                                                <img className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item__img" src={`${product.images[0]}`} alt="" />
+                                            </div>
+
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item__label">{product.title}</div>
+                                            </div>
+
+                                            {
+                                                product.variantes?.length > 0 ? (
+                                                    <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemVariantes">
+                                                    {Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                        const opciones = opcionesStr.split(',').map(op => op.trim());
+
+                                                        return (
+                                                        <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemVariantes__variantes'>
+                                                            <div>{atributo}:</div>
+                                                            <select
+                                                            className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemVariantes__variantes__select'
+                                                            value={product.camposSeleccionados?.[atributo] || ''}
+                                                            onChange={(e) => {
+                                                            const value = e.target.value;
+
+                                                            setAddedProducts(prev => {
+                                                                const prevSinEste = prev.filter(p => p._uniqueKey !== product._uniqueKey);
+
+                                                                const nuevosCampos = {
+                                                                    ...product.camposSeleccionados,
+                                                                    [atributo]: value
+                                                                };
+
+                                                                const newKey = getProductKey(product._id, nuevosCampos);
+
+                                                                const yaExiste = prevSinEste.some(p => p._uniqueKey === newKey);
+
+                                                                if (yaExiste) {
+                                                                    toast('Ya has añadido este producto con esa variante.', {
+                                                                        position: "top-right",
+                                                                        autoClose: 2000,
+                                                                        theme: "dark",
+                                                                        className: "custom-toast",
+                                                                    });
+                                                                    return prev;
+                                                                }
+
+                                                                const varianteSeleccionada = product.variantes.find(v =>
+                                                                    Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val)
+                                                                );
+
+                                                                const actualizado = {
+                                                                    ...product,
+                                                                    camposSeleccionados: nuevosCampos,
+                                                                    price: varianteSeleccionada?.price ?? product.price,
+                                                                    stock: varianteSeleccionada?.stock ?? product.stock,
+                                                                    quantity: 1,
+                                                                    _uniqueKey: newKey
+                                                                };
+
+                                                                return [...prevSinEste, actualizado];
+                                                            });
+                                                        }}
+
+                                                            >
+                                                            {opciones.map((op, idx) => (
+                                                                <option key={idx} value={op}>{op}</option>
+                                                            ))}
+                                                            </select>
+                                                        </div>
+                                                        );
+                                                    })}
+                                                    </div>
+                                                ) : (
+                                                    <span className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemVariantes__noVariants'>-</span>
                                                     )
-                                                    : product.stock
-                                                }
+                                            }
+
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemPrice">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemPrice__label">
+                                                    {
+                                                        product.variantes?.length > 0
+                                                            ? (
+                                                                (() => {
+                                                                const selectedVariante = product.variantes.find(v =>
+                                                                    Object.entries(product.camposSeleccionados || {}).every(
+                                                                    ([key, val]) => v.campos[key] === val
+                                                                    )
+                                                                );
+                                                                return selectedVariante ? `$ ${selectedVariante.price}` : '-';
+                                                                })()
+                                                            )
+                                                            : `$ ${product.price}`
+                                                        }
+                                                </div>
                                             </div>
-                                        </div>
 
-
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity">
-                                                <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleDecreaseQuantity(product._uniqueKey)}>-</button>
-                                                <span>{product.quantity}</span>
-                                                <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__quantity__btn' onClick={() => handleIncreaseQuantity(product._uniqueKey)}>+</button>
+                                                {/* Stock */}
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemStock">
+                                                <div>stock:</div>
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemStock__label">
+                                                    {
+                                                    product.variantes?.length > 0
+                                                        ? (
+                                                        product.variantes.find(v =>
+                                                            Object.entries(product.camposSeleccionados || {}).every(([key, val]) => v.campos[key] === val)
+                                                        )?.stock ?? '-'
+                                                        )
+                                                        : product.stock
+                                                    }
+                                                </div>
                                             </div>
+
+
+                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item">
+                                                <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item__quantity">
+                                                    <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item__quantity__btn' onClick={() => handleDecreaseQuantity(product._uniqueKey)}>-</button>
+                                                    <span>{product.quantity}</span>
+                                                    <button className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item__quantity__btn' onClick={() => handleIncreaseQuantity(product._uniqueKey)}>+</button>
+                                                </div>
+                                            </div>
+
+                                            
+
+                                            <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__btnsContainer'>
+
+                                                <button onClick={() => handleRemoveProduct(product._uniqueKey)} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__btnsContainer__btn'>Borrar</button>
+
+                                            </div>
+
                                         </div>
 
-                                        <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
-                                            <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__label">{product.category.name}</div>
-                                        </div>
-
-                                        <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer'>
-
-                                            <button onClick={() => handleRemoveProduct(product._uniqueKey)} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__btnsContainer__btn'>Borrar</button>
-
-                                        </div>
-
-                                    </div>
+                                    </>
                                     
                                 ))}
                             </div>
@@ -915,7 +890,7 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                                             </div>
                                             <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid'>
 
-                                                <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__labelTotal'>TOTAL <span style={{fontSize:'14px'}}>(con descuento)</span></div>
+                                                <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__labelTotal'>TOTAL <span style={{fontSize:'12px'}}>(con descuento)</span></div>
 
                                                 <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'>$ {totalWithDiscount}</div>
 
@@ -924,6 +899,25 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                                 }
 
                             </div>
+
+                            {billingInfo?.branches?.length > 0 && (
+                                <div className='createSaleModalContainer__createSaleModal__addedProducts__branchesContainer'>
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__branchesContainer__label'>Sucursal para facturación:</div>
+                                    <select
+                                        className='createSaleModalContainer__createSaleModal__addedProducts__branchesContainer__select'
+                                        value={selectedBranchId}
+                                        onChange={e => setSelectedBranchId(e.target.value)}
+                                        >
+                                        <option value="" disabled>Selecciona una sucursal</option> {/* placeholder */}
+                                        {billingInfo.branches.map(b => (
+                                            <option key={b._id} value={b._id}>
+                                            {b.name} ({b.puntoVenta})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__btnContainer'>
                                 <button
                                     className="createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn"
@@ -934,13 +928,32 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                                 <button 
                                     onClick={handleBtnConfirmSale} 
                                     className='createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn'
-                                    disabled={loadingBtnConfirmSale}
                                 >
-                                    {loadingBtnConfirmSale ? <Spinner/> : 'Confirmar venta'}
+                                    Confirmar venta
                                 </button>
                             </div>
+
                         </div>
+
                     }
+
+                    <div className='createSaleModalContainer__createSaleModal__inputSearchProduct'>
+                        <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer'>
+                            <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__label'>Buscar por:</div>
+                            <select
+                                className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__select'
+                                value={selectedField}
+                                onChange={(e) => setSelectedField(e.target.value)}
+                                >
+                                {Object.entries(fieldLabels).map(([key, label]) => (
+                                    <option key={key} value={key}>{label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__inputContainer'>
+                            <input type="text" onChange={handleInputFilteredProducts} value={inputFilteredProducts} placeholder={`Buscar productos por ${fieldLabels[selectedField]}`} className='createSaleModalContainer__createSaleModal__inputSearchProduct__inputContainer__input' name="" id="" />
+                        </div>
+                    </div>
 
                     <div className='createSaleModalContainer__createSaleModal__btnAddSelected'>
                         <button
@@ -972,6 +985,15 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
 
                             </div>
 
+                            <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTableMobile">
+
+                                <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}></div>
+                                <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Imagen</div>
+                                <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Título</div>
+                                <div className="createSaleModalContainer__createSaleModal__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Variantes</div>
+
+                            </div>
+
                         </div>
                     }
 
@@ -990,132 +1012,235 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
                                     const productKey = getProductKey(product._id, camposSeleccionados);
 
                                     return (
+
+                                        <>
                                     
-                                        <div key={productKey} className="createSaleModalContainer__createSaleModal__productsTable__itemContainer">
+                                            <div key={`${productKey}-desktop`} className="createSaleModalContainer__createSaleModal__productsTable__itemContainer">
 
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedProducts.includes(product._id)}
-                                                    onChange={() => toggleSelectProduct(product._id)}
-                                                />
-                                            </div>
-
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <img className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__img" src={`http://localhost:8081/${product.images[0]}`} alt="" />
-                                            </div>
-
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.title}</div>
-                                            </div>
-
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__description">{product.description}</div>
-                                            </div>
-
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes">
-                                                {
-                                                    product.variantes?.length > 0 ? (
-                                                        Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
-                                                            const opciones = opcionesStr.split(',').map(op => op.trim());
-
-                                                            return (
-                                                                <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes'>
-                                                                    <div>{atributo}</div>
-                                                                    <select
-                                                                        className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes__select'
-                                                                        value={selectedVariantsMap[product._id]?.[atributo] || ''}
-                                                                        onChange={(e) => {
-                                                                            const value = e.target.value;
-                                                                            setSelectedVariantsMap(prev => {
-                                                                                const newMap = {
-                                                                                ...prev,
-                                                                                [product._id]: {
-                                                                                    ...prev[product._id],
-                                                                                    [atributo]: value
-                                                                                }
-                                                                                };
-                                                                                return newMap;
-                                                                            });
-                                                                        }}
-                                                                    >
-                                                                        <option value="" disabled>{`Elegir ${atributo}`}</option>
-                                                                        {opciones.map((op, idx) => (
-                                                                            <option key={idx} value={op}>{op}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                </div>
-                                                            );
-                                                        })
-                                                    ) : (
-                                                        <span className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__noVariants'>-</span>
-                                                    )
-                                                }
-                                            </div>
-
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
-                                                    {product.variantes?.length > 0 ? (
-                                                        (() => {
-                                                            const camposSeleccionados = selectedVariantsMap[product._id] || {};
-                                                            const camposRequeridos = Object.keys(product.camposExtras || {});
-                                                            const variantesCompletas = camposRequeridos.every(
-                                                                campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
-                                                            );
-                                                            return variantesCompletas
-                                                                ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
-                                                                : '-';
-                                                        })()
-                                                    ) : `$ ${product.price}`}
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedProducts.includes(product._id)}
+                                                        onChange={() => toggleSelectProduct(product._id)}
+                                                    />
                                                 </div>
-                                            </div>
 
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
-                                                    {product.variantes?.length > 0 ? (
-                                                        (() => {
-                                                            const camposSeleccionados = selectedVariantsMap[product._id] || {};
-                                                            const camposRequeridos = Object.keys(product.camposExtras || {});
-                                                            const variantesCompletas = camposRequeridos.every(
-                                                                campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
-                                                            );
-                                                            return variantesCompletas
-                                                                ? getSelectedVariante(product)?.stock ?? '-'
-                                                                : '-';
-                                                        })()
-                                                    ) : product.stock}
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <img className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__img" src={`${product.images[0]}`} alt="" />
                                                 </div>
-                                            </div>
 
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.title}</div>
+                                                </div>
 
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__description">{product.description}</div>
+                                                </div>
 
-                                            <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
-                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category.name}</div>
-                                            </div>
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes">
+                                                    {
+                                                        product.variantes?.length > 0 ? (
+                                                            Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                                const opciones = opcionesStr.split(',').map(op => op.trim());
 
-                                            <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
-
-                                                <button
-                                                    className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'
-                                                    onClick={() => {
-                                                    // Validar que todas las variantes tengan valor seleccionado
-                                                    const campos = selectedVariantsMap[product._id] || {};
-                                                    const faltan = Object.values(campos).some(v => !v);
-                                                    if (product.variantes?.length > 0 && faltan) {
-                                                        toast('Por favor selecciona todas las variantes');
-                                                        return;
+                                                                return (
+                                                                    <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes'>
+                                                                        <div>{capitalizeFirstLetter(atributo)}</div>
+                                                                        <select
+                                                                            className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__variantes__select'
+                                                                            value={selectedVariantsMap[product._id]?.[atributo] || ''}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                setSelectedVariantsMap(prev => {
+                                                                                    const newMap = {
+                                                                                    ...prev,
+                                                                                    [product._id]: {
+                                                                                        ...prev[product._id],
+                                                                                        [atributo]: value
+                                                                                    }
+                                                                                    };
+                                                                                    return newMap;
+                                                                                });
+                                                                            }}
+                                                                        >
+                                                                            <option value="" disabled>{`Elegir ${atributo}`}</option>
+                                                                            {opciones.map((op, idx) => (
+                                                                                <option key={idx} value={op}>{op}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        ) : (
+                                                            <span className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__itemVariantes__noVariants'>-</span>
+                                                        )
                                                     }
-                                                    const key = getProductKey(product._id, campos);
-                                                    // Aquí llamás a la función para agregar producto:
-                                                    handleAddProduct(product, campos, key);
-                                                    }}
-                                                >
-                                                    Añadir
-                                                </button>
+                                                </div>
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                                        {product.variantes?.length > 0 ? (
+                                                            (() => {
+                                                                const camposSeleccionados = selectedVariantsMap[product._id] || {};
+                                                                const camposRequeridos = Object.keys(product.camposExtras || {});
+                                                                const variantesCompletas = camposRequeridos.every(
+                                                                    campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+                                                                );
+                                                                return variantesCompletas
+                                                                    ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
+                                                                    : '-';
+                                                            })()
+                                                        ) : `$ ${product.price}`}
+                                                    </div>
+                                                </div>
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">
+                                                        {product.variantes?.length > 0 ? (
+                                                            (() => {
+                                                                const camposSeleccionados = selectedVariantsMap[product._id] || {};
+                                                                const camposRequeridos = Object.keys(product.camposExtras || {});
+                                                                const variantesCompletas = camposRequeridos.every(
+                                                                    campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
+                                                                );
+                                                                return variantesCompletas
+                                                                    ? getSelectedVariante(product)?.stock ?? '-'
+                                                                    : '-';
+                                                            })()
+                                                        ) : product.stock}
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item">
+                                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainer__item__label">{product.category.name}</div>
+                                                </div>
+
+                                                <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer'>
+
+                                                    <button
+                                                        className='createSaleModalContainer__createSaleModal__productsTable__itemContainer__btnsContainer__btn'
+                                                        onClick={() => {
+                                                        // Validar que todas las variantes tengan valor seleccionado
+                                                        const campos = selectedVariantsMap[product._id] || {};
+                                                        const faltan = Object.values(campos).some(v => !v);
+                                                        if (product.variantes?.length > 0 && faltan) {
+                                                            toast('Por favor selecciona todas las variantes');
+                                                            return;
+                                                        }
+                                                        const key = getProductKey(product._id, campos);
+                                                        // Aquí llamás a la función para agregar producto:
+                                                        handleAddProduct(product, campos, key);
+                                                        }}
+                                                    >
+                                                        Añadir
+                                                    </button>
+
+                                                </div>
 
                                             </div>
 
-                                        </div>
+                                            <div key={`${productKey}-mobile`} className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile">
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__item">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedProducts.includes(product._id)}
+                                                        onChange={() => toggleSelectProduct(product._id)}
+                                                    />
+                                                </div>
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__item">
+                                                    <img className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__item__img" src={`${product.images[0]}`} alt="" />
+                                                </div>
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__item">
+                                                    <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__item__label">{product.title}</div>
+                                                </div>
+
+                                                <div className="createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__itemVariantes">
+                                                    {
+                                                        product.variantes?.length > 0 ? (
+                                                            Object.entries(product.camposExtras || {}).map(([atributo, opcionesStr]) => {
+                                                                const opciones = opcionesStr.split(',').map(op => op.trim());
+
+                                                                return (
+                                                                    <div key={atributo} className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__itemVariantes__variantes'>
+                                                                        <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__itemVariantes__variantes__label'>{capitalizeFirstLetter(atributo)}</div>
+                                                                        <select
+                                                                            className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__itemVariantes__variantes__select'
+                                                                            value={selectedVariantsMap[product._id]?.[atributo] || ''}
+                                                                            onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                setSelectedVariantsMap(prev => {
+                                                                                    const newMap = {
+                                                                                    ...prev,
+                                                                                    [product._id]: {
+                                                                                        ...prev[product._id],
+                                                                                        [atributo]: value
+                                                                                    }
+                                                                                    };
+                                                                                    return newMap;
+                                                                                });
+                                                                            }}
+                                                                        >
+                                                                            <option value="" disabled>{`Elegir ${atributo}`}</option>
+                                                                            {opciones.map((op, idx) => (
+                                                                                <option key={idx} value={op}>{op}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        ) : (
+                                                            <span className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__itemVariantes__noVariants'>-</span>
+                                                        )
+                                                    }
+                                                </div>
+
+                                                <div className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__btnsContainer'>
+
+                                                    <button
+                                                        className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__btnsContainer__btn'
+                                                        onClick={() => {
+                                                        // Validar que todas las variantes tengan valor seleccionado
+                                                        const campos = selectedVariantsMap[product._id] || {};
+                                                        const faltan = Object.values(campos).some(v => !v);
+                                                        if (product.variantes?.length > 0 && faltan) {
+                                                            toast('Por favor selecciona todas las variantes');
+                                                            return;
+                                                        }
+                                                        const key = getProductKey(product._id, campos);
+                                                        // Aquí llamás a la función para agregar producto:
+                                                        handleAddProduct(product, campos, key);
+                                                        }}
+                                                    >
+                                                        Añadir
+                                                    </button>
+                                                    <button
+                                                        className='createSaleModalContainer__createSaleModal__productsTable__itemContainerMobile__btnsContainer__btnMobile'
+                                                        onClick={() => {
+                                                        // Validar que todas las variantes tengan valor seleccionado
+                                                        const campos = selectedVariantsMap[product._id] || {};
+                                                        const faltan = Object.values(campos).some(v => !v);
+                                                        if (product.variantes?.length > 0 && faltan) {
+                                                            toast('Por favor selecciona todas las variantes');
+                                                            return;
+                                                        }
+                                                        const key = getProductKey(product._id, campos);
+                                                        // Aquí llamás a la función para agregar producto:
+                                                        handleAddProduct(product, campos, key);
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        </>
                                     )
                                     
                                 })
@@ -1150,8 +1275,23 @@ const CreateSaleModal = ({fetchTickets,selectedDate,setCreateSaleModal,user,prod
             </div>
 
             {
-                showConfirmationConfirmSaleModal &&
-                <ConfirmationConfirmSale/>
+                showConfirmationBtnConfirmSaleModal &&
+                <ConfirmationBtnConfirmSaleModal
+                    setShowConfirmationBtnConfirmSaleModal={setShowConfirmationBtnConfirmSaleModal}
+                    setCreateSaleModal={setCreateSaleModal}
+                    addedProducts={addedProducts}
+                    setAddedProducts={setAddedProducts}
+                    fetchTickets={fetchTickets}
+                    selectedBranchId={selectedBranchId}
+                    billingInfo={billingInfo}
+                    selectedDate={selectedDate}
+                    user={user}
+                    showLabelDiscountApplied={showLabelDiscountApplied}
+                    totalWithDiscount={totalWithDiscount}
+                    total={total}
+
+                
+                />
             }
 
         </>

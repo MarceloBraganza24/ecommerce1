@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import ConfirmationDeleteCPanelProductModal from './ConfirmationDeleteCPanelProductModal';
 
 const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selectedField,categories,selectedProducts,setSelectedProducts,toggleSelectProduct}) => {
-    //console.log(product.category)
+    //console.log(product)
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showConfirmationDeleteCPanelProductModal, setShowConfirmationDeleteCPanelProductModal] = useState(false);
     const [textConfirmationDeleteModal, setTextConfirmationDeleteCPanelProductModal] = useState('');
@@ -34,7 +34,7 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
 
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                    <img className="cPanelProductsContainer__productsTable__itemContainer__item__img" src={`${SERVER_URL}${product.images[0]}`} alt="" />
+                    <img className="cPanelProductsContainer__productsTable__itemContainer__item__img" src={`${product.images[0]}`} alt="" />
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__item">
@@ -68,7 +68,7 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
                 </div>
 
                 <div className="cPanelProductsContainer__productsTable__itemContainer__itemEllipsis">
-                    <div className="cPanelProductsContainer__productsTable__itemContainer__itemEllipsis__label">{product.category?.name}</div>
+                    <span className="cPanelProductsContainer__productsTable__itemContainer__itemEllipsis__label">{product.category?.name}</span>
                 </div>
 
                 <div className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer'>
@@ -76,6 +76,52 @@ const ItemCPanelProduct = ({product,fetchProducts,inputFilteredProducts,selected
                     <button
                     onClick={handleBtnDeleteProduct}
                     className='cPanelProductsContainer__productsTable__itemContainer__btnsContainer__btn'
+                    >
+                    Borrar
+                    </button>
+                </div>
+
+            </div>
+
+            <div className="cPanelProductsContainer__productsTable__itemContainerMobile">
+
+                <div className="cPanelProductsContainer__productsTable__itemContainerMobile__item">
+                    <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product._id)}
+                        onChange={() => toggleSelectProduct(product._id)}
+                    />
+                </div>
+
+
+                <div className="cPanelProductsContainer__productsTable__itemContainerMobile__item">
+                    <img className="cPanelProductsContainer__productsTable__itemContainerMobile__item__img" src={`${product.images[0]}`} alt="" />
+                </div>
+
+                <div className="cPanelProductsContainer__productsTable__itemContainerMobile__item">
+                    <div className="cPanelProductsContainer__productsTable__itemContainerMobile__item__label">{capitalizeFirstLetter(product.title)}</div>
+                </div>
+
+                <div className="cPanelProductsContainer__productsTable__itemContainerMobile__item">
+                    <div className="cPanelProductsContainer__productsTable__itemContainerMobile__item__label">
+                        {
+                            product.variantes && product.variantes.length != 0 ?
+                            <div onClick={() => setShowUpdateModal(true)} style={{cursor:'pointer'}}>Ver stock</div>
+                            :
+                            product.stock 
+                        }
+                    </div>
+                </div>
+
+                {/* <div className="cPanelProductsContainer__productsTable__itemContainerMobile__itemEllipsis">
+                    <span className="cPanelProductsContainer__productsTable__itemContainerMobile__itemEllipsis__label">{product.category?.name}</span>
+                </div> */}
+
+                <div className='cPanelProductsContainer__productsTable__itemContainerMobile__btnsContainer'>
+                    <button onClick={() => setShowUpdateModal(true)} className='cPanelProductsContainer__productsTable__itemContainerMobile__btnsContainer__btn'>Editar</button>
+                    <button
+                    onClick={handleBtnDeleteProduct}
+                    className='cPanelProductsContainer__productsTable__itemContainerMobile__btnsContainer__btn'
                     >
                     Borrar
                     </button>

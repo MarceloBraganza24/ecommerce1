@@ -31,7 +31,7 @@ export default function CategorySidebar({ onSelectCategory }) {
 
 function CategoryTree({ categories, onSelect, level = 0 }) {
   return (
-    <ul className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul" style={{ listStyle: "none", paddingLeft: level * 35, paddingTop: '0.3vh', cursor:'pointer' }}>
+    <ul className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul" style={{ listStyle: "none", paddingLeft: level * 25, paddingTop: '0.3vh', cursor:'pointer' }}>
       {categories.map(cat => (
         <CategoryNode key={cat._id} category={cat} onSelect={onSelect} level={level} />
       ))}
@@ -67,7 +67,7 @@ function CategoryNode({ category, onSelect, level }) {
               display: "inline-block",
               width: "16px",
               textAlign: "center",
-              marginRight: "5px",
+              marginRight: "4px",
               transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
               transition: "transform 0.2s"
             }}

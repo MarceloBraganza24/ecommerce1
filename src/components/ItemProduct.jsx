@@ -103,10 +103,10 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
                         modules={[Navigation, Pagination]}
                         className="w-full h-56"
                     >
-                        {images.map((img, index) => (
-                        <SwiperSlide key={index}>
+                        {(images || []).map((img, index) => (
+                        <SwiperSlide key={index} style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
                             <img
-                            src={`${SERVER_URL}${img}`}
+                            src={`${img}`}
                             alt={`Imagen ${index + 1} de ${title}`}
                             className="itemProduct__imgContainer__img"
                             />
@@ -117,11 +117,11 @@ const ItemProduct = ({user,fetchContextFavorites,fetchCartByUserId,variantes,id,
                 </div>
 
                 <div className="itemProduct__titleContainer" onClick={handleLinkToItemDetail}>
-                    <div className="itemProduct__titleContainer__prop">{capitalizeFirstLetter(title)}</div>
+                    <div className="itemProduct__titleContainer__prop">{/* capitalizeFirstLetter(title) */title}</div>
                 </div>
 
                 <div className="itemProduct__descriptionContainer" onClick={handleLinkToItemDetail}>
-                    <div className="itemProduct__descriptionContainer__prop">{capitalizeFirstLetter(description)}</div>
+                    <div className="itemProduct__descriptionContainer__prop">{/* capitalizeFirstLetter(description) */description}</div>
                 </div>
 
                 <div className="itemProduct__priceContainer" onClick={handleLinkToItemDetail}>

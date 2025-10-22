@@ -197,7 +197,7 @@ const Login = () => {
                 <div className='loginContainer__logoContainer'>
 
                     <div className='loginContainer__logoContainer__title'>
-                        <div className='loginContainer__logoContainer__title__prop'>Bienvenidos/as a "{storeSettings?.storeName}"</div>
+                        <div className='loginContainer__logoContainer__title__prop'>Bienvenidos/as a <br /> "{storeSettings?.storeName}"</div>
                     </div>
 
                     <div className='loginContainer__logoContainer__logo'>

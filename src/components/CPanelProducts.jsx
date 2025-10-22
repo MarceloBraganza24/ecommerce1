@@ -6,6 +6,7 @@ import CreateProductModal from './CreateProductModal';
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
 
 const CPanelProducts = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -58,7 +59,7 @@ const CPanelProducts = () => {
     
     useEffect(() => {
         if (!isLoadingAuth) {
-            if (!user || user.role !== 'admin') {
+            if (!user || (user.role !== 'admin' && user.role !== 'premium')) {
                 navigate('/');
             }
         }
@@ -253,6 +254,21 @@ const CPanelProducts = () => {
         );
     };
 
+    const isParentSelected = (categoryId) => {
+        const findParentId = (cats, targetId, parentId = null) => {
+            for (let cat of cats) {
+                if (cat._id === targetId) return parentId;
+                if (cat.children?.length) {
+                    const found = findParentId(cat.children, targetId, cat._id);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+        const parentId = findParentId(categoriesTree, categoryId);
+        return parentId && selectedCategories.includes(parentId);
+    };
+
     const handleSubmitUpdatedPrices = () => {
         if (selectedCategories.length === 0) {
             toast('Debes seleccionar al menos una categoría.', {
@@ -287,7 +303,7 @@ const CPanelProducts = () => {
 
     const handleRestorePricesByCategory = async () => {
         if (selectedCategories.length === 0) {
-            toast('Debes seleccionar al menos una categoría para restaurar.', {
+            toast('Debes seleccionar al menos una categoría para restaurar los precios.', {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
@@ -305,6 +321,24 @@ const CPanelProducts = () => {
 
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+
+    const getSelectedCategoryNames = (tree, selectedIds) => {
+        let result = [];
+
+        const traverse = (nodes) => {
+            for (const node of nodes) {
+            if (selectedIds.includes(node._id)) {
+                result.push(node.name);
+            }
+            if (node.children && node.children.length > 0) {
+                traverse(node.children);
+            }
+            }
+        };
+
+        traverse(tree);
+        return result;
     };
 
     const ConfirmationDeleteAllProductsSelected = () => {
@@ -402,9 +436,7 @@ const CPanelProducts = () => {
     const ConfirmationUpdatePricesModal = () => {
         const [loading, setLoading] = useState(false);
 
-        const categoriasSeleccionadasNames = categoriesTree
-            .filter(cat => selectedCategories.includes(cat._id))
-            .map(cat => cat.name);
+        const categoriasSeleccionadasNames = getSelectedCategoryNames(categoriesTree, selectedCategories);
 
         const handleSubmitUpdatedPrices = async () => {
             try {
@@ -479,7 +511,11 @@ const CPanelProducts = () => {
                         </div>
                         
                         <div className='confirmationDeleteModalContainer__confirmationModal__title'>
-                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>¿Estás seguro que deseas actualizar los precios({ percentage > 0 ? `+${percentage}` : `${percentage}` }%) <br /> de las siguientes categorías: ({categoriasSeleccionadasNames.join(', ')})?</div>
+                            <div className='confirmationDeleteModalContainer__confirmationModal__title__prop'>
+                                ¿Estás seguro que deseas actualizar los precios ({ percentage > 0 ? `+${percentage}` : `${percentage}` }%) 
+                                <br />
+                                de las siguientes categorías: ({categoriasSeleccionadasNames.join(', ')})?
+                            </div>
                         </div>
 
                         <div className='confirmationDeleteModalContainer__confirmationModal__btnContainer'>
@@ -514,9 +550,7 @@ const CPanelProducts = () => {
     const ConfirmationRestoreOriginalPricesModal = () => {
         const [loading, setLoading] = useState(false);
 
-        const categoriasSeleccionadasNames = categoriesTree
-            .filter(cat => selectedCategories.includes(cat._id))
-            .map(cat => cat.name);
+        const categoriasSeleccionadasNames = getSelectedCategoryNames(categoriesTree, selectedCategories);
 
         const handleRestorePricesByCategory = async () => {
             try {
@@ -649,10 +683,50 @@ const CPanelProducts = () => {
         );
     };
 
+    const renderCategories = (categories, level = 0) => {
+        return categories.map((cat) => (
+            <div key={cat._id} style={{ marginLeft: `${level * 20}px` }}>
+            <label className='cPanelProductsContainer__formUpdatePrices__categories__labelInput'>
+                <input
+                type="checkbox"
+                value={cat._id}
+                checked={selectedCategories.includes(cat._id)}
+                onChange={() => handleCheckboxChange(cat._id)}
+                disabled={isParentSelected(cat._id)}
+                />
+                <div className='cPanelProductsContainer__formUpdatePrices__categories__labelInput__label'>
+                {cat.name} ({cat.productCount})
+                </div>
+            </label>
+
+            {/* Renderiza hijos si existen */}
+            {cat.children && cat.children.length > 0 && renderCategories(cat.children, level + 1)}
+            </div>
+        ));
+    };
 
     return (
 
         <>
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
+
             <div className='navbarContainer'>
                 <NavBar
                 isScrollForced={isScrollForced}
@@ -678,62 +752,22 @@ const CPanelProducts = () => {
                     <div className='cPanelProductsContainer__title__prop'>Productos</div>        
                 </div>
 
-                <div className='cPanelProductsContainer__inputSearchProduct'>
-                    <div className='cPanelProductsContainer__inputSearchProduct__selectContainer'>
-                        <div>Buscar por:</div>
-                        <select
-                            className='cPanelProductsContainer__inputSearchProduct__selectContainer__select'
-                            value={selectedField}
-                            onChange={(e) => setSelectedField(e.target.value)}
-                            >
-                            {Object.entries(fieldLabels).map(([key, label]) => (
-                                <option key={key} value={key}>{label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className='cPanelProductsContainer__inputSearchProduct__inputContainer'>
-                        <input type="text" onChange={handleInputFilteredProducts} value={inputFilteredProducts} placeholder={`Buscar por ${fieldLabels[selectedField]}`} className='cPanelProductsContainer__inputSearchProduct__inputContainer__input' name="" id="" />
-                    </div>
-                </div>
-
-                <div className='cPanelProductsContainer__btnCreateProduct'>
-                    <button onClick={()=>setShowCreateProductModal(true)} className='cPanelProductsContainer__btnCreateProduct__btn'>Crear producto</button>
-                </div>
-
                 <div className='cPanelProductsContainer__formUpdatePrices'>
                     <div className='cPanelProductsContainer__formUpdatePrices__title'>Actualizaciones de precios</div>
                     <div className='cPanelProductsContainer__formUpdatePrices__subTitle'>Seleccioná las categorías:</div>
-                        <div className='cPanelProductsContainer__formUpdatePrices__categories'>
-                            {
-                                
-                                isLoadingCategories ? 
-                                    <>
-                                        <div className="cPanelProductsContainer__formUpdatePrices__categories__spinner">
-                                            <Spinner/>
-                                        </div>
-                                    </>
-                                :
-                                categoriesTree.map((categoria) => (
-                                    <label
-                                    className='cPanelProductsContainer__formUpdatePrices__categories__labelInput'
-                                    key={categoria._id}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            value={categoria._id}
-                                            checked={selectedCategories.includes(categoria._id)}
-                                            onChange={() => handleCheckboxChange(categoria._id)}
-                                        />
-                                        <div className='cPanelProductsContainer__formUpdatePrices__categories__labelInput__label'>
-                                            {categoria.name}
-                                        </div>
-                                    </label>
-                                ))
-                            }
-                        </div>
+                        
+                    <div className='cPanelProductsContainer__formUpdatePrices__categories'>
+                        {isLoadingCategories ? (
+                            <div className="cPanelProductsContainer__formUpdatePrices__categories__spinner">
+                                <Spinner/>
+                            </div>
+                        ) : (
+                            renderCategories(categoriesTree)
+                        )}
+                    </div>
 
                     <div className='cPanelProductsContainer__formUpdatePrices__inputPercentage'>
-                        <label>Porcentaje a aplicar (%):</label>
+                        <div className='cPanelProductsContainer__formUpdatePrices__inputPercentage__label'>Porcentaje a aplicar (%)</div>
                         <input
                         className='cPanelProductsContainer__formUpdatePrices__inputPercentage__input'
                         type="number"
@@ -756,19 +790,44 @@ const CPanelProducts = () => {
                     </div>
                 </div>
 
+                <div className='cPanelProductsContainer__inputSearchProduct'>
+                    <div className='cPanelProductsContainer__inputSearchProduct__selectContainer'>
+                        <div>Buscar por:</div>
+                        <select
+                            className='cPanelProductsContainer__inputSearchProduct__selectContainer__select'
+                            value={selectedField}
+                            onChange={(e) => setSelectedField(e.target.value)}
+                            >
+                            {Object.entries(fieldLabels).map(([key, label]) => (
+                                <option key={key} value={key}>{label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className='cPanelProductsContainer__inputSearchProduct__inputContainer'>
+                        <input type="text" onChange={handleInputFilteredProducts} value={inputFilteredProducts} placeholder={`Buscar por ${fieldLabels[selectedField]}`} className='cPanelProductsContainer__inputSearchProduct__inputContainer__input' name="" id="" />
+                    </div>
+                </div>
+
+                <div className='cPanelProductsContainer__btnCreateProduct'>
+                    <button onClick={()=>setShowCreateProductModal(true)} className='cPanelProductsContainer__btnCreateProduct__btn'>Crear producto</button>
+                </div>
+
                 <div className='cPanelProductsContainer__quantityProducts'>
                     <div className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer'>
-                        <input
-                        type="checkbox"
-                        checked={selectAll}
-                        onChange={(e) => handleSelectAll(e.target.checked)}
-                        />
-                        <span>Seleccionar todos</span>
+                        <div className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__checkboxContainer'>
+                            <input
+                            className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__checkboxContainer__checkbox'
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={(e) => handleSelectAll(e.target.checked)}
+                            />
+                            <span className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__checkboxContainer__span'>Seleccionar todos</span>
+                        </div>
                         {selectedProducts.length > 0 ? (
-                        <div className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer'>
+                        <div className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__btn'>
                             <button
                             onClick={handleMassDelete}
-                            className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__btn'
+                            className='cPanelProductsContainer__quantityProducts__massDeleteBtnContainer__btn__prop'
                             >
                             Eliminar seleccionados ({selectedProducts.length})
                             </button>
@@ -794,6 +853,16 @@ const CPanelProducts = () => {
                             <div className="cPanelProductsContainer__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Precio</div>
                             <div className="cPanelProductsContainer__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Stock</div>
                             <div className="cPanelProductsContainer__headerTableContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Categoría</div>
+
+                        </div>
+
+                        <div className="cPanelProductsContainer__headerTableContainer__headerTableMobile">
+
+                            <div className="cPanelProductsContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}></div>
+                            <div className="cPanelProductsContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Imagen</div>
+                            <div className="cPanelProductsContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Título</div>
+                            <div className="cPanelProductsContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Stock</div>
+                            {/* <div className="cPanelProductsContainer__headerTableContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Categoría</div> */}
 
                         </div>
 

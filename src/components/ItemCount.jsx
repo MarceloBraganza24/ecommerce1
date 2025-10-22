@@ -297,18 +297,19 @@ const ItemCount = ({loadingVariant,selectedVariant,variantes,user_id,roleUser,id
             <button className='itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus' onClick={increment}>+</button>
 
             <div className='itemDetailContainer__itemDetail__infoContainer__info__count__availability'>
-                {
-                    loadingVariant ?
-                    <Spinner/>
-                    :
-                    !selectedVariant ?
-                    ""
-                    :
-                    stockVariante >= 10 ?
-                    '(+10 Disponibles)'
-                    :
-                    `(${stockVariante} Disponibles)`
-                }
+                {loadingVariant ? (
+                    <Spinner />
+                ) : variantes?.length > 0 ? (
+                    // 🔸 Producto con variantes
+                    selectedVariant ? (
+                    stockVariante >= 10 ? "(+10 Disponibles)" : `(${stockVariante} Disponibles)`
+                    ) : (
+                    "" // aún no seleccionó una variante
+                    )
+                ) : (
+                    // 🔸 Producto sin variantes → usar stock general
+                    stock >= 10 ? "(+10 Disponibles)" : `(${stock} Disponibles)`
+                )}
             </div>
 
         </div> 

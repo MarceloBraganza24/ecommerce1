@@ -5,6 +5,9 @@ import Spinner from './Spinner';
 import ItemTicket from './ItemTicket';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
+import BrandsSection from './BrandsSection';
+import FeaturedProducts from './FeaturedProducts';
 
 const MyPurchases = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -12,6 +15,9 @@ const MyPurchases = () => {
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
     const [isLoading, setIsLoading] = useState(true);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
+    //console.log(user)
+    const [products, setProducts] = useState([]);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -40,6 +46,24 @@ const MyPurchases = () => {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (!isLoadingAuth) {
+            if (!user || (user.role !== 'admin' && user.role !== 'premium' && user.role !== 'user')) {
+                navigate('/');
+            }
+        }
+    }, [user, isLoadingAuth, navigate]);
+
+    const fetchProducts = async (page = 1, search = "",field = "") => {
+        try {
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const productsAll = await response.json();
+            setProducts(productsAll.data.docs)
+        } catch (error) {
+            console.error('Error al obtener datos:', error);
+        }
+    };
+
     function esColorClaro(hex) {
         if (!hex) return true;
 
@@ -58,14 +82,6 @@ const MyPurchases = () => {
             setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
         }
     }, [storeSettings]);
-
-    useEffect(() => {
-        const delay = setTimeout(() => {
-            fetchTickets(1, inputFilteredPurchases, user?.email);
-        }, 300); // debounce
-
-        return () => clearTimeout(delay);
-    }, [inputFilteredPurchases]);
 
     const ticketsOrdenados = [...tickets].sort((a, b) => new Date(b.purchase_datetime) - new Date(a.purchase_datetime));
 
@@ -184,16 +200,20 @@ const MyPurchases = () => {
     };
 
     useEffect(() => {
-        if (user?.email) {
+        if (isLoadingAuth || !user?.email) return;
+
+        const delay = setTimeout(() => {
             fetchTickets(1, inputFilteredPurchases, user.email);
-        }
-    }, [user]);
+        }, 300);
+
+        return () => clearTimeout(delay);
+    }, [inputFilteredPurchases, user?.email, isLoadingAuth]);
 
     const fetchTickets = async (page = 1, search = "", email = "") => {
         try {
             const response = await fetch(`${SERVER_URL}api/tickets/byPageAndEmail?page=${page}&search=${search}&email=${email}`)
             const ticketsAll = await response.json();
-            //console.log(ticketsAll.data)
+            console.log(ticketsAll)
             if (response.ok) {
                 setTickets(ticketsAll.data.docs); 
                 setTotalTickets(ticketsAll.data.totalDocs)
@@ -240,6 +260,7 @@ const MyPurchases = () => {
         fetchCurrentUser();
         fetchCategories();
         fetchStoreSettings();
+        fetchProducts();
     }, []);
 
     const handleInputFilteredPurchases = (e) => {
@@ -259,6 +280,24 @@ const MyPurchases = () => {
     return (
 
         <>
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
@@ -305,6 +344,14 @@ const MyPurchases = () => {
                             <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Código</div>
                             <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Productos</div>
                             <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTable__item" style={{borderRight:'0.3vh solid black'}}>Precio</div>
+
+                        </div>
+
+                        <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTableMobile">
+
+                            <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Fecha y hora</div>
+                            <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Código</div>
+                            <div className="myPurchasesContainer__headerTableMyPurchasesContainer__headerTableMobile__item" style={{borderRight:'0.3vh solid black'}}>Precio</div>
 
                         </div>
 
@@ -389,11 +436,11 @@ const MyPurchases = () => {
                             </>
                             
                         :
-                            <div className="myPurchasesContainer__purchasesTable__isLoadingLabel">
+                            <div className="myPurchasesContainer__purchasesTable__nonPruchases">
                                 <div>Aún no existen compras</div>
                                 {
                                     ticketsByVisibilityTrue.length == 0 &&
-                                    <Link to={'/products'} className='myPurchasesContainer__purchasesTable__isLoadingLabel__label'>
+                                    <Link to={'/products'} className='myPurchasesContainer__purchasesTable__nonPruchases__label'>
                                         Ir a comprar
                                     </Link>
                                 }
@@ -404,6 +451,18 @@ const MyPurchases = () => {
                 </div>
 
             </div>  
+
+            <div className="separatorFooter" style={{paddingBottom:'4vh'}}>
+                <div className="separatorFooter__prop"></div>
+            </div>
+
+            <FeaturedProducts/>
+
+            <div className="separatorFooter">
+                <div className="separatorFooter__prop"></div>
+            </div>
+
+            <BrandsSection/>
         
         </>
 

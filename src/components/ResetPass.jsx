@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom';
+import { Link,useSearchParams  } from 'react-router-dom';
 import { toast } from "react-toastify";
 import Spinner from './Spinner';
 
 const ResetPass = () => {
+    const [searchParams] = useSearchParams();
+    const token = searchParams.get('token');
     const [password, setPassword] = useState('');
     const [passwordValidation, setPasswordValidation] = useState({
         length: false,
@@ -13,13 +15,18 @@ const ResetPass = () => {
         specialChar: false
     });
     const [showSpinner, setShowSpinner] = useState(false);
-    const [isMonted, setIsMonted] = useState(false);
-    const [isCorrectCookie, setIsCorrectCookie] = useState(false);
-    const [emailUsercookie, setEmailUsercookie] = useState(null);
+    const [isValid, setIsValid] = useState(false);
     const [storeName, setStoreName] = useState('');
     const [loadingBtnResetPass, setLoadingBtnResetPass] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isLoadingValidateToken, setIsLoadingValidateToken] = useState(true);
     const SERVER_URL = import.meta.env.VITE_API_URL;
+
+    useEffect( async () => {
+        if (token) {
+            await fetchValidateToken();
+        }
+    }, [token]);
 
     useEffect(() => {
         fetchStoreName();
@@ -36,6 +43,33 @@ const ResetPass = () => {
             number: /[0-9]/.test(value),
             specialChar: /[!@#$%^&*(),.?":{}|<>]/.test(value)
         });
+    };
+
+    const fetchValidateToken = async () => {
+        try {
+            const response = await fetch(`${SERVER_URL}api/users/validate-reset-token?token=${token}`);
+            const data = await response.json();
+            if (response.ok) {
+                setIsValid(true);
+            } else {
+                setIsValid(false);
+                toast('El token no es válido! Vuelva a generar el link', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    className: "custom-toast",
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoadingValidateToken(false)
+        }
     };
 
     const fetchStoreName = async () => {
@@ -62,23 +96,6 @@ const ResetPass = () => {
             console.error(error);
         }
     };
-
-    const fetchEmailUsercookie = async () => {
-        try {
-            const response = await fetch(`${SERVER_URL}api/sessions/emailUsercookie`, {
-                method: 'GET',
-                credentials: 'include', // 🔥 necesario para que la cookie se envíe
-            });
-            const data = await response.json();
-            setEmailUsercookie(data.data); // 👈 guardamos el token para validación opcional
-        } catch (error) {
-            console.error("Error al obtener el usuario:", error);
-        } 
-    };
-
-    useEffect(() => {
-        fetchEmailUsercookie();
-    }, []);
 
     const ConfirmationResetPassModal = ({handleResetPassModalLocal}) => {
 
@@ -303,10 +320,18 @@ const ResetPass = () => {
         return score; // 0 a 5
     };
 
+    if (isLoadingValidateToken) {
+        return (
+            <div className="loadingContainer">
+                <Spinner/>
+            </div>
+        );
+    }
+
     return (
         <>
             {
-                emailUsercookie?
+                isValid ?
                 <>
                     <div className='resetPassContainer'>
                         <div className='resetPassContainer__credentials'>

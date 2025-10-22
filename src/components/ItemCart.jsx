@@ -44,6 +44,10 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
         setLoadingDelete(false);
     };
 
+    const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+
     return (
 
         <>
@@ -51,7 +55,7 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
             <div className='itemCart'>
 
                 <div className='itemCart__imgContainer'>
-                    <img className='itemCart__imgContainer__img' src={`${SERVER_URL}${img}`} alt="img" />
+                    <img className='itemCart__imgContainer__img' src={`${img}`} alt="img" />
                 </div>
 
                 <div className='itemCart__title'>
@@ -70,14 +74,14 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
                         <div className='itemCart__variantesContainer__variantes'>
                             {Object.entries(selectedVariant.campos).map(([key, value]) => (
                                 <div key={key} className='itemCart__variantesContainer__variantes__prop'>
-                                    {key}: {value}
+                                    {capitalizeFirstLetter(key)}: {value}
                                 </div>
                             ))}
                         </div>
                     </div>
                     :
                     <div className='itemCart__variantesContainer'>
-                        Sin variantes
+                        -
                     </div>
                 }
 
@@ -109,11 +113,17 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
                     <div className='itemCart__price__prop'>
                         ${selectedVariant?.price ?? price}
                     </div>
+                    <div className='itemCart__price__propMobile'>
+                        Precio: ${selectedVariant?.price ?? price}
+                    </div>
                 </div>
 
                 <div className='itemCart__subtotal'>
                     <div className='itemCart__subtotal__prop'>
                         ${Math.round(quantity * (selectedVariant?.price ?? price))}
+                    </div>
+                    <div className='itemCart__subtotal__propMobile'>
+                        Subtotal: ${Math.round(quantity * (selectedVariant?.price ?? price))}
                     </div>
                 </div>
 

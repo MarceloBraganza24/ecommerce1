@@ -39,7 +39,7 @@ const DeliveryAddress = ({deliveryAddressFormData,isLoadingDeliveryForm}) => {
                     <div className='deliveryAddressContainer__address'>{corregirCapitalizacion(deliveryAddressFormData.street)} {corregirCapitalizacion(deliveryAddressFormData.street_number)}, {corregirCapitalizacion(deliveryAddressFormData.locality)}</div>
                     :
                     <Link to={"/deliveryForm"} className='deliveryAddressContainer__address'>
-                        agregar dirección
+                        Agregar dirección
                     </Link>
                 }
                 <Link to={"/deliveryForm"} className='deliveryAddressContainer__btnEdit'>

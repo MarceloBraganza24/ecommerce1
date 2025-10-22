@@ -17,19 +17,19 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/grid";
 import { Navigation, Pagination,Autoplay,Grid  } from "swiper/modules";
+import NavbarMobile from "./NavbarMobile.jsx";
+import FeaturedProducts from "./FeaturedProducts.jsx";
+import BrandsSection from "./BrandsSection.jsx";
 
 const Home = () => {
     const [brands, setBrands] = useState([]);
     const [activeBrand, setActiveBrand] = useState("");
     const [brandProducts, setBrandProducts] = useState([]);
 
-    const scrollRef = useRef(null);
     const scrollRefLatestNews = useRef(null);
     const scrollRefBrands = useRef(null);
     const navigate = useNavigate();
 
-    const [featured, setFeatured] = useState({});
-    const [activeTab, setActiveTab] = useState("");
     const [latestNews, setLatestNews] = useState({});
     const [activeTabLatestNews, setActiveTabLatestNews] = useState("");
     
@@ -39,7 +39,6 @@ const Home = () => {
 
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const firstRender = useRef(true);
-    const [isScrollForced, setIsScrollForced] = useState(false);
     const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
     const [isLoadingLatestNews, setIsLoadingLatestNews] = useState(false);
     const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
@@ -50,6 +49,7 @@ const Home = () => {
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [isLoadingProductsByCategory, setIsLoadingProductsByCategory] = useState(true);
     const [products, setProducts] = useState([]);
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [productsByCategory, setProductsByCategory] = useState([]);
     const [totalProducts, setTotalProducts] = useState("");
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -105,7 +105,7 @@ const Home = () => {
             const res = await fetch(`${SERVER_URL}api/categories/combined`);
             const data = await res.json();
 
-            if (res.ok && data.status === "success") {
+            if (res.ok) {
             setCategoriesTree(data.payload || []); // 🔹 ahora usamos payload en vez de tree
             } else {
             console.error("Error al cargar categorías:", data.message || data);
@@ -220,19 +220,14 @@ const Home = () => {
         }
     };
 
-    const fetchFeatured = async () => {
+    const fetchRootCategories = async () => {
         try {
-            setIsLoadingFeatured(true);
-            const response = await fetch(`${SERVER_URL}api/products/featured`)
-            const productsAll = await response.json();
-            if(response.ok) {
-                setFeatured(productsAll.payload)
-                setActiveTab(Object.keys(productsAll.payload)[0] || "");
-            }
+            const res = await fetch(`${SERVER_URL}api/categories/flat`);
+            const categories = await res.json();
+            const rootCats = categories.filter(cat => !cat.parent); // solo padres
+            setRootCategories(rootCats);
         } catch (error) {
-            console.error('Error al obtener datos:', error);
-        } finally {
-            setIsLoadingFeatured(false);
+            console.error(error);
         }
     };
 
@@ -265,22 +260,6 @@ const Home = () => {
         }
         return result;
     };
-
-    useEffect(() => {
-        if (featured && Object.keys(featured).length > 0) {
-            const roots = [];
-            Object.keys(featured).forEach((key) => {
-            const catProducts = featured[key];
-            if (catProducts && catProducts.length > 0) {
-                const category = catProducts[0].category;
-                if (!category.parent) { // solo categorías raíz
-                roots.push(category);
-                }
-            }
-            });
-            setRootCategories(roots);
-        }
-    }, [featured]);
 
     const fetchSellerAddresses = async () => {
         try {
@@ -366,7 +345,7 @@ const Home = () => {
     useEffect(() => {
         fetchCategories();
         fetchProductsByCategory();
-        fetchFeatured();
+        fetchRootCategories();
         fetchLatestNews();
         fetchCurrentUser();
         fetchProducts();
@@ -407,6 +386,7 @@ const Home = () => {
     }
 
     function ProductCard({ product }) {
+        //console.log(product.images)
         const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
 
         const handleRedirectToItemDetailProduct = () => {
@@ -429,7 +409,7 @@ const Home = () => {
 
                 <div className="product-card__img">
                     <img
-                    src={`${SERVER_URL}${product.images[0]}`}
+                    src={`${product.images[0]?.trim()}`}
                     alt={product.title}
                     className="product-card__img__prop"
                     onClick={handleRedirectToItemDetailProduct}
@@ -492,6 +472,25 @@ const Home = () => {
             scrollToTop={scrollToTop}
             />
 
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
+
             <NavBar
             products={products}
             isScrollForced={isScrollForced}
@@ -531,343 +530,321 @@ const Home = () => {
                 </div>
             }
 
-            {
+            <FeaturedProducts/>
 
-                isLoadingFeatured ? 
-                <>
-                    <div style={{backgroundColor:'#EFEFEF',padding:'10vh 0vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                        <Spinner/>
+            <div className="linkToAboutPagContainer">
+                <div
+                    className="linkToAboutPagContainer__imgContainer"
+                    style={{
+                        backgroundImage: `url("${storeSettings?.siteImages?.aboutImage}")`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
+                    }}
+                >
+                    <div className="linkToAboutPagContainer__imgContainer__phrase">
+                        <div onClick={()=>window.location.href='/about'} className='linkToAboutPagContainer__imgContainer__phrase__prop'>
+                            Conocé más sobre nosotros
+                        </div>
                     </div>
-                </>
-                :
-                <>
-                    <div className="featured-products">
-                        <div className="featured-products__title">
-                            <div className="featured-products__title__prop">Conocé nuestros <strong>productos destacados</strong></div>
-                        </div>
-                        <div className="tabsContainer">
+                </div>
+            </div>
 
-                            <div className="tabsContainer__tabs">
+            <div className="categoriesExplored">
 
-                                <button
-                                    style={{paddingRight:'1.5vh'}}
-                                    className="tabsContainer__tabs__scrollButton left"
-                                    onClick={() => {
-                                    scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
-                                    }}
-                                >
-                                    ◀
-                                </button>
+                <div className="categoriesExplored__title">
+                    <div className="categoriesExplored__title__prop">Explorá nuestras <strong>categorías</strong></div>
+                </div>
 
-                                <div className="tabsContainer__tabs__buttonContainer" ref={scrollRef}>
-                                    {Object.keys(featured).map((category) => (
-                                    <button
-                                        key={category}
-                                        className={activeTab === category ? "active" : ""}
-                                        onClick={() => setActiveTab(category)}
-                                    >
-                                        {category}
-                                    </button>
-                                    ))}
-                                </div>
+                <div className="categoriesExplored__grid">
 
-                                <button
-                                    style={{paddingLeft:'1.5vh'}}
-                                    className="tabsContainer__tabs__scrollButton right"
-                                    onClick={() => {
-                                    scrollRef.current.scrollBy({ left: 200, behavior: "smooth" });
-                                    }}
-                                >
-                                    ▶
-                                </button>
-                                
-                            </div>
-
-                        </div>
-
-                        <div className="product-grid-container">
-                            <div className="product-grid-container__product-grid">
-                                {activeTab && featured[activeTab] && (
-                                    <Swiper
-                                    modules={[Navigation, Pagination, Grid, Autoplay]}
-                                    navigation
-                                    autoplay={{ delay: 3000, disableOnInteraction: true }}
-                                    pagination={{ clickable: true }}
-                                    spaceBetween={15}
-                                    slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
-                                    slidesPerGroup={1}       // 🔹 que avance de a 1
-                                    grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
-                                    >
-                                    {chunkArray(featured[activeTab], 1).map((page, idx) => (
-                                        <SwiperSlide key={idx}>
-                                            <div>
-                                                {page.map((product) => (
-                                                    <ProductCard key={product._id} product={product} />
-                                                ))}
-                                            </div>
-                                        </SwiperSlide>
-                                    ))}
-                                    </Swiper>
-                                )}
+                    <div className="categoriesExplored__grid__left">
+                        <div className="categoriesExplored__grid__left__categoryImg">
+                            <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`${rootCategories[0]?.image}`} alt={rootCategories[0]?.name} />
+                            <div className="categoriesExplored__grid__left__categoryImg__label">
+                                {rootCategories[0]?.name}
                             </div>
                         </div>
                     </div>
 
-                    <div className="linkToAboutPagContainer">
-                        <div
-                            className="linkToAboutPagContainer__imgContainer"
-                            style={{
-                                backgroundImage: `url("${storeSettings?.siteImages?.aboutImage}")`,
-                                backgroundSize: "cover",
-                                backgroundPosition: "center"
+                    <div className="categoriesExplored__grid__right">
+                        {rootCategories.length > 1 && (
+                            <>
+                            <Swiper
+                                modules={[Navigation, Pagination, Grid, Autoplay]}
+                                navigation
+                                autoplay={{ delay: 3000, disableOnInteraction: true }}
+                                pagination={{ clickable: true }}
+                                spaceBetween={20}
+                                slidesPerView={4}        // 🔹 mostramos 9 categorías a la vez
+                                slidesPerGroup={1}       // 🔹 que avance de a 1
+                                grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                                style={{padding: "1vh 1vh"}}
+                                >
+                                {rootCategoriesTree.slice(1).map((category) => (
+                                    <SwiperSlide key={category._id} >
+                                    <div className="categoriesExplored__grid__right__category">
+                                        <div className="categoriesExplored__grid__right__category__img">
+                                            <img
+                                            className="categoriesExplored__grid__right__category__img__prop"
+                                            src={`${category.image}`}
+                                            alt={category.name}
+                                            onClick={()=>handleRedirectToProducts(category)}
+                                            />
+                                        </div>
+                                        <div className="categoriesExplored__grid__right__category__name">
+                                            <div className="categoriesExplored__grid__right__category__name__prop">{category.name}</div>
+                                        </div>
+                                    </div>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                            </>
+                        )}
+                    </div>
+
+                </div>
+
+                <div className="categoriesExplored__gridMobile">
+
+                    <div className="categoriesExplored__gridMobile__left">
+                        <div className="categoriesExplored__gridMobile__left__categoryImg">
+                            <img className="categoriesExplored__gridMobile__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`${rootCategories[0]?.image}`} alt={rootCategories[0]?.name} />
+                            <div className="categoriesExplored__gridMobile__left__categoryImg__label">
+                                {rootCategories[0]?.name}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="categoriesExplored__gridMobile__right">
+                        {rootCategories.length > 1 && (
+                            <>
+                            <Swiper
+                                modules={[Navigation, Pagination, Grid, Autoplay]}
+                                navigation
+                                autoplay={{ delay: 3000, disableOnInteraction: true }}
+                                pagination={{ clickable: true }}
+                                spaceBetween={20}
+                                slidesPerView={2}        // 🔹 mostramos 9 categorías a la vez
+                                slidesPerGroup={1}       // 🔹 que avance de a 1
+                                grid={{ rows: 1, fill: "row" }} // 🔹 grid de 3 filas
+                                style={{padding: "1vh 1vh"}}
+                                >
+                                {rootCategoriesTree.slice(1).map((category) => (
+                                    <SwiperSlide key={category._id} >
+                                    <div className="categoriesExplored__gridMobile__right__category">
+                                        <div className="categoriesExplored__gridMobile__right__category__img">
+                                            <img
+                                            className="categoriesExplored__gridMobile__right__category__img__prop"
+                                            src={`${category.image}`}
+                                            alt={category.name}
+                                            onClick={()=>handleRedirectToProducts(category)}
+                                            />
+                                        </div>
+                                        <div className="categoriesExplored__gridMobile__right__category__name">
+                                            <div className="categoriesExplored__gridMobile__right__category__name__prop">{category.name}</div>
+                                        </div>
+                                    </div>
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                            </>
+                        )}
+                    </div>
+
+                </div>
+            
+            </div>
+
+            <div className="informationStrip">
+
+                <div className="informationStrip__grid">
+
+                    {storeSettings?.storeInfoBoxes?.map((box, i) => (
+                    <div key={i} className="informationStrip__grid__box">
+
+                        <div className="informationStrip__grid__box__img">
+                            {box.icon && <img className="informationStrip__grid__box__img__prop" src={`${box.icon}`} alt="" />}
+                        </div>
+                        <div className="informationStrip__grid__box__info">
+                            <h4 className="informationStrip__grid__box__info__h4">{box.title}</h4>
+                            <p className="informationStrip__grid__box__info__p">{box.description}</p>
+                        </div>
+
+                    </div>
+                    ))}
+
+                </div>
+
+            </div>
+
+            <div className="informationStripMobile">
+
+                <Swiper
+                    modules={[Pagination]}
+                    pagination={{ clickable: true }}
+                    spaceBetween={10}
+                    slidesPerView={1}       // ✅ solo un slide por vista
+                    >
+                    {storeSettings?.storeInfoBoxes?.map((box, i) => (
+                        <SwiperSlide key={i} className="informationStripMobile__swipper">
+                        <div className="informationStripMobile__grid__box">
+                            <div className="informationStripMobile__grid__box__img">
+                            {box.icon && (
+                                <img
+                                className="informationStripMobile__grid__box__img__prop"
+                                src={box.icon}
+                                alt=""
+                                />
+                            )}
+                            </div>
+                            <div className="informationStripMobile__grid__box__info">
+                            <h4 className="informationStripMobile__grid__box__info__h4">{box.title}</h4>
+                            <p className="informationStripMobile__grid__box__info__p">{box.description}</p>
+                            </div>
+                        </div>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+
+            </div>
+            
+
+            <div className="latestNews-products">
+                <div className="latestNews-products__title">
+                    <div className="latestNews-products__title__prop">Conocé nuestras <strong>últimas novedades</strong></div>
+                </div>
+                <div className="tabsContainer">
+
+                    <div className="tabsContainer__tabs">
+
+                        <button
+                            style={{paddingRight:'1.5vh'}}
+                            className="tabsContainer__tabs__scrollButton left"
+                            onClick={() => {
+                            scrollRefLatestNews.current.scrollBy({ left: -200, behavior: "smooth" });
                             }}
                         >
-                            <div className="linkToAboutPagContainer__imgContainer__phrase">
-                                <div onClick={()=>window.location.href='/about'} className='linkToAboutPagContainer__imgContainer__phrase__prop'>
-                                    Conocé más sobre nosotros
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            ◀
+                        </button>
 
-                    <div className="categoriesExplored">
-
-                        <div className="categoriesExplored__title">
-                            <div className="categoriesExplored__title__prop">Explorá nuestras <strong>categorías</strong></div>
-                        </div>
-
-                        <div className="categoriesExplored__grid">
-
-                            <div className="categoriesExplored__grid__left">
-                                <div className="categoriesExplored__grid__left__categoryImg">
-                                    <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`${rootCategories[0]?.image}`} alt="category" />
-                                </div>
-                            </div>
-
-                            <div className="categoriesExplored__grid__right">
-                                {rootCategoriesTree.length > 1 && (
-                                    <>
-                                    <Swiper
-                                        modules={[Navigation, Pagination, Grid, Autoplay]}
-                                        navigation
-                                        autoplay={{ delay: 3000, disableOnInteraction: true }}
-                                        pagination={{ clickable: true }}
-                                        spaceBetween={20}
-                                        slidesPerView={4}        // 🔹 mostramos 9 categorías a la vez
-                                        slidesPerGroup={1}       // 🔹 que avance de a 1
-                                        grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
-                                        >
-                                        {rootCategoriesTree.slice(1).map((category) => (
-                                            <SwiperSlide key={category._id}>
-                                            <div className="categoriesExplored__grid__right__category">
-                                                <img
-                                                className="categoriesExplored__grid__right__category__img"
-                                                src={`${category.image}`}
-                                                alt={category.name}
-                                                onClick={()=>handleRedirectToProducts(category)}
-                                                />
-                                            </div>
-                                            </SwiperSlide>
-                                        ))}
-                                    </Swiper>
-
-                                    </>
-                                )}
-                            </div>
-
-                        </div>
-                    
-                    </div>
-
-                    <div className="informationStrip">
-
-                        <div className="informationStrip__grid">
-
-                            {storeSettings?.storeInfoBoxes?.map((box, i) => (
-                            <div key={i} className="informationStrip__grid__box">
-
-                                <div className="informationStrip__grid__box__img">
-                                    {box.icon && <img className="informationStrip__grid__box__img__prop" src={`${box.icon}`} alt="" />}
-                                </div>
-                                <div className="informationStrip__grid__box__info">
-                                    <h4 className="informationStrip__grid__box__info__h4">{box.title}</h4>
-                                    <p className="informationStrip__grid__box__info__p">{box.description}</p>
-                                </div>
-
-                            </div>
+                        <div className="tabsContainer__tabs__buttonContainer" ref={scrollRefLatestNews}>
+                            {Object.keys(latestNews).map((category) => (
+                            <button
+                                key={category}
+                                className={activeTabLatestNews === category ? "active" : ""}
+                                onClick={() => setActiveTabLatestNews(category)}
+                            >
+                                {category}
+                            </button>
                             ))}
-
                         </div>
 
-                    </div>
-
-                    <div className="featured-products">
-                        <div className="featured-products__title">
-                            <div className="featured-products__title__prop">Conocé nuestras <strong>últimas novedades</strong></div>
-                        </div>
-                        <div className="tabsContainer">
-
-                            <div className="tabsContainer__tabs">
-
-                                <button
-                                    style={{paddingRight:'1.5vh'}}
-                                    className="tabsContainer__tabs__scrollButton left"
-                                    onClick={() => {
-                                    scrollRefLatestNews.current.scrollBy({ left: -200, behavior: "smooth" });
-                                    }}
-                                >
-                                    ◀
-                                </button>
-
-                                <div className="tabsContainer__tabs__buttonContainer" ref={scrollRefLatestNews}>
-                                    {Object.keys(latestNews).map((category) => (
-                                    <button
-                                        key={category}
-                                        className={activeTabLatestNews === category ? "active" : ""}
-                                        onClick={() => setActiveTabLatestNews(category)}
-                                    >
-                                        {category}
-                                    </button>
-                                    ))}
-                                </div>
-
-                                <button
-                                    style={{paddingLeft:'1.5vh'}}
-                                    className="tabsContainer__tabs__scrollButton right"
-                                    onClick={() => {
-                                    scrollRefLatestNews.current.scrollBy({ left: 200, behavior: "smooth" });
-                                    }}
-                                >
-                                    ▶
-                                </button>
-                                
-                            </div>
-
-                        </div>
-
-                        <div className="product-grid-container">
-                            <div className="product-grid-container__product-grid">
-                                {activeTabLatestNews && latestNews[activeTabLatestNews] && (
-                                    <Swiper
-                                    modules={[Navigation, Pagination, Grid, Autoplay]}
-                                    navigation
-                                    autoplay={{ delay: 3000, disableOnInteraction: true }}
-                                    pagination={{ clickable: true }}
-                                    spaceBetween={15}
-                                    slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
-                                    slidesPerGroup={1}       // 🔹 que avance de a 1
-                                    grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
-                                    >
-                                    {chunkArray(latestNews[activeTabLatestNews], 1).map((page, idx) => (
-                                        <SwiperSlide key={idx}>
-                                            <div>
-                                                {page.map((product) => (
-                                                    <ProductCard key={product._id} product={product} />
-                                                ))}
-                                            </div>
-                                        </SwiperSlide>
-                                    ))}
-                                    </Swiper>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="separatorWhite"></div>
-
-                        <div className="brandsExplored">
-
-                            <div className="brandsExplored__title">
-                                <div className="brandsExplored__title__prop">Descubrí las <strong>mejores marcas</strong></div>
-                            </div>
-
-                            <div className="tabsContainer">
-
-                                <div className="tabsContainer__tabs">
-
-                                    <button
-                                        style={{paddingRight:'1.5vh'}}
-                                        className="tabsContainer__tabs__scrollButton left"
-                                        onClick={() => {
-                                        scrollRefBrands.current.scrollBy({ left: -200, behavior: "smooth" });
-                                        }}
-                                    >
-                                        ◀
-                                    </button>
-
-                                    <div className="tabsContainer__tabs__buttonContainer" ref={scrollRefBrands}>
-                                        {brands.map((brand) => (
-                                        <button
-                                            key={brand}
-                                            className={activeBrand === brand ? "active" : ""}
-                                            onClick={() => setActiveBrand(brand)}
-                                        >
-                                            {brand}
-                                        </button>
-                                        ))}
-                                    </div>
-
-                                    <button
-                                        style={{paddingLeft:'1.5vh'}}
-                                        className="tabsContainer__tabs__scrollButton right"
-                                        onClick={() => {
-                                        scrollRefBrands.current.scrollBy({ left: 200, behavior: "smooth" });
-                                        }}
-                                    >
-                                        ▶
-                                    </button>
-                                    
-                                </div>
-
-                            </div>
-
-                            <div className="brandsExplored__grid">
-
-                                <div className="brandsExplored__grid__left">
-                                    <div className="brandsExplored__grid__left__categoryImg">
-                                        <img className="brandsExplored__grid__left__categoryImg__prop" onClick={() => handleRedirectToBrand(activeBrand)} src={`${SERVER_URL}${brandProducts[0]?.images?.[0]}`} alt={brandProducts[0]?.title || "producto"} />
-                                    </div>
-                                </div>
-
-                                <div className="brandsExplored__grid__right">
-                                    {brandProducts.length > 0 && (
-                                        <Swiper
-                                        modules={[Navigation, Pagination, Autoplay]}
-                                        navigation
-                                        autoplay={{ delay: 3000, disableOnInteraction: true }}
-                                        pagination={{ clickable: true }}
-                                        spaceBetween={150}
-                                        slidesPerView={4}    // cantidad de productos visibles
-                                        slidesPerGroup={1}   // avanza de a 1
-                                        >
-                                        {brandProducts.map((product) => (
-                                            <SwiperSlide key={product._id}>
-                                                <ItemProduct
-                                                user={user} 
-                                                fetchCartByUserId={fetchCartByUserId}
-                                                id={product._id}
-                                                stock={product.stock}
-                                                images={product.images}
-                                                title={product.title}
-                                                description={product.description}
-                                                price={product.price}
-                                                variantes={product.variantes}
-                                                userCart={userCart}
-                                                />
-                                            </SwiperSlide>
-                                        ))}
-                                        </Swiper>
-                                    )}
-                                </div>
-
-
-                            </div>
+                        <button
+                            style={{paddingLeft:'1.5vh'}}
+                            className="tabsContainer__tabs__scrollButton right"
+                            onClick={() => {
+                            scrollRefLatestNews.current.scrollBy({ left: 200, behavior: "smooth" });
+                            }}
+                        >
+                            ▶
+                        </button>
                         
-                        </div>
-
                     </div>
 
-                </>
-            }
+                </div>
+
+                <div className="product-grid-containerMobile">
+                    <div className="product-grid-containerMobile__product-grid">
+                        {activeTabLatestNews && latestNews[activeTabLatestNews] && (
+                            <Swiper
+                            modules={[Navigation, Pagination, Grid, Autoplay]}
+                            navigation
+                            autoplay={{ delay: 3000, disableOnInteraction: true }}
+                            pagination={{ clickable: true }}
+                            spaceBetween={12}
+                            slidesPerView={1}        // 🔹 mostramos 9 categorías a la vez
+                            slidesPerGroup={1}       // 🔹 que avance de a 1
+                            grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                            style={{padding: "1vh 1vh"}}
+                            >
+                            {chunkArray(latestNews[activeTabLatestNews], 1).map((page, idx) => (
+                                <SwiperSlide key={idx}>
+                                    <div>
+                                        {page.map((product) => (
+                                            <ProductCard key={product._id} product={product} />
+                                        ))}
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                            </Swiper>
+                        )}
+                    </div>
+                </div>
+
+                <div className="product-grid-container">
+                    <div className="product-grid-container__product-grid">
+                        {activeTabLatestNews && latestNews[activeTabLatestNews] && (
+                            <Swiper
+                            modules={[Navigation, Pagination, Grid, Autoplay]}
+                            navigation
+                            autoplay={{ delay: 3000, disableOnInteraction: true }}
+                            pagination={{ clickable: true }}
+                            spaceBetween={12}
+                            slidesPerView={3}        // 🔹 mostramos 9 categorías a la vez
+                            slidesPerGroup={1}       // 🔹 que avance de a 1
+                            grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                            style={{padding: "1vh 1vh"}}
+                            >
+                            {chunkArray(latestNews[activeTabLatestNews], 1).map((page, idx) => (
+                                <SwiperSlide key={idx}>
+                                    <div>
+                                        {page.map((product) => (
+                                            <ProductCard key={product._id} product={product} />
+                                        ))}
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                            </Swiper>
+                        )}
+
+                    </div>
+                </div>
+
+                <div className="product-grid-containerTablet">
+                    <div className="product-grid-containerTablet__product-grid">
+                        {activeTabLatestNews && latestNews[activeTabLatestNews] && (
+                            <Swiper
+                            modules={[Navigation, Pagination, Grid, Autoplay]}
+                            navigation
+                            autoplay={{ delay: 3000, disableOnInteraction: true }}
+                            pagination={{ clickable: true }}
+                            spaceBetween={12}
+                            slidesPerView={2}        // 🔹 mostramos 9 categorías a la vez
+                            slidesPerGroup={1}       // 🔹 que avance de a 1
+                            grid={{ rows: 2, fill: "row" }} // 🔹 grid de 3 filas
+                            style={{padding: "1vh 1vh"}}
+                            >
+                            {chunkArray(latestNews[activeTabLatestNews], 1).map((page, idx) => (
+                                <SwiperSlide key={idx}>
+                                    <div>
+                                        {page.map((product) => (
+                                            <ProductCard key={product._id} product={product} />
+                                        ))}
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                            </Swiper>
+                        )}
+
+                    </div>
+                </div>
+
+                <div className="separatorWhite"></div>
+
+                <BrandsSection/>
+
+            </div>
+
 
             <Footer
             isLoggedIn={user?.isLoggedIn}

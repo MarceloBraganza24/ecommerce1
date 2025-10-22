@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import SmartLink from './SmartLink';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
+import BrandsSection from './BrandsSection';
 
 const Cart = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -17,8 +19,10 @@ const Cart = () => {
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const navigate = useNavigate();
+    const [isScrollForced, setIsScrollForced] = useState(false);
     const [userCart, setUserCart] = useState({});
     const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
     const [deliveryForms, setDeliveryForms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
@@ -50,6 +54,14 @@ const Cart = () => {
             fetchCartByUserId(user._id)
         }
     }, [user]);
+
+    useEffect(() => {
+        if (!isLoadingAuth) {
+            if (!user || (user.role !== 'admin' && user.role !== 'premium' && user.role !== 'user')) {
+                navigate('/');
+            }
+        }
+    }, [user, isLoadingAuth, navigate]);
 
     function esColorClaro(hex) {
         if (!hex) return true;
@@ -280,8 +292,21 @@ const Cart = () => {
         }
     };
 
+    const fetchProducts = async (page = 1, search = "",field = "") => {
+        try {
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const productsAll = await response.json();
+            setProducts(productsAll.data.docs)
+        } catch (error) {
+            console.error('Error al obtener datos:', error);
+        } finally {
+            setIsLoadingProducts(false)
+        }
+    };
+
     useEffect(() => {
         fetchCurrentUser();
+        fetchProducts();
         fetchCategories();
         fetchSellerAddresses();
         fetchDeliveryForm();
@@ -301,6 +326,27 @@ const Cart = () => {
     return (
 
         <>
+
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
+
+
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
@@ -444,7 +490,7 @@ const Cart = () => {
 
                                 <div className='cartContainer__accountSummaryContainer__accountSummary__itemGrid__label'>Envío</div>
 
-                                <div className='cartContainer__accountSummaryContainer__accountSummary__itemGrid__value'>Coordinar con vendedor</div>
+                                <div className='cartContainer__accountSummaryContainer__accountSummary__itemGrid__valuee'>Coordinar con vendedor</div>
 
                             </div>
 
@@ -479,8 +525,11 @@ const Cart = () => {
 
                 </>
             }
+            <div style={{paddingBottom:'20vh', backgroundColor:'#dddddd'}}>
+                <BrandsSection/>
+            </div>
 
-            <Footer
+            {/* <Footer
             isLoggedIn={user?.isLoggedIn}
             logo_store={storeSettings?.siteImages?.logoStore || ""}
             aboutText={storeSettings?.footerLogoText || ""}
@@ -491,7 +540,7 @@ const Cart = () => {
             sellerAddresses={sellerAddresses}
             isLoadingSellerAddresses={isLoadingSellerAddresses}
             isLoadingStoreSettings={isLoadingStoreSettings}
-            />
+            /> */}
 
         </>
       

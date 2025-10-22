@@ -12,11 +12,15 @@ import ConfirmationDeleteCPanelCategoryModal from './ConfirmationDeleteCPanelCat
 import ConfirmationDeleteCPanelSellerAddressModal from './ConfirmationDeleteCPanelSellerAddressModal.jsx';
 import ConfirmationDeleteCPanelCouponModal from './ConfirmationDeleteCPanelCouponModal.jsx';
 import ConfirmationDeleteCPanelUserModal from './ConfirmationDeleteCPanelUserModal.jsx';
+import CPanelBillingForm from './CPanelBillingForm.jsx';
 
 import CategoriesPage from './CategoriesPage.jsx';
-
+import NavbarMobile from './NavbarMobile.jsx';
 
 const CPanel = () => {
+    const [isScrollForced, setIsScrollForced] = useState(false);
+    const firstRender = useRef(true);
+    const [products, setProducts] = useState([]);
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const [categoryId, setCategoryId] = useState('');
     const [showConfirmationDeleteCPanelCategoryModal, setShowConfirmationDeleteCPanelCategoryModal] = useState(false);
@@ -83,6 +87,49 @@ const CPanel = () => {
     });
     const navigate = useNavigate();
     const [categoriesTree, setCategoriesTree] = useState([]);
+    const [pageInfo, setPageInfo] = useState({
+        page: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+        nextPage: null,
+        prevPage: null
+    });  
+
+    useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+        setIsScrollForced(true);
+        const el = document.getElementById('catalogContainer');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+        const timeout = setTimeout(() => {
+            setIsScrollForced(false);
+        }, 1500);
+
+        return () => clearTimeout(timeout);
+    }, [pageInfo.page]);
+
+    const fetchProducts = async (page = 1, search = "",field = "") => {
+        try {
+            const response = await fetch(`${SERVER_URL}api/products/byPage?page=${page}&search=${search}&field=${field}`)
+            const productsAll = await response.json();
+            setProducts(productsAll.data.docs)
+            setPageInfo({
+                page: productsAll.data.page,
+                totalPages: productsAll.data.totalPages,
+                hasNextPage: productsAll.data.hasNextPage,
+                hasPrevPage: productsAll.data.hasPrevPage,
+                nextPage: productsAll.data.nextPage,
+                prevPage: productsAll.data.prevPage
+            });
+        } catch (error) {
+            console.error('Error al obtener datos:', error);
+        }
+    };
 
     const fetchCategoriesTree = async () => {
         try {
@@ -104,7 +151,6 @@ const CPanel = () => {
         }
         return null;
     };
-
 
     const renderCategoryOptions = (categories, level = 0) => {
         return categories.flatMap(category => [
@@ -745,6 +791,7 @@ const CPanel = () => {
         fetchCategoriesTree();
         fetchStoreSettings();
         fetchSellerAddresses();
+        fetchProducts();
         fetchCoupons();
         window.scrollTo(0, 0);
     }, []);
@@ -1187,30 +1234,6 @@ const CPanel = () => {
 
         const formData = new FormData();
 
-        /* let infoBoxFileCounter = 0;
-
-        const processedInfoBoxes = configurationSiteformData.storeInfoBoxes.map((box) => {
-            let iconStr = '';
-            let iconFileIndex = null;
-
-            if (box.iconFile instanceof File) {
-                // Nuevo archivo
-                formData.append('storeInfoIcons', box.iconFile);
-                iconStr = `__upload__${infoBoxFileCounter}`;
-                iconFileIndex = infoBoxFileCounter;
-                infoBoxFileCounter++;
-            } else if (typeof box.prevIconPath === 'string' && box.prevIconPath.trim() !== '') {
-                // Mantener el ícono viejo
-                iconStr = box.prevIconPath;
-            }
-
-            return {
-                title: box.title,
-                description: box.description,
-                icon: iconStr,
-                iconFileIndex // 🔑 clave que el backend espera
-            };
-        }); */
         let infoBoxFileCounter = 0;
 
         const processedInfoBoxes = configurationSiteformData.storeInfoBoxes.map((box) => {
@@ -1575,50 +1598,52 @@ const CPanel = () => {
         };
 
         return (
-            <div className="cPanelContainer__siteConfiguration__form__gridColor">
+            <>
                 <label className='cPanelContainer__siteConfiguration__form__gridColor__label'>{label}</label>
+                <div className="cPanelContainer__siteConfiguration__form__gridColor">
 
-                {inputMode === "hex" ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <span className='cPanelContainer__siteConfiguration__form__gridColor__labelInput'>#</span>
-                    <input
-                    className='cPanelContainer__siteConfiguration__form__gridColor__inputHex'
-                        type="text"
-                        value={localHex}
-                        onChange={handleHexChange}
-                        onBlur={handleHexBlur}
-                        maxLength={6}
-                        placeholder="000000"
-                    />
-                    </div>
-                ) : (
-                    <div className="cPanelContainer__siteConfiguration__form__gridColor">
+                    {inputMode === "hex" ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <span className='cPanelContainer__siteConfiguration__form__gridColor__labelInput'>#</span>
                         <input
-                            type="color"
-                            value={value}
-                            onChange={(e) => onChange(name, e.target.value)}
+                        className='cPanelContainer__siteConfiguration__form__gridColor__inputHex'
+                            type="text"
+                            value={localHex}
+                            onChange={handleHexChange}
+                            onBlur={handleHexBlur}
+                            maxLength={6}
+                            placeholder="000000"
                         />
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                            {colorOptions.map((color) => (
-                            <button
-                                key={color}
-                                type="button"
-                                style={{
-                                backgroundColor: color,
-                                width: 30,
-                                height: 30,
-                                border: value === color ? "2px solid black" : "1px solid #ccc",
-                                borderRadius: "50%",
-                                cursor: "pointer"
-                                }}
-                                onClick={() => onChange(name, color)}
-                                title={color}
-                            />
-                            ))}
                         </div>
-                    </div>
-                )}
-            </div>
+                    ) : (
+                        <div className="cPanelContainer__siteConfiguration__form__gridColorMobile">
+                            <input
+                                type="color"
+                                value={value}
+                                onChange={(e) => onChange(name, e.target.value)}
+                            />
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                {colorOptions.map((color) => (
+                                <button
+                                    key={color}
+                                    type="button"
+                                    style={{
+                                    backgroundColor: color,
+                                    width: 30,
+                                    height: 30,
+                                    border: value === color ? "2px solid black" : "1px solid #ccc",
+                                    borderRadius: "50%",
+                                    cursor: "pointer"
+                                    }}
+                                    onClick={() => onChange(name, color)}
+                                    title={color}
+                                />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </>
         );
     }
 
@@ -1666,6 +1691,25 @@ const CPanel = () => {
 
         <>
 
+            <NavbarMobile
+            products={products}
+            isScrollForced={isScrollForced}
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={configurationSiteformData?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={configurationSiteformData?.siteImages?.logoStore || ""}
+            primaryColor={configurationSiteformData?.primaryColor || ""}
+            />
+
             <div className='navbarContainer'>
                 <NavBar
                 isLoading={isLoading}
@@ -1712,7 +1756,11 @@ const CPanel = () => {
                             
                         </div>
 
-                        <label className='cPanelContainer__siteConfiguration__form__gridColor__labelTitle' style={{marginTop: '2vh'}}>Emails:</label>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className='cPanelContainer__siteConfiguration__form__gridColor__labelTitle'>Emails:</div>
 
                         {configurationSiteformData.contactEmail.map((item, index) => (
                         <div key={index} className='cPanelContainer__siteConfiguration__form__gridPhone'>
@@ -1742,14 +1790,14 @@ const CPanel = () => {
                             </div>
 
                             <div className='cPanelContainer__siteConfiguration__form__gridPhone__inputBtn'>
-                            <label className='cPanelContainer__siteConfiguration__form__gridPhone__checkboxLabel'>
+                            <div className='cPanelContainer__siteConfiguration__form__gridPhone__checkboxLabel'>
                                 <input
                                 type="checkbox"
                                 checked={item.selected || false}
                                 onChange={(e) => handleContactEmailChange(index, 'selected', e.target.checked)}
                                 />
                                 Recibir mensajes de contacto
-                            </label>
+                            </div>
                             </div>
 
                             {configurationSiteformData.contactEmail.length > 1 && (
@@ -1776,7 +1824,11 @@ const CPanel = () => {
                         </button>
                         </div>
 
-                        <label className='cPanelContainer__siteConfiguration__form__gridColor__labelTitle' style={{marginTop: '2vh'}}>Teléfonos:</label>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className='cPanelContainer__siteConfiguration__form__gridColor__labelTitle' >Teléfonos:</div>
                         
                         {configurationSiteformData.phoneNumbers.map((phone, index) => (
                             <div key={index} className='cPanelContainer__siteConfiguration__form__gridPhone'>
@@ -1827,8 +1879,11 @@ const CPanel = () => {
                             </button>
                         </div>
 
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
 
-                        <div className='cPanelContainer__siteConfiguration__form__gridColor' style={{marginTop: '2vh'}}>
+                        <div className='cPanelContainer__siteConfiguration__form__gridColor'>
                             <label className='cPanelContainer__siteConfiguration__form__gridColor__labelTitle'>Modo de selección de color:</label>
                             <select
                             className='cPanelContainer__siteConfiguration__form__gridColor__select'
@@ -1842,7 +1897,7 @@ const CPanel = () => {
                         </div>
 
                         <ColorInput
-                        label="Color primario ('Navbar', 'Footer', 'Fondo botones')"
+                        label="Color primario ('Navbar', 'Footer')"
                         name="primaryColor"
                         value={colorSelectFormData.primaryColor}
                         inputMode={colorSelectFormData.colorInputMode}
@@ -1859,114 +1914,124 @@ const CPanel = () => {
                         colorOptions={colorOptions}
                         />
 
-                        <div className="cPanelContainer__siteConfiguration__form__offersTitle" style={{ marginTop: '3vh' }}>Ofertas</div>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className="cPanelContainer__siteConfiguration__form__offersTitle" >Ofertas</div>
                         
                         <div className="cPanelContainer__siteConfiguration__form__offers">
                             {configurationSiteformData.offersSlider.map((offer, offerIndex) => (
-                                <div
-                                key={offerIndex}
-                                className='cPanelContainer__siteConfiguration__form__offers__offer'
-                                >
-                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer'>
-                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__label'>Imagen de la oferta</div>
-                                        {offer.image && (
-                                        <img
-                                            className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__prop'
-                                            src={
-                                            typeof offer.image === "string"
-                                                ? `${offer.image}`
-                                                : offer.image.preview || URL.createObjectURL(offer.image)
-                                            }
-                                            alt={`Oferta-${offerIndex}`}
-                                        />
-                                        )}
-                                    </div>
-                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput'>
-                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput__label'>Seleccionar nueva imagen:</div>
-                                        <input
-                                            className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput__input'
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleOfferImageChange(e, offerIndex)}
-                                        />
-                                    </div>
-
-                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection'>
-                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__label'>Filtros de redirección:</div>
-
-                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect'>
-                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__label'>Categoría</div>
-                                            <select
-                                                className="cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__select"
-                                                name="category"
-                                                value={offer.filters?.category?._id || ""}
-                                                onChange={(e) => {
-                                                    const categoryObj = findCategoryById(categoriesTree, e.target.value);
-                                                    if (categoryObj) {
-                                                        handleConditionChange(offerIndex, "category", "value", categoryObj);
-                                                    }
-                                                }}
-                                                required
-                                                >
-                                                <option value="">Selecciona una categoría</option>
-                                                {renderCategoryOptions(categoriesTree)}
-                                            </select>
-
+                                <>
+                                    <div
+                                    key={offerIndex}
+                                    className='cPanelContainer__siteConfiguration__form__offers__offer'
+                                    >
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer'>
+                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__label'>Imagen de la oferta</div>
+                                            {offer.image && (
+                                            <img
+                                                className='cPanelContainer__siteConfiguration__form__offers__offer__imgOffer__prop'
+                                                src={
+                                                typeof offer.image === "string"
+                                                    ? `${offer.image}`
+                                                    : offer.image.preview || URL.createObjectURL(offer.image)
+                                                }
+                                                alt={`Oferta-${offerIndex}`}
+                                            />
+                                            )}
+                                        </div>
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput'>
+                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput__label'>Seleccionar nueva imagen:</div>
+                                            <input
+                                                className='cPanelContainer__siteConfiguration__form__offers__offer__labelInput__input'
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => handleOfferImageChange(e, offerIndex)}
+                                            />
                                         </div>
 
-                                        {Object.entries(offer.filters || {})
-                                        .filter(([key]) => key !== "category")
-                                        .map(([key, value], condIndex) => (
-                                            <div
-                                            key={condIndex}
-                                            style={{ display: "flex", gap: 8, marginTop: 4 }}
-                                            className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn'
-                                            >
-                                                <input
-                                                    className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input'
-                                                    type="text"
-                                                    placeholder="Ej: material"
-                                                    value={key}
-                                                    onChange={(e) =>
-                                                    handleConditionChange(offerIndex, key, "key", e.target.value)
-                                                    }
-                                                />
-                                                <input
-                                                    type="text"
-                                                    className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input'
-                                                    placeholder={`Ej: ${key === "color" ? "rojo" : "jean"}`}
-                                                    value={value}
-                                                    onChange={(e) =>
-                                                    handleConditionChange(offerIndex, key, "value", e.target.value)
-                                                    }
-                                                />
-                                                <button
-                                                    className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__btn'
-                                                    type="button"
-                                                    onClick={() => handleRemoveCondition(offerIndex, key)}
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection'>
+                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__label'>Filtros de redirección:</div>
+
+                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect'>
+                                                <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__label'>Categoría</div>
+                                                <select
+                                                    className="cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__categorySelect__select"
+                                                    name="category"
+                                                    value={offer.filters?.category?._id || ""}
+                                                    onChange={(e) => {
+                                                        const categoryObj = findCategoryById(categoriesTree, e.target.value);
+                                                        if (categoryObj) {
+                                                            handleConditionChange(offerIndex, "category", "value", categoryObj);
+                                                        }
+                                                    }}
+                                                    required
+                                                    >
+                                                    <option value="">Selecciona una categoría</option>
+                                                    {renderCategoryOptions(categoriesTree)}
+                                                </select>
+
+                                            </div>
+
+                                            {Object.entries(offer.filters || {})
+                                            .filter(([key]) => key !== "category")
+                                            .map(([key, value], condIndex) => (
+                                                <div
+                                                key={condIndex}
+                                                style={{ display: "flex", gap: 8, marginTop: 4 }}
+                                                className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn'
                                                 >
-                                                    Eliminar
+                                                    <input
+                                                        className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input'
+                                                        type="text"
+                                                        placeholder="Ej: material"
+                                                        value={key}
+                                                        onChange={(e) =>
+                                                        handleConditionChange(offerIndex, key, "key", e.target.value)
+                                                        }
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__input'
+                                                        placeholder={`Ej: ${key === "color" ? "rojo" : "jean"}`}
+                                                        value={value}
+                                                        onChange={(e) =>
+                                                        handleConditionChange(offerIndex, key, "value", e.target.value)
+                                                        }
+                                                    />
+                                                    <button
+                                                        className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__inputsBtn__btn'
+                                                        type="button"
+                                                        onClick={() => handleRemoveCondition(offerIndex, key)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition'>
+                                                <button
+                                                className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition__prop'
+                                                type="button"
+                                                onClick={() => handleAddCondition(offerIndex)}
+                                                >
+                                                + Agregar condición
                                                 </button>
                                             </div>
-                                        ))}
-                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition'>
-                                            <button
-                                            className='cPanelContainer__siteConfiguration__form__offers__offer__filterRedirection__btnAddCondition__prop'
-                                            type="button"
-                                            onClick={() => handleAddCondition(offerIndex)}
-                                            >
-                                            + Agregar condición
+                                        </div>
+
+                                        {/* Eliminar oferta */}
+                                        <div className='cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer'>
+                                            <button className='cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer__prop' type="button" onClick={() => handleRemoveOffer(offerIndex)}>
+                                                Eliminar oferta
                                             </button>
                                         </div>
                                     </div>
-
-                                    {/* Eliminar oferta */}
-                                    <div className='cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer'>
-                                        <button className='cPanelContainer__siteConfiguration__form__offers__offer__btnDeleteOffer__prop' type="button" onClick={() => handleRemoveOffer(offerIndex)}>
-                                            Eliminar oferta
-                                        </button>
+                                    <div className='cPanelContainer__siteConfiguration__separatorOffer'>
+                                        <div className='cPanelContainer__siteConfiguration__separatorOffer__prop'></div>
                                     </div>
-                                </div>
+                                </>
+                                
                             ))}
 
                             <div className='cPanelContainer__siteConfiguration__form__offers__btnAddOffer'>
@@ -1980,7 +2045,11 @@ const CPanel = () => {
                             </div>
                         </div>
 
-                        <div className="cPanelContainer__siteConfiguration__form__infoBlock" style={{ marginTop: '3vh' }}>Bloque de info</div>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className="cPanelContainer__siteConfiguration__form__infoBlock">Bloque de info</div>
 
                         <div className='cPanelContainer__siteConfiguration__form__itemInfoBlockContainer'> 
 
@@ -2106,7 +2175,11 @@ const CPanel = () => {
 
                         </div>
 
-                        <div className="cPanelContainer__siteConfiguration__form__images" style={{marginTop: '2vh'}}>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className="cPanelContainer__siteConfiguration__form__images">
                             <div className="cPanelContainer__siteConfiguration__form__images__title">Imágenes del sitio</div>
                             {[
                                 { name: 'favicon', label: 'Favicon' },
@@ -2136,7 +2209,11 @@ const CPanel = () => {
                             ))}
                         </div>
 
-                        <div className='cPanelContainer__siteConfiguration__form__gridImages' style={{marginTop: '2vh'}}>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className='cPanelContainer__siteConfiguration__form__gridImages'>
                             <label className='cPanelContainer__siteConfiguration__form__gridImages__label'>
                                 Imágenes del slider de logos:
                             </label>
@@ -2170,7 +2247,11 @@ const CPanel = () => {
                             </div>
                         </div>
 
-                        <div className="cPanelContainer__siteConfiguration__form__aboutText" style={{marginTop: '2vh'}}>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className="cPanelContainer__siteConfiguration__form__aboutText">
                             <label className="cPanelContainer__siteConfiguration__form__aboutText__label">Texto sección Sobre Nosotros:</label>
                             <textarea
                                 className="cPanelContainer__siteConfiguration__form__aboutText__textArea"
@@ -2182,7 +2263,11 @@ const CPanel = () => {
                             />
                         </div>
 
-                        <div className="cPanelContainer__siteConfiguration__form__aboutText" style={{marginTop: '2vh'}}>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className="cPanelContainer__siteConfiguration__form__aboutText">
                             <label className="cPanelContainer__siteConfiguration__form__aboutText__label">Texto logo footer:</label>
                             <textarea
                                 className="cPanelContainer__siteConfiguration__form__aboutText__textArea"
@@ -2192,6 +2277,10 @@ const CPanel = () => {
                                 placeholder="Escribí aquí el texto que aparecerá abajo del logo en el footer"
                                 rows={5}
                             />
+                        </div>
+
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
                         </div>
 
                         <div className='cPanelContainer__siteConfiguration__form__socialNetworks'>
@@ -2252,7 +2341,11 @@ const CPanel = () => {
 
                         </div>
 
-                        <div className="cPanelContainer__siteConfiguration__form__copyrightText" style={{marginTop: '2vh'}}>
+                        <div className='cPanelContainer__siteConfiguration__separator'>
+                            <div className='cPanelContainer__siteConfiguration__separator__prop'></div>
+                        </div>
+
+                        <div className="cPanelContainer__siteConfiguration__form__copyrightText">
                             <label className="cPanelContainer__siteConfiguration__form__copyrightText__label">
                                 Copyright (footer):
                             </label>
@@ -2290,7 +2383,9 @@ const CPanel = () => {
                 </div>
                 
                 <div className='cPanelContainer__categoriesManagement'>
-                    <h1>📂 Gestión de Categorías</h1>
+                    <div className='cPanelContainer__categoriesManagement__title'>
+                        <div className='cPanelContainer__categoriesManagement__title__prop'>📂 Gestión de Categorías</div>
+                    </div>
                     <CategoriesPage />
                 </div>
 
@@ -2453,84 +2548,90 @@ const CPanel = () => {
                     </>
                 }
 
+                <CPanelBillingForm
+                    userId={user?._id}
+                />
+
                 <div className='cPanelContainer__adminsList'>
                     <div className='cPanelContainer__adminsList__title'>Usuarios administradores</div>
-                    {adminsEdited.map((admin, index) => (
-                        <div
-                        key={admin._id}
-                        className='cPanelContainer__adminsList__item'
-                        >
-                            <div className='cPanelContainer__adminsList__item__input'>
-                                <input
-                                    className='cPanelContainer__adminsList__item__input__prop'
-                                    type="text"
-                                    value={admin.first_name}
-                                    onChange={(e) => handleAdminChange(index, 'first_name', e.target.value)}
-                                    placeholder="Nombre"
-                                />
-                            </div>
-                            <div className='cPanelContainer__adminsList__item__input'>
-                                <input
-                                    className='cPanelContainer__adminsList__item__input__prop'
-                                    type="text"
-                                    value={admin.last_name}
-                                    onChange={(e) => handleAdminChange(index, 'last_name', e.target.value)}
-                                    placeholder="Apellido"
-                                />
-                            </div>
-                            <div className='cPanelContainer__adminsList__item__input'>
-                                <input
-                                    className='cPanelContainer__adminsList__item__input__prop'
-                                    type="email"
-                                    value={admin.email}
-                                    onChange={(e) => handleAdminChange(index, 'email', e.target.value)}
-                                    placeholder="Email"
-                                />
-                            </div>
-                            <div className='cPanelContainer__adminsList__item__input'>
-                                <div className='cPanelContainer__adminsList__item__input'>
+                    <div className='cPanelContainer__adminsList__itemContainer'>
+                        {adminsEdited.map((admin, index) => (
+                            <div
+                            key={admin._id}
+                            className='cPanelContainer__adminsList__itemContainer__item'
+                            >
+                                <div className='cPanelContainer__adminsList__itemContainer__item__input'>
                                     <input
-                                        className='cPanelContainer__adminsList__item__input__prop'
+                                        className='cPanelContainer__adminsList__itemContainer__item__input__prop'
                                         type="text"
-                                        value={admin.role}
-                                        readOnly
+                                        value={admin.first_name}
+                                        onChange={(e) => handleAdminChange(index, 'first_name', e.target.value)}
+                                        placeholder="Nombre"
                                     />
                                 </div>
+                                <div className='cPanelContainer__adminsList__itemContainer__item__input'>
+                                    <input
+                                        className='cPanelContainer__adminsList__itemContainer__item__input__prop'
+                                        type="text"
+                                        value={admin.last_name}
+                                        onChange={(e) => handleAdminChange(index, 'last_name', e.target.value)}
+                                        placeholder="Apellido"
+                                    />
+                                </div>
+                                <div className='cPanelContainer__adminsList__itemContainer__item__input'>
+                                    <input
+                                        className='cPanelContainer__adminsList__itemContainer__item__input__prop'
+                                        type="email"
+                                        value={admin.email}
+                                        onChange={(e) => handleAdminChange(index, 'email', e.target.value)}
+                                        placeholder="Email"
+                                    />
+                                </div>
+                                <div className='cPanelContainer__adminsList__itemContainer__item__input'>
+                                    <div className='cPanelContainer__adminsList__itemContainer__item__input'>
+                                        <input
+                                            className='cPanelContainer__adminsList__itemContainer__item__input__prop'
+                                            type="text"
+                                            value={admin.role}
+                                            readOnly
+                                        />
+                                    </div>
+                                </div>
+                                <div className='cPanelContainer__adminsList__itemContainer__item__btns'>
+                                    {loadingBtnUpdateAdmin == admin._id ? (
+                                        <button
+                                        disabled
+                                        className='cPanelContainer__adminsList__itemContainer__item__btns__btn'
+                                        >
+                                        <Spinner/>
+                                        </button>
+                                    ) : (
+                                        <button
+                                        onClick={() => handleSaveAdmin(index)}
+                                        className='cPanelContainer__adminsList__itemContainer__item__btns__btn'
+                                        >
+                                        Actualizar
+                                        </button>
+                                    )}
+                                    {loadingBtnDeleteAdmin == admin._id ? (
+                                        <button
+                                        disabled
+                                        className='cPanelContainer__adminsList__itemContainer__item__btns__btn'
+                                        >
+                                        <Spinner/>
+                                        </button>
+                                    ) : (
+                                        <button
+                                        onClick={() => handleDeleteAdmin(index)}
+                                        className='cPanelContainer__adminsList__itemContainer__item__btns__btn'
+                                        >
+                                        Borrar
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                            <div className='cPanelContainer__adminsList__item__btns'>
-                                {loadingBtnUpdateAdmin == admin._id ? (
-                                    <button
-                                    disabled
-                                    className='cPanelContainer__adminsList__item__btns__btn'
-                                    >
-                                    <Spinner/>
-                                    </button>
-                                ) : (
-                                    <button
-                                    onClick={() => handleSaveAdmin(index)}
-                                    className='cPanelContainer__adminsList__item__btns__btn'
-                                    >
-                                    Actualizar
-                                    </button>
-                                )}
-                                {loadingBtnDeleteAdmin == admin._id ? (
-                                    <button
-                                    disabled
-                                    className='cPanelContainer__adminsList__item__btns__btn'
-                                    >
-                                    <Spinner/>
-                                    </button>
-                                ) : (
-                                    <button
-                                    onClick={() => handleDeleteAdmin(index)}
-                                    className='cPanelContainer__adminsList__item__btns__btn'
-                                    >
-                                    Borrar
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
                 <div className='cPanelContainer__userRegisterContainer'>
@@ -2579,7 +2680,7 @@ const CPanel = () => {
                         {
                             userCredentials.password &&
                             <>
-                                <div className='loginContainer__formContainer__form__passwordValidation'>
+                                <div className='cPanelContainer__userRegisterContainer__form__passwordValidation'>
                                     <p style={{ color: passwordValidation.length ? 'green' : 'red' }}>
                                         • Al menos 8 caracteres
                                     </p>
@@ -2596,7 +2697,7 @@ const CPanel = () => {
                                         • Un carácter especial (!@#$%)
                                     </p>
                                 </div>
-                                <div className="loginContainer__formContainer__form__passwordStrengthBar" style={{ height: '6px', backgroundColor: '#ccc', borderRadius: '4px' }}>
+                                <div className="cPanelContainer__userRegisterContainer__form__passwordStrengthBar" style={{ height: '6px', backgroundColor: '#ccc', borderRadius: '4px' }}>
                                     <div
                                         style={{
                                             width: `${getPasswordStrength() * 20}%`,

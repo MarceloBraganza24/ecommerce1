@@ -11,6 +11,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { useAuth } from '../context/AuthContext';
+import NavbarMobile from './NavbarMobile';
 
 const Favorites = () => {
     const firstRender = useRef(true);
@@ -339,6 +340,22 @@ const Favorites = () => {
     return (
 
         <>  
+            <NavbarMobile
+            isLoading={isLoading}
+            isLoadingAuth={isLoadingAuth}
+            user={user}
+            isLoggedIn={user?.isLoggedIn || false}
+            role={user?.role || null}
+            first_name={user?.first_name || ''}
+            storeName={storeSettings?.storeName || ""}
+            categories={categories}
+            userCart={userCart}
+            showLogOutContainer={showLogOutContainer}
+            hexToRgba={hexToRgba}
+            cartIcon={cartIcon}
+            logo_store={storeSettings?.siteImages?.logoStore || ""}
+            primaryColor={storeSettings?.primaryColor || ""}
+            />
 
             <div className='navbarContainer'>
                 <NavBar
@@ -359,37 +376,37 @@ const Favorites = () => {
                 />
             </div>
 
-            <div className='favoritesContiner'>
+            <div className='favoritesContainer'>
                 {isLoadingAuth ? (
-                    <div className="favoritesContiner__isLoadingLabel">
+                    <div className="favoritesContainer__isLoadingLabel">
                         <Spinner />
                     </div>
                 ) : !user ? (
-                    <div className="favoritesContiner__isLoadingLabel">
+                    <div className="favoritesContainer__isLoadingLabel">
                         Debes iniciar sesión para ver tus favoritos
                     </div>
                 ) : isLoadingFavorites ? (
-                    <div className="favoritesContiner__isLoadingLabel">
+                    <div className="favoritesContainer__isLoadingLabel">
                         Cargando favoritos&nbsp;&nbsp;<Spinner />
                     </div>
                 ) : (
                     <>
                         {favorites?.length > 0 ? (
-                            <div className='favoritesContiner__gridContainer'>
-                                <div className='favoritesContiner__gridContainer__btn'>
+                            <div className='favoritesContainer__gridContainer'>
+                                <div className='favoritesContainer__gridContainer__btn'>
                                     <button
                                         onClick={async () => {
                                             setLoadingClearAll(true);
                                             await clearAllFavorites(user._id);
                                             setLoadingClearAll(false);
                                         }}
-                                        className='favoritesContiner__gridContainer__btn__prop'
+                                        className='favoritesContainer__gridContainer__btn__prop'
                                         disabled={loadingClearAll}
                                     >
                                         {loadingClearAll ? <Spinner /> : 'Eliminar todos'}
                                     </button>
                                 </div>
-                                <div className='favoritesContiner__gridContainer__grid'>
+                                <div className='favoritesContainer__gridContainer__grid'>
                                     {favorites?.map((product) => (
                                         <ItemProduct
                                             key={product._id}
@@ -409,8 +426,8 @@ const Favorites = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className='favoritesContiner__nonProductsYet'>
-                                <div className='favoritesContiner__nonProductsYet__label'>
+                            <div className='favoritesContainer__nonProductsYet'>
+                                <div className='favoritesContainer__nonProductsYet__label'>
                                     Aún no tienes favoritos guardados
                                 </div>
                             </div>

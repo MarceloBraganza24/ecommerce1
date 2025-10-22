@@ -75,52 +75,51 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
         )}
         {editing ? (
           <>
-            <input
-              value={newName}
-              onChange={e => setNewName(e.target.value)}
-              style={{ marginRight: "5px" }}
-            />
-            <select
-              value={newParent}
-              onChange={e => setNewParent(e.target.value)}
-              style={{ marginRight: "5px" }}
-            >
-              <option value="">Categoría raíz</option>
-              {renderOptions(optionsTree)}
-            </select>
+            <div className="cPanelContainer__categoriesManagement__editCategoryContainer">
+              <input
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                style={{ marginRight: "5px" }}
+              />
 
-            {(!newParent) && (
-              <>
-                {(preview || category.image) && (
-                  <img
-                    src={preview || `${SERVER_URL}${category.image}`}
-                    alt={category.name}
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      marginRight: "8px",
-                      objectFit: "cover",
-                      borderRadius: "4px"
-                    }}
-                  />
+              <div className="cPanelContainer__categoriesManagement__editCategoryContainer__img">
+
+                {(!newParent) && (
+                  <>
+                    {(preview || category.image) && (
+                      <img
+                        src={preview || `${category.image}`}
+                        alt={category.name}
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          marginRight: "8px",
+                          objectFit: "cover",
+                          borderRadius: "4px"
+                        }}
+                      />
+                    )}
+                    <input
+                    className="cPanelContainer__categoriesManagement__editCategoryContainer__img__input"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setNewImage(file);
+                          setPreview(URL.createObjectURL(file)); // 👈 preview temporal
+                        }
+                      }}
+                      style={{ marginRight: "5px" }}
+                    />
+                  </>
                 )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      setNewImage(file);
-                      setPreview(URL.createObjectURL(file)); // 👈 preview temporal
-                    }
-                  }}
-                  style={{ marginRight: "5px" }}
-                />
-              </>
-            )}
-
-            <button style={{margin:'0vh 1vh', cursor:'pointer'}} onClick={handleSave}>💾</button>
-            <button onClick={() => setEditing(false)}>❌</button>
+              </div>
+              <div className="cPanelContainer__categoriesManagement__editCategoryContainer__btns">
+                <button style={{backgroundColor:'#dddddd', borderRadius:'0.5vh', padding:'0.1vh',margin:'0vh 1vh', cursor:'pointer'}} onClick={handleSave}>💾</button>
+                <button style={{backgroundColor:'#dddddd', borderRadius:'0.5vh', padding:'0.1vh', cursor:'pointer'}} onClick={() => setEditing(false)}>❌</button>
+              </div>
+            </div>
           </>
         ) : (
           <>
@@ -131,9 +130,9 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
                 style={{ width: "30px", height: "30px", marginRight: "8px", objectFit: "cover", borderRadius: "4px" }}
               />
             )}
-            {category.name}
-            <button style={{margin:'0vh 1vh', cursor:'pointer'}} onClick={() => setEditing(true)}>✏️</button>
-            <button onClick={() => onDelete(category)}>🗑️</button>
+            <div style={{fontSize:'12px'}}>{category.name}</div>
+            <button style={{backgroundColor:'#dddddd', borderRadius:'0.5vh', padding:'0.1vh',margin:'0vh 1vh', cursor:'pointer'}} onClick={() => setEditing(true)}>✏️</button>
+            <button style={{backgroundColor:'#dddddd', borderRadius:'0.5vh', padding:'0.1vh', cursor:'pointer'}} onClick={() => onDelete(category)}>🗑️</button>
           </>
         )}
       </div>

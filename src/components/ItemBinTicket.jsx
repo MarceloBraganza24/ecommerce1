@@ -163,6 +163,64 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                 </div>
 
             </div>
+            <div className="binContainer__salesTable__itemContainerMobile">
+
+                <div className="binContainer__salesTable__itemContainerMobile__item">
+                    <input
+                        type="checkbox"
+                        checked={selectedTickets.includes(ticket._id)}
+                        onChange={() => toggleSelectTicket(ticket._id)}
+                        />
+                </div>
+
+                <div className="binContainer__salesTable__itemContainerMobile__item">
+                    <div className="binContainer__salesTable__itemContainerMobile__item__label">{fechaHora}</div>
+                </div>
+
+                <div className="binContainer__salesTable__itemContainerMobile__itemEllipsis">
+                    <div className="binContainer__salesTable__itemContainerMobile__itemEllipsis__item">{ticket.code}</div>
+                </div>
+
+                <div className="binContainer__salesTable__itemContainerMobile__itemEllipsis">
+                    <div className="binContainer__salesTable__itemContainerMobile__itemEllipsis__item">{ticket.payer_email}</div>
+                </div>
+
+                <div className='binContainer__salesTable__itemContainerMobile__btnsContainer'>
+                    {loadingBtnRestore ? (
+                        <button
+                        disabled
+                        className='binContainer__salesTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        <Spinner/>
+                        </button>
+                    ) : (
+                        <button
+                        onClick={handleBtnRestoreTicket}
+                        className='binContainer__salesTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        Restaurar
+                        </button>
+                    )}
+
+                    {loading ? (
+                        <button
+                        disabled
+                        className='binContainer__salesTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        <Spinner/>
+                        </button>
+                    ) : (
+                        <button
+                        onClick={handleBtnDeleteTicket}
+                        className='binContainer__salesTable__itemContainerMobile__btnsContainer__btn'
+                        >
+                        Borrar <br /> permamentemente
+                        </button>
+                    )}
+
+                </div>
+
+            </div>
             {
                 showConfirmationRestoreItemBinTicketModal &&
                 <ConfirmationRestoreItemBinTicketModal
