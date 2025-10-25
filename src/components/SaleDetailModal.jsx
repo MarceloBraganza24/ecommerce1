@@ -2,6 +2,10 @@ import React from 'react'
 
 const SaleDetailModal = ({userRole,ticket,setShowMoreDetailsTicketModal,fechaHora}) => {
 
+    const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+
     return (
 
         <>
@@ -27,7 +31,7 @@ const SaleDetailModal = ({userRole,ticket,setShowMoreDetailsTicketModal,fechaHor
 
                     <div className='saleDetailModalContainer__saleDetailModal__detailsGrid'>
                         <div className='saleDetailModalContainer__saleDetailModal__detailsGrid__key'>TOTAL</div>
-                        <div className='saleDetailModalContainer__saleDetailModal__detailsGrid__value'>${ticket.amount}</div>
+                        <div className='saleDetailModalContainer__saleDetailModal__detailsGrid__valuePrice'>${ticket.amount}</div>
                     </div>
 
                     {
@@ -95,7 +99,7 @@ const SaleDetailModal = ({userRole,ticket,setShowMoreDetailsTicketModal,fechaHor
                                                             key={key}
                                                             className="saleDetailModalContainer__saleDetailModal__detailsGrid__products__variantContainer__variant__prop"
                                                         >
-                                                            {key}: {value}
+                                                            <strong>{capitalizeFirstLetter(key)}</strong>: {value}
                                                         </div>
                                                     ))}
                                                 </div>

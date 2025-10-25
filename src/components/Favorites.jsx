@@ -435,6 +435,11 @@ const Favorites = () => {
                     </>
                 )}
             </div>
+            
+            {
+                favorites.length < 3 &&
+                <div className='favoritesContainer__lessThanTwo'></div>
+            }
 
 
 

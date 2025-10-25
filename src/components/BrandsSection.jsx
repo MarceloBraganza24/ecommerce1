@@ -167,7 +167,7 @@ const BrandsSection = () => {
                                 spaceBetween={60}
                                 slidesPerView="auto"  
                                 slidesPerGroup={1}   // avanza de a 1
-                                style={{padding: "2vh 10vh"}}
+                                className="brandsExplored__grid__right__swipper"
                                 >
                                 {brandProducts.map((product) => (
                                     <SwiperSlide key={product._id} style={{width: "200px",padding: "2vh 0vh"}}>

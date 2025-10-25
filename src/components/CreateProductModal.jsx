@@ -703,7 +703,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                                 nuevasVariantes[i].price = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '80px', textAlign: 'center' }}
+                                            style={{ width: '120px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
                                         />
                                         </label>
                                     </div>
@@ -719,7 +719,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                                 nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '80px', textAlign: 'center' }}
+                                            style={{ width: '80px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
                                         />
                                         </label>
                                     </div>

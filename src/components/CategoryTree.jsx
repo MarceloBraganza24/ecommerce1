@@ -54,8 +54,8 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
     ));
 
   return (
-    <li style={{ marginBottom: "5px", paddingLeft: level * 20 }}>
-      <div style={{ display: "flex", alignItems: "center" }}>
+    <li style={{ marginBottom: "10px", paddingLeft: level * 20 }}>
+      <div style={{ display: "flex", alignItems: "center", gap:'0.5vh' }}>
         {/* Flecha para expandir/colapsar */}
         {category.children.length > 0 && (
           <span
@@ -77,9 +77,9 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
           <>
             <div className="cPanelContainer__categoriesManagement__editCategoryContainer">
               <input
+                className="cPanelContainer__categoriesManagement__editCategoryContainer__input"
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
-                style={{ marginRight: "5px" }}
               />
 
               <div className="cPanelContainer__categoriesManagement__editCategoryContainer__img">
@@ -130,7 +130,7 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
                 style={{ width: "30px", height: "30px", marginRight: "8px", objectFit: "cover", borderRadius: "4px" }}
               />
             )}
-            <div style={{fontSize:'12px'}}>{category.name}</div>
+            <div className="cPanelContainer__categoriesManagement__categoryContainer__name">{category.name}</div>
             <button style={{backgroundColor:'#dddddd', borderRadius:'0.5vh', padding:'0.1vh',margin:'0vh 1vh', cursor:'pointer'}} onClick={() => setEditing(true)}>✏️</button>
             <button style={{backgroundColor:'#dddddd', borderRadius:'0.5vh', padding:'0.1vh', cursor:'pointer'}} onClick={() => onDelete(category)}>🗑️</button>
           </>

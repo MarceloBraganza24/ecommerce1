@@ -29,9 +29,9 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
         setShowConfirmationDeleteUserTicketModal(true);
     };
 
-    /* const handleBtnShowMoreTicketDetails = () => {
-        setShowMoreDetailsTicketModal(true);
-    }; */
+    const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
 
     return (
         <>
@@ -103,7 +103,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                                                             key={key}
                                                             className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__variant__prop"
                                                         >
-                                                            {key}: {value}
+                                                            {capitalizeFirstLetter(key)}: {value}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -245,7 +245,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                                 //  console.log(snapshot)
 
                                 const imageUrl = relativePath
-                                    ? `${SERVER_URL}${relativePath}` // reemplazá con tu dominio real
+                                    ? `${relativePath}` // reemplazá con tu dominio real
                                     : '/default-image.jpg';
 
                                 const handleLinkToProductDetail = () => {
@@ -279,7 +279,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                                                             key={key}
                                                             className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variantContainer__variant__prop"
                                                         >
-                                                            {key}: {value}
+                                                            {capitalizeFirstLetter(key)}: {value}
                                                         </div>
                                                     ))}
                                                 </div>

@@ -452,14 +452,14 @@ const MyPurchases = () => {
 
             </div>  
 
-            <div className="separatorFooter" style={{paddingBottom:'4vh'}}>
+            <div className="separatorFooter">
                 <div className="separatorFooter__prop"></div>
             </div>
 
             <FeaturedProducts/>
 
-            <div className="separatorFooter">
-                <div className="separatorFooter__prop"></div>
+            <div className="separatorFooterDown">
+                <div className="separatorFooterDown__prop"></div>
             </div>
 
             <BrandsSection/>

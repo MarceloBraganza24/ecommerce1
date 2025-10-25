@@ -504,24 +504,6 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                         <div className='createSaleModalContainer__createSaleModal__title__prop'>Crear venta</div>
                     </div>
 
-                    {/* <div className='createSaleModalContainer__createSaleModal__inputSearchProduct'>
-                        <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer'>
-                            <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__label'>Buscar por:</div>
-                            <select
-                                className='createSaleModalContainer__createSaleModal__inputSearchProduct__selectContainer__select'
-                                value={selectedField}
-                                onChange={(e) => setSelectedField(e.target.value)}
-                                >
-                                {Object.entries(fieldLabels).map(([key, label]) => (
-                                    <option key={key} value={key}>{label}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className='createSaleModalContainer__createSaleModal__inputSearchProduct__inputContainer'>
-                            <input type="text" onChange={handleInputFilteredProducts} value={inputFilteredProducts} placeholder={`Buscar productos por ${fieldLabels[selectedField]}`} className='createSaleModalContainer__createSaleModal__inputSearchProduct__inputContainer__input' name="" id="" />
-                        </div>
-                    </div> */}
-
                     {
                         addedProducts.length > 0 && 
                         <div className='createSaleModalContainer__createSaleModal__addedProducts'>
@@ -580,7 +562,7 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                                         return (
                                                         <div key={atributo} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes'>
-                                                            <div>{atributo}:</div>
+                                                            <div>{capitalizeFirstLetter(atributo)}:</div>
                                                             <select
                                                             className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes__select'
                                                             value={product.camposSeleccionados?.[atributo] || ''}

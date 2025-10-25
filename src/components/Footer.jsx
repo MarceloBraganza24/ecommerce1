@@ -87,7 +87,7 @@ const Footer = ({isLoggedIn,copyrightText,sellerAddresses,socialNetworks,logo_st
                                 </div>
                             ))}
 
-                            <div className='footerContainer__contactContainer__contact__contactProps__prop' style={{marginTop:'1vh'}}>Teléfonos</div>
+                            <div className='footerContainer__contactContainer__contact__contactProps__propLabel' style={{marginTop:'1vh'}}>Teléfonos</div>
 
                             {phoneNumbers?.map((phone, index) => (
                             <div
@@ -98,7 +98,7 @@ const Footer = ({isLoggedIn,copyrightText,sellerAddresses,socialNetworks,logo_st
                             </div>
                             ))}
 
-                            <div className='footerContainer__contactContainer__contact__contactProps__prop' style={{marginTop:'1vh'}}>Correos electrónicos de contacto</div>
+                            <div className='footerContainer__contactContainer__contact__contactProps__propLabel' style={{marginTop:'1vh'}}>Correos electrónicos de contacto</div>
 
                             {contactEmail?.map(({ email, label, _id }) => (
                                 <div key={_id} className="footerContainer__contactContainer__contact__contactProps__prop">

@@ -52,7 +52,7 @@ function CategoryNode({ category, onSelect, level }) {
       <div
       className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__tree__ul__li__category"
         style={{
-          fontWeight: level === 0 ? "bold" : "normal"
+          fontWeight: level === 0 ? "bold" : "normal",
         }}
         onClick={() => onSelect(category)}
       >

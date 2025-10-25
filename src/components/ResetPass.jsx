@@ -308,9 +308,7 @@ const ResetPass = () => {
             }
         } catch (error) {
             console.error('Error al restaurar el producto:', error);
-        }/* finally {
-            setLoadingBtnResetPass(false);
-        } */
+        }
 
     }
 
@@ -320,7 +318,7 @@ const ResetPass = () => {
         return score; // 0 a 5
     };
 
-    if (isLoadingValidateToken) {
+    if (!isLoadingValidateToken) {
         return (
             <div className="loadingContainer">
                 <Spinner/>

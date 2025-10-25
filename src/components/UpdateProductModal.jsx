@@ -686,7 +686,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                                 nuevasVariantes[i].price = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '80px', textAlign: 'center' }}
+                                            style={{ width: '120px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
                                         />
                                         </label>
                                     </div>
@@ -702,7 +702,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                                 nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '80px', textAlign: 'center' }}
+                                            style={{ width: '80px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
                                         />
                                         </label>
                                     </div>
@@ -717,6 +717,9 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                                     >
                                         Eliminar
                                     </button>
+                                    <div className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__line'>
+                                        <div className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__line__prop'></div>
+                                    </div>
                                     </li>
                                 ))}
                             </ul>

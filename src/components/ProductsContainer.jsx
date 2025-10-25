@@ -527,7 +527,7 @@ const ProductsContainer = () => {
 
                                     {Object.entries(availableFilters || {}).map(([filterName, values]) => (
                                     <div key={filterName} className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters">
-                                        <h4>{capitalizeFirstLetter(filterName)}</h4>
+                                        <div className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__label">{capitalizeFirstLetter(filterName)}</div>
                                         {Object.keys(values).map((val) => (
                                         <label className="productsContainer__gridCategoriesProducts__categoriesContainer__categories__filters__labelInput" key={val}>
                                             <input
@@ -536,7 +536,7 @@ const ProductsContainer = () => {
                                             checked={appliedFilters[filterName]?.includes(val) || false}
                                             onChange={(e) => handleFilterChange(filterName, val, e.target.checked)}
                                             />
-                                            {val} ({values[val]})
+                                            {capitalizeFirstLetter(val)} ({values[val]})
                                         </label>
                                         ))}
                                     </div>

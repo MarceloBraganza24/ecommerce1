@@ -74,7 +74,7 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
                         <div className='itemCart__variantesContainer__variantes'>
                             {Object.entries(selectedVariant.campos).map(([key, value]) => (
                                 <div key={key} className='itemCart__variantesContainer__variantes__prop'>
-                                    {capitalizeFirstLetter(key)}: {value}
+                                    <strong>{capitalizeFirstLetter(key)}</strong>: {value}
                                 </div>
                             ))}
                         </div>
@@ -88,7 +88,7 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
                 <div className='itemCart__quantity'>
 
                     <button
-                        className="itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus"
+                        className="itemCart__quantity__minus"
                         onClick={() => quantity > 1 && handleUpdateQuantity(quantity - 1)}
                         disabled={loadingQuantity} 
                     >
@@ -100,7 +100,7 @@ const ItemCart = ({user_id,userCart,id,title,description,stock,quantity,img,pric
                     </div>
 
                     <button
-                        className="itemDetailContainer__itemDetail__infoContainer__info__count__plusMinus"
+                        className="itemCart__quantity__plus"
                         onClick={handleIncrement}
                         disabled={loadingQuantity}
                     >
