@@ -30,6 +30,39 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
     const [isLoadingValidateCoupon, setIsLoadingValidateCoupon] = useState(false);
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const [showConfirmationBtnConfirmSaleModal, setShowConfirmationBtnConfirmSaleModal] = useState(false);
+    const [buyerData, setBuyerData] = useState({
+        name: "",
+        dni: "",
+        phone: "",
+        email: "",
+    });
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [invoiceType, setInvoiceType] = useState('');
+    //const [saleDate, setSaleDate] = useState(() => new Date().toISOString().split('T')[0]); // fecha actual por defecto
+    const [seller, setSeller] = useState(`${user?.first_name} ${user?.last_name}` || ''); // si tenés el usuario logueado
+    const [notes, setNotes] = useState('');
+
+    const handlePaymentMethodChange = e => setPaymentMethod(e.target.value);
+    const handleInvoiceTypeChange = e => setInvoiceType(e.target.value);
+    const handleSaleDateChange = e => setSaleDate(e.target.value);
+    const handleSellerChange = e => setSeller(e.target.value);
+    const handleNotesChange = e => setNotes(e.target.value);
+
+    const getLocalDateTime = () => {
+        const now = new Date();
+        const offset = now.getTimezoneOffset();
+        const local = new Date(now.getTime() - offset * 60 * 1000);
+        return local.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+    };
+    const [saleDate, setSaleDate] = useState(getLocalDateTime());
+
+    const handleBuyerChange = (e) => {
+        const { name, value } = e.target;
+        setBuyerData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     const handleBtnCloseCreateSaleModal = () => {
         setCreateSaleModal(false)
@@ -129,8 +162,36 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
     };
 
     const handleBtnConfirmSale = async () => {
+        if (buyerData.name == '' || buyerData.dni == '' || buyerData.phone == '' || buyerData.email == '') {
+            toast('Debes completar todos los campos del comprador', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
         if (!selectedBranchId) {
             toast('Debes seleccionar una sucursal', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: "custom-toast",
+            });
+            return;
+        }
+        if (!paymentMethod) {
+            toast('Debes seleccionar un método de pago', {
                 position: "top-right",
                 autoClose: 2000,
                 hideProgressBar: false,
@@ -487,6 +548,9 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
         setSelectedProducts([]);
         setSelectedProductData([]);
     };
+    
+    const formatPrice = num => num?.toLocaleString('es-AR');
+
 
     return (
 
@@ -538,9 +602,9 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__list'>
                                 {addedProducts.map(product => (
 
-                                    <>
+                                    <React.Fragment key={product._uniqueKey || product._id}>
 
-                                        <div key={product._uniqueKey || product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer'>
+                                        <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer'>
 
                                             <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item">
                                                 <img className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__item__img" src={`${product.images[0]}`} alt="" />
@@ -567,10 +631,7 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                             className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainer__itemVariantes__variantes__select'
                                                             value={product.camposSeleccionados?.[atributo] || ''}
                                                             onChange={(e) => {
-                                                            const value = e.target.value;
-
-                                                            setAddedProducts(prev => {
-                                                                const prevSinEste = prev.filter(p => p._uniqueKey !== product._uniqueKey);
+                                                                const value = e.target.value;
 
                                                                 const nuevosCampos = {
                                                                     ...product.camposSeleccionados,
@@ -579,9 +640,13 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                                                 const newKey = getProductKey(product._id, nuevosCampos);
 
-                                                                const yaExiste = prevSinEste.some(p => p._uniqueKey === newKey);
+                                                                setAddedProducts(prev => {
+                                                                    const index = prev.findIndex(p => p._uniqueKey === product._uniqueKey);
+                                                                    if (index === -1) return prev;
 
-                                                                if (yaExiste) {
+                                                                    // Verificamos si ya existe otra combinación igual
+                                                                    const yaExiste = prev.some((p, i) => i !== index && p._uniqueKey === newKey);
+                                                                    if (yaExiste) {
                                                                     toast('Ya has añadido este producto con esa variante.', {
                                                                         position: "top-right",
                                                                         autoClose: 2000,
@@ -589,24 +654,25 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                                         className: "custom-toast",
                                                                     });
                                                                     return prev;
-                                                                }
+                                                                    }
 
-                                                                const varianteSeleccionada = product.variantes.find(v =>
+                                                                    const varianteSeleccionada = product.variantes.find(v =>
                                                                     Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val)
-                                                                );
+                                                                    );
 
-                                                                const actualizado = {
+                                                                    const updated = [...prev];
+                                                                    updated[index] = {
                                                                     ...product,
                                                                     camposSeleccionados: nuevosCampos,
                                                                     price: varianteSeleccionada?.price ?? product.price,
                                                                     stock: varianteSeleccionada?.stock ?? product.stock,
                                                                     quantity: 1,
                                                                     _uniqueKey: newKey
-                                                                };
+                                                                    };
 
-                                                                return [...prevSinEste, actualizado];
-                                                            });
-                                                        }}
+                                                                    return updated;
+                                                                });
+                                                            }}
 
                                                             >
                                                             {opciones.map((op, idx) => (
@@ -633,10 +699,10 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                                     ([key, val]) => v.campos[key] === val
                                                                     )
                                                                 );
-                                                                return selectedVariante ? `$ ${selectedVariante.price}` : '-';
+                                                                return selectedVariante ? `$ ${formatPrice(selectedVariante.price)}` : '-';
                                                                 })()
                                                             )
-                                                            : `$ ${product.price}`
+                                                            : `$ ${formatPrice(product.price)}`
                                                         }
                                                 </div>
                                             </div>
@@ -677,7 +743,7 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                         </div>
 
-                                        <div key={product._uniqueKey || product._id} className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile'>
+                                        <div className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile'>
 
                                             <div className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item">
                                                 <img className="createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__item__img" src={`${product.images[0]}`} alt="" />
@@ -699,11 +765,9 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                             <select
                                                             className='createSaleModalContainer__createSaleModal__addedProducts__list__itemContainerMobile__itemVariantes__variantes__select'
                                                             value={product.camposSeleccionados?.[atributo] || ''}
+                                                            
                                                             onChange={(e) => {
-                                                            const value = e.target.value;
-
-                                                            setAddedProducts(prev => {
-                                                                const prevSinEste = prev.filter(p => p._uniqueKey !== product._uniqueKey);
+                                                                const value = e.target.value;
 
                                                                 const nuevosCampos = {
                                                                     ...product.camposSeleccionados,
@@ -712,9 +776,13 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                                                 const newKey = getProductKey(product._id, nuevosCampos);
 
-                                                                const yaExiste = prevSinEste.some(p => p._uniqueKey === newKey);
+                                                                setAddedProducts(prev => {
+                                                                    const index = prev.findIndex(p => p._uniqueKey === product._uniqueKey);
+                                                                    if (index === -1) return prev;
 
-                                                                if (yaExiste) {
+                                                                    // Verificamos si ya existe otra combinación igual
+                                                                    const yaExiste = prev.some((p, i) => i !== index && p._uniqueKey === newKey);
+                                                                    if (yaExiste) {
                                                                     toast('Ya has añadido este producto con esa variante.', {
                                                                         position: "top-right",
                                                                         autoClose: 2000,
@@ -722,24 +790,25 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                                         className: "custom-toast",
                                                                     });
                                                                     return prev;
-                                                                }
+                                                                    }
 
-                                                                const varianteSeleccionada = product.variantes.find(v =>
+                                                                    const varianteSeleccionada = product.variantes.find(v =>
                                                                     Object.entries(nuevosCampos).every(([key, val]) => v.campos[key] === val)
-                                                                );
+                                                                    );
 
-                                                                const actualizado = {
+                                                                    const updated = [...prev];
+                                                                    updated[index] = {
                                                                     ...product,
                                                                     camposSeleccionados: nuevosCampos,
                                                                     price: varianteSeleccionada?.price ?? product.price,
                                                                     stock: varianteSeleccionada?.stock ?? product.stock,
                                                                     quantity: 1,
                                                                     _uniqueKey: newKey
-                                                                };
+                                                                    };
 
-                                                                return [...prevSinEste, actualizado];
-                                                            });
-                                                        }}
+                                                                    return updated;
+                                                                });
+                                                            }}
 
                                                             >
                                                             {opciones.map((op, idx) => (
@@ -766,11 +835,11 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                                     ([key, val]) => v.campos[key] === val
                                                                     )
                                                                 );
-                                                                return selectedVariante ? `$ ${selectedVariante.price}` : '-';
+                                                                return selectedVariante ? `$ ${formatPrice(selectedVariante.price)}` : '-';
                                                                 })()
                                                             )
-                                                            : `$ ${product.price}`
-                                                        }
+                                                            : `$ ${formatPrice(product.price)}`
+                                                    }
                                                 </div>
                                             </div>
 
@@ -809,7 +878,7 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                         </div>
 
-                                    </>
+                                    </React.Fragment>
                                     
                                 ))}
                             </div>
@@ -858,7 +927,7 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                             <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__labelTotal'>TOTAL</div>
 
-                                            <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'>$ {total}</div>
+                                            <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'>$ {formatPrice(total)}</div>
 
                                         </div>
                                     :
@@ -867,20 +936,73 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
 
                                                 <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__labelTotalBefore'></div>
 
-                                                <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'><span style={{fontSize:'14px',alignSelf:'center'}}>antes</span> <span style={{textDecoration:'line-through'}}>$ {total}</span></div>
+                                                <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'><span style={{fontSize:'14px',alignSelf:'center'}}>antes</span> <span style={{textDecoration:'line-through'}}>$ {formatPrice(total)}</span></div>
 
                                             </div>
                                             <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid'>
 
                                                 <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__labelTotal'>TOTAL <span style={{fontSize:'12px'}}>(con descuento)</span></div>
 
-                                                <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'>$ {totalWithDiscount}</div>
+                                                <div className='createSaleModalContainer__createSaleModal__addedProducts__itemGrid__valueTotal'>$ {formatPrice(totalWithDiscount)}</div>
 
                                             </div>
                                         </>
                                 }
 
                             </div>
+
+                            <div className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData'>
+                                <div className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData__title'>
+                                    Datos del comprador:
+                                </div>
+
+                                <div className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData__form'>
+                                    <div>
+                                    <input
+                                        className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData__form__input'
+                                        type='text'
+                                        name='name'
+                                        placeholder='Nombre completo'
+                                        value={buyerData.name}
+                                        onChange={handleBuyerChange}
+                                    />
+                                    </div>
+
+                                    <div>
+                                    <input
+                                        className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData__form__input'
+                                        type='number'
+                                        name='dni'
+                                        placeholder='DNI'
+                                        value={buyerData.dni}
+                                        onChange={handleBuyerChange}
+                                    />
+                                    </div>
+
+                                    <div>
+                                    <input
+                                        className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData__form__input'
+                                        type='number'
+                                        name='phone'
+                                        placeholder='Teléfono'
+                                        value={buyerData.phone}
+                                        onChange={handleBuyerChange}
+                                    />
+                                    </div>
+
+                                    <div>
+                                    <input
+                                        className='createSaleModalContainer__createSaleModal__addedProducts__purchaserData__form__inputEmail'
+                                        type='email'
+                                        name='email'
+                                        placeholder='Email'
+                                        value={buyerData.email}
+                                        onChange={handleBuyerChange}
+                                    />
+                                    </div>
+                                </div>
+                            </div>
+
 
                             {billingInfo?.branches?.length > 0 && (
                                 <div className='createSaleModalContainer__createSaleModal__addedProducts__branchesContainer'>
@@ -900,6 +1022,81 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                 </div>
                             )}
 
+                            <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer'>
+
+                                <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__header'>
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__header__itemBorder'>Método de pago</div>
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__header__itemBorder'>Tipo de comprobante</div>
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__header__itemBorder'>Fecha de la venta</div>
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__header__itemBorder'>Vendedor</div>
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__header__item'>Observaciones</div>
+                                </div>
+
+                                <div className="createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs">
+
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__select'>
+                                        <select
+                                            className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__select__prop'
+                                            value={paymentMethod}
+                                            onChange={handlePaymentMethodChange}
+                                        >
+                                            <option value="">Selecciona un método</option>
+                                            <option value="efectivo">Efectivo</option>
+                                            <option value="Cuenta corriente">Cuenta corriente</option>
+                                            <option value="tarjeta de credito">Tarjeta de crédito</option>
+                                            <option value="tarjeta de debito">Tarjeta de débito</option>
+                                            <option value="transferencia">Transferencia</option>
+                                            <option value="cheque">Cheque</option>
+                                            <option value="otro">Otro</option>
+                                        </select>
+                                    </div>
+
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__select'>
+                                        <select
+                                            className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__select__prop'
+                                            value={invoiceType}
+                                            onChange={handleInvoiceTypeChange}
+                                        >
+                                            <option value="">Selecciona tipo</option>
+                                            <option value="A">Factura A</option>
+                                            <option value="B">Factura B</option>
+                                            <option value="C">Factura C</option>
+                                            <option value="ticket">Ticket</option>
+                                        </select>
+                                    </div>
+
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__input'>
+                                        <input
+                                            type="datetime-local"
+                                            className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__input__prop'
+                                            value={saleDate}
+                                            onChange={handleSaleDateChange}
+                                        />
+                                    </div>
+
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__input'>
+                                        <input
+                                            type='text'
+                                            className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__input__prop'
+                                            placeholder='Nombre del vendedor'
+                                            value={seller}
+                                            onChange={handleSellerChange}
+                                        />
+                                    </div>
+
+                                    <div className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__textArea'>
+                                        <textarea
+                                            className='createSaleModalContainer__createSaleModal__addedProducts__dataSaleContainer__inputs__textArea__prop'
+                                            placeholder='Notas u observaciones (opcional)'
+                                            value={notes}
+                                            onChange={handleNotesChange}
+                                        />
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                             <div className='createSaleModalContainer__createSaleModal__addedProducts__btnContainer'>
                                 <button
                                     className="createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn"
@@ -909,7 +1106,7 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                 </button>
                                 <button 
                                     onClick={handleBtnConfirmSale} 
-                                    className='createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btn'
+                                    className='createSaleModalContainer__createSaleModal__addedProducts__btnContainer__btnConfirm'
                                 >
                                     Confirmar venta
                                 </button>
@@ -1069,10 +1266,10 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                                                                     campo => camposSeleccionados[campo] && camposSeleccionados[campo] !== ''
                                                                 );
                                                                 return variantesCompletas
-                                                                    ? `$ ${getSelectedVariante(product)?.price ?? '-'}`
+                                                                    ? `$ ${formatPrice(getSelectedVariante(product)?.price) ?? '-'}`
                                                                     : '-';
                                                             })()
-                                                        ) : `$ ${product.price}`}
+                                                        ) : `$ ${formatPrice(product.price)}`}
                                                     </div>
                                                 </div>
 
@@ -1270,9 +1467,14 @@ const CreateSaleModal = ({selectedBranchId,billingInfo,setSelectedBranchId,fetch
                     user={user}
                     showLabelDiscountApplied={showLabelDiscountApplied}
                     totalWithDiscount={totalWithDiscount}
+                    inputDiscount={inputDiscount}
                     total={total}
-
-                
+                    buyerData={buyerData}   
+                    paymentMethod={paymentMethod}
+                    invoiceType={invoiceType}
+                    saleDate={saleDate}
+                    seller={seller}
+                    notes={notes}
                 />
             }
 

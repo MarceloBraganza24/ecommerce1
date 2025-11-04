@@ -20,6 +20,8 @@ import { Navigation, Pagination,Autoplay,Grid  } from "swiper/modules";
 import NavbarMobile from "./NavbarMobile.jsx";
 import FeaturedProducts from "./FeaturedProducts.jsx";
 import BrandsSection from "./BrandsSection.jsx";
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const Home = () => {
     const [brands, setBrands] = useState([]);
@@ -41,7 +43,7 @@ const Home = () => {
     const firstRender = useRef(true);
     const [isLoadingFeatured, setIsLoadingFeatured] = useState(false);
     const [isLoadingLatestNews, setIsLoadingLatestNews] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [isVisible, setIsVisible] = useState(false);
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
@@ -147,7 +149,7 @@ const Home = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 
@@ -443,9 +445,17 @@ const Home = () => {
                         )}
                     </div>
 
-                    <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>Precio: ${price}</div>
+                    <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>Precio: <strong className="product-card__props__labels__price">${price}</strong></div>
                     <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>
-                        Stock disponible: {stock}
+                        {
+                            stock === 0 ? (
+                                <strong>Sin stock</strong>
+                            ) : (
+                                <>
+                                Stock disponible: <span>{stock <= 10 ? stock : '+10'}</span>
+                                </>
+                            )
+                        }
                     </div>
 
                 </div>
@@ -455,8 +465,8 @@ const Home = () => {
         );
     }
 
-    const handleRedirectToProducts = (category) => {
-        navigate("/products", { state: { category } });
+    const handleRedirectToProducts = (categoryId) => {
+        navigate("/products", { state: { categoryId } });
     }
 
     const handleRedirectToBrand = (brand) => {
@@ -559,7 +569,7 @@ const Home = () => {
 
                     <div className="categoriesExplored__grid__left">
                         <div className="categoriesExplored__grid__left__categoryImg">
-                            <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`${rootCategories[0]?.image}`} alt={rootCategories[0]?.name} />
+                            <img className="categoriesExplored__grid__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0]._id)} src={`${rootCategories[0]?.image}`} alt={rootCategories[0]?.name} />
                             <div className="categoriesExplored__grid__left__categoryImg__label">
                                 {rootCategories[0]?.name}
                             </div>
@@ -581,6 +591,7 @@ const Home = () => {
                                 style={{padding: "1vh 1vh"}}
                                 >
                                 {rootCategoriesTree.slice(1).map((category) => (
+                                    <>
                                     <SwiperSlide key={category._id} >
                                     <div className="categoriesExplored__grid__right__category">
                                         <div className="categoriesExplored__grid__right__category__img">
@@ -588,7 +599,7 @@ const Home = () => {
                                             className="categoriesExplored__grid__right__category__img__prop"
                                             src={`${category.image}`}
                                             alt={category.name}
-                                            onClick={()=>handleRedirectToProducts(category)}
+                                            onClick={()=>handleRedirectToProducts(category._id)}
                                             />
                                         </div>
                                         <div className="categoriesExplored__grid__right__category__name">
@@ -596,6 +607,7 @@ const Home = () => {
                                         </div>
                                     </div>
                                     </SwiperSlide>
+                                    </>
                                 ))}
                             </Swiper>
                             </>
@@ -608,7 +620,7 @@ const Home = () => {
 
                     <div className="categoriesExplored__gridMobile__left">
                         <div className="categoriesExplored__gridMobile__left__categoryImg">
-                            <img className="categoriesExplored__gridMobile__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0])} src={`${rootCategories[0]?.image}`} alt={rootCategories[0]?.name} />
+                            <img className="categoriesExplored__gridMobile__left__categoryImg__prop" onClick={()=>handleRedirectToProducts(rootCategories[0]._id)} src={`${rootCategories[0]?.image}`} alt={rootCategories[0]?.name} />
                             <div className="categoriesExplored__gridMobile__left__categoryImg__label">
                                 {rootCategories[0]?.name}
                             </div>
@@ -637,7 +649,7 @@ const Home = () => {
                                             className="categoriesExplored__gridMobile__right__category__img__prop"
                                             src={`${category.image}`}
                                             alt={category.name}
-                                            onClick={()=>handleRedirectToProducts(category)}
+                                            onClick={()=>handleRedirectToProducts(category._id)}
                                             />
                                         </div>
                                         <div className="categoriesExplored__gridMobile__right__category__name">

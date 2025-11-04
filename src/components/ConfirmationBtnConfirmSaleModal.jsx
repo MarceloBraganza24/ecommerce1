@@ -2,9 +2,11 @@ import React, {useState} from 'react'
 import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 
-const ConfirmationBtnConfirmSaleModal = ({setCreateSaleModal,setShowConfirmationBtnConfirmSaleModal,addedProducts,selectedBranchId,setAddedProducts,fetchTickets,billingInfo,showLabelDiscountApplied,totalWithDiscount,total,user,selectedDate}) => {
+const ConfirmationBtnConfirmSaleModal = ({inputDiscount,paymentMethod,invoiceType,saleDate,seller,notes,buyerData,setCreateSaleModal,setShowConfirmationBtnConfirmSaleModal,addedProducts,selectedBranchId,setAddedProducts,fetchTickets,billingInfo,showLabelDiscountApplied,totalWithDiscount,total,user,selectedDate}) => {
     const [loading, setLoading] = useState(false);
     const SERVER_URL = import.meta.env.VITE_API_URL;
+    const discountPercentage = showLabelDiscountApplied ? Number(inputDiscount) : 0;
+    const discountAmount = showLabelDiscountApplied ? (total - totalWithDiscount) : 0;
 
     const handleBtnConfirmSale = async () => {
         // ✅ Verificación previa de stock
@@ -52,16 +54,27 @@ const ConfirmationBtnConfirmSaleModal = ({setCreateSaleModal,setShowConfirmation
             return;
         }
         
-        const purchase_datetime = new Date();
-
         const newTicket = {
-            amount: showLabelDiscountApplied?totalWithDiscount:total,
+            amount: total, // monto original
+            finalAmount: showLabelDiscountApplied ? totalWithDiscount : total, 
+            discountPercentage,
+            discountAmount,
             payer_email: user.email,
             items: addedProducts,
             deliveryMethod: 'vendedor',
-            purchase_datetime,
+            purchase_datetime:  new Date(),
             user_role: user.role,
-            branchId: branch._id.toString(), 
+            branchId: branch._id.toString(),
+            purchaserData: {
+                name: buyerData.name,
+                dni: buyerData.dni,
+                phone: buyerData.phone,
+                email: buyerData.email,
+            }, 
+            paymentMethod,
+            invoiceType, 
+            seller, 
+            notes  
         }
         try {
             setLoading(true)
@@ -104,6 +117,7 @@ const ConfirmationBtnConfirmSaleModal = ({setCreateSaleModal,setShowConfirmation
                     theme: "dark",
                     className: "custom-toast",
                 });
+                setLoading(false)
             }
         } catch (error) {
             console.error('Error:', error);

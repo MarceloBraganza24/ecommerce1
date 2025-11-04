@@ -4,8 +4,9 @@ import Spinner from './Spinner';
 import { toast } from 'react-toastify';
 import ConfirmationRestoreItemBinTicketModal from './ConfirmationRestoreItemBinTicketModal';
 import ConfirmationPermanentDeleteItemBinTicketModal from './ConfirmationPermanentDeleteItemBinTicketModal';
+import SaleDetailModal from './SaleDetailModal';
 
-const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
+const ItemBinTicket = ({role,ticket,fechaHora,fetchDeletedTickets,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -16,6 +17,8 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
     const [showConfirmationPermanentDeleteItemBinTicketModal, setShowConfirmationPermanentDeleteItemBinTicketModal] = useState(false);
     const [textConfirmationPermanentDeleteItemBinTicketModal, setTextConfirmationPermanentDeleteItemBinTicketModal] = useState('');
 
+    const [showDetailTicketModal, setShowMoreDetailsTicketModal] = useState(false);
+
     const handleBtnDeleteTicket = async () => {
         setTextConfirmationPermanentDeleteItemBinTicketModal(`la venta con los siguientes datos:\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
         setShowConfirmationPermanentDeleteItemBinTicketModal(true);
@@ -24,6 +27,10 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
     const handleBtnRestoreTicket = async () => {
         setTextConfirmationRestoreItemBinTicketModal(`la venta con los siguientes datos:\nfecha: ${fechaHora}\ncodigo: ${ticket.code}\nrealizada por ${ticket.payer_email}`)
         setShowConfirmationRestoreItemBinTicketModal(true);
+    };
+
+    const handleBtnShowDetailTicketModal = async () => {
+        setShowMoreDetailsTicketModal(true);
     };
 
     return (
@@ -69,7 +76,7 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                         const variantCampos = item.selectedVariant?.campos || snapshot?.variant?.campos;
 
                         const imageUrl = relativePath
-                            ? `${SERVER_URL}${relativePath}`  // <-- reemplazá con tu dominio real
+                            ? `${relativePath}`  // <-- reemplazá con tu dominio real
                             : '/default-image.jpg';
 
                         return (
@@ -163,6 +170,7 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                 </div>
 
             </div>
+
             <div className="binContainer__salesTable__itemContainerMobile">
 
                 <div className="binContainer__salesTable__itemContainerMobile__item">
@@ -186,6 +194,12 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                 </div>
 
                 <div className='binContainer__salesTable__itemContainerMobile__btnsContainer'>
+                    <button
+                    onClick={handleBtnShowDetailTicketModal}
+                    className='binContainer__salesTable__itemContainerMobile__btnsContainer__btn'
+                    >
+                    Ver detalle
+                    </button>
                     {loadingBtnRestore ? (
                         <button
                         disabled
@@ -221,6 +235,15 @@ const ItemBinTicket = ({ticket,fechaHora,fetchDeletedTickets,selectedTickets,set
                 </div>
 
             </div>
+            {
+                showDetailTicketModal &&
+                <SaleDetailModal
+                ticket={ticket}
+                userRole={role}
+                fechaHora={fechaHora}
+                setShowMoreDetailsTicketModal={setShowMoreDetailsTicketModal}
+                />
+            }
             {
                 showConfirmationRestoreItemBinTicketModal &&
                 <ConfirmationRestoreItemBinTicketModal

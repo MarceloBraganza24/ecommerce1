@@ -215,7 +215,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                             :
                             user ?
                                 <>
-                                    <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{user.first_name}</div>
+                                    <div className='header__gridUp__links__itemName'>Bienvenido/a <br />{capitalizeFirstLetter(user.first_name)}</div>
                                     <div onClick={() => navigate('/cart')} className='header__gridUp__links__itemCart'>
                                         <img
                                         className='header__gridUp__links__itemCart__logo'
@@ -302,6 +302,7 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                         <Link to={`/tickets`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- VENTAS</Link>
                         <Link to={`/cpanel`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PANEL DE CONTROL</Link>
                         <Link to={`/bin`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PAPELERA</Link>
+                        <Link to={`/myData`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS DATOS</Link>
                     </>
                 ) :
                 role === 'premium' ? (
@@ -309,10 +310,14 @@ const NavBar = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollForced,pr
                         <Link to={`/cpanel/products`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PANEL DE PRODUCTOS</Link>
                         <Link to={`/tickets`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- VENTAS</Link>
                         <Link to={`/bin`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- PAPELERA</Link>
+                        <Link to={`/myData`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS DATOS</Link>
                     </>
                 )
                 : (
-                    <Link to={`/myPurchases`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS COMPRAS</Link>
+                    <>
+                        <Link to={`/myPurchases`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS COMPRAS</Link>
+                        <Link to={`/myData`} onClick={() => setShowHMenuOptions(false)} className='hMenuOptionsContainer__option'>- MIS DATOS</Link>
+                    </>
                 )}
             </div>
 

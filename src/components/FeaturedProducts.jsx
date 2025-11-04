@@ -94,9 +94,17 @@ const FeaturedProducts = () => {
                         )}
                     </div>
 
-                    <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>Precio: ${price}</div>
+                    <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>Precio: <strong className="product-card__props__labels__price">${price}</strong></div>
                     <div className="product-card__props__labels" onClick={handleRedirectToItemDetailProduct}>
-                        Stock disponible: {stock}
+                        {
+                            stock === 0 ? (
+                                <strong>Sin stock</strong>
+                            ) : (
+                                <>
+                                Stock disponible: <span>{stock <= 10 ? stock : '+10'}</span>
+                                </>
+                            )
+                        }
                     </div>
 
                 </div>

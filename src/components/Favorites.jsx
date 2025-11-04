@@ -12,13 +12,15 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const Favorites = () => {
     const firstRender = useRef(true);
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [loadingClearAll, setLoadingClearAll] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [showLogOutContainer, setShowLogOutContainer] = useState(false);
@@ -64,7 +66,7 @@ const Favorites = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
     

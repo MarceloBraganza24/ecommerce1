@@ -13,6 +13,8 @@ import Spinner from "./Spinner";
 import { useAuth } from '../context/AuthContext';
 import CategorySidebar from "./CategorySidebar";
 import NavbarMobile from "./NavbarMobile.jsx";
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const ProductsContainer = () => {
     const location = useLocation();
@@ -27,7 +29,8 @@ const ProductsContainer = () => {
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(100000);
 
-    const initialCategoryId = location.state?.filters?.category || null;
+    //const initialCategoryId = location.state?.filters?.category || null;
+    const initialCategoryId = location.state?.categoryId || null;
     const [selectedCategory, setSelectedCategory] = useState(initialCategoryId);
 
     const [appliedFilters, setAppliedFilters] = useState(() => {
@@ -43,7 +46,7 @@ const ProductsContainer = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [isVisible, setIsVisible] = useState(false);
     const [sellerAddresses, setSellerAddresses] = useState([]);
     const [isLoadingSellerAddresses, setIsLoadingSellerAddresses] = useState(true);
@@ -136,7 +139,7 @@ const ProductsContainer = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 

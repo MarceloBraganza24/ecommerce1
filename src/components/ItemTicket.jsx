@@ -6,6 +6,7 @@ import ConfirmationDeleteUserTicketModal from './ConfirmationDeleteUserTicketMod
 import SaleDetailModal from './SaleDetailModal';
 
 const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selectedTickets,setSelectedTickets,toggleSelectTicket}) => {
+    const [showInvoice, setShowInvoice] = useState(false);
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const [loading, setLoading] = useState(false);
     const [showMoreDetailsTicketModal, setShowMoreDetailsTicketModal] = useState(false);
@@ -32,6 +33,8 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
     const capitalizeFirstLetter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
+
+    const formatPrice = num => num?.toLocaleString('es-AR');
 
     return (
         <>
@@ -103,7 +106,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                                                             key={key}
                                                             className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__variantContainer__variant__prop"
                                                         >
-                                                            {capitalizeFirstLetter(key)}: {value}
+                                                            <strong>{capitalizeFirstLetter(key)}:</strong> {value}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -118,7 +121,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                                             x {item.quantity}
                                         </div>
                                         <div className="cPanelSalesContainer__salesTable__itemContainer__itemProduct__products__productLine__quantity">
-                                            ${snapshot?.price || product?.price || '-'}
+                                            ${formatPrice(snapshot?.price) || formatPrice(product?.price) || '-'}
                                         </div>
                                     </div>
                                 );
@@ -126,7 +129,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                         </div>
 
                         <div className="cPanelSalesContainer__salesTable__itemContainer__item">
-                            <div className="cPanelSalesContainer__salesTable__itemContainer__item__label">$ {ticket.amount}</div>
+                            <div className="cPanelSalesContainer__salesTable__itemContainer__item__label">$ {formatPrice(ticket.amount)}</div>
                         </div>
 
                         <div className="cPanelSalesContainer__salesTable__itemContainer__itemEllipsis">
@@ -138,6 +141,11 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                         </div>
 
                         <div className='cPanelSalesContainer__salesTable__itemContainer__btnsContainer'>
+                            {ticket.invoiceGenerated && ticket.pdfUrl && (
+                                <button className='cPanelSalesContainer__salesTable__itemContainer__btnsContainer__btn' onClick={() => setShowInvoice(!showInvoice)}>
+                                    {showInvoice ? 'Cerrar factura' : 'Ver factura'}
+                                </button>
+                            )}
 
                             {loading ? (
                                 <button
@@ -160,6 +168,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                         </div>
 
                     </div>
+
                     <div className="cPanelSalesContainer__salesTable__itemContainerMobile">
 
                         <div className="cPanelSalesContainer__salesTable__itemContainerMobile__item">
@@ -183,7 +192,11 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                         </div>
 
                         <div className='cPanelSalesContainer__salesTable__itemContainerMobile__btnsContainer'>
-
+                            {ticket.invoiceGenerated && ticket.pdfUrl && (
+                                <button className='cPanelSalesContainer__salesTable__itemContainerMobile__btnsContainer__btnShowInvoice' onClick={() => setShowInvoice(!showInvoice)}>
+                                    {showInvoice ? 'Cerrar factura' : 'Ver factura'}
+                                </button>
+                            )}
                             <button
                             onClick={handleBtnSeeMoreDetailsTicket}
                             className='cPanelSalesContainer__salesTable__itemContainerMobile__btnsContainer__btn'
@@ -279,7 +292,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                                                             key={key}
                                                             className="myPurchasesContainer__purchasesTable__itemContainer__itemProduct__products__variantContainer__variant__prop"
                                                         >
-                                                            {capitalizeFirstLetter(key)}: {value}
+                                                            <strong>{capitalizeFirstLetter(key)}:</strong> {value}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -302,7 +315,7 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                         </div>
 
                         <div className="myPurchasesContainer__purchasesTable__itemContainer__item">
-                            <div className="myPurchasesContainer__purchasesTable__itemContainer__item__label">$ {ticket.amount}</div>
+                            <div className="myPurchasesContainer__purchasesTable__itemContainer__item__labelPrice">$ {ticket.amount}</div>
                         </div>
 
                         <div className='myPurchasesContainer__purchasesTable__itemContainer__btnsContainer'>
@@ -368,6 +381,39 @@ const ItemTicket = ({ticket,fetchTickets,selectedDate,fechaHora,email,role,selec
                     </div>
                 </>
             }
+
+            {showInvoice && (
+                <div style={{
+                position: 'fixed',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 1000
+                }}>
+                <div style={{
+                    width: '80%',
+                    height: '80%',
+                    backgroundColor: '#fff',
+                    padding: '16px',
+                    position: 'relative'
+                }}>
+                    <button
+                    onClick={() => setShowInvoice(false)}
+                    style={{ position: 'absolute', top: 0, right: 0, backgroundColor:'black', color:'white', padding:'0.5vh 3vh', borderRadius:'0.5vh' }}
+                    >
+                    Cerrar
+                    </button>
+                    <iframe
+                    src={ticket.pdfUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 'none' }}
+                    />
+                </div>
+                </div>
+            )}
 
             {
                 showMoreDetailsTicketModal &&

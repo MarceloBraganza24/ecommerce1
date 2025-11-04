@@ -274,7 +274,6 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
             });
     
             const data = await res.json();
-            console.log(data)
             if(data.error === 'There is already a product with that title') {
                 toast('Ya existe un producto con ese título!', {
                     position: "top-right",
@@ -688,13 +687,21 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                 }
                                 {variantes.map((v, i) => (
                                     <li className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__li' key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
-                                    <div style={{ marginBottom: '4px' }}>
+                                    {/* <div style={{ marginBottom: '4px' }}>
                                        {Object.entries(v.campos).map(([k, val]) => `${capitalizeFirstLetter(k)}: ${val}`).join(' | ')}
+                                    </div> */}
+                                    <div style={{ marginBottom: '4px' }}>
+                                        {Object.entries(v.campos).map(([k, val], index) => (
+                                            <span key={index}>
+                                            <strong>{capitalizeFirstLetter(k)}:</strong> {val}
+                                            {index < Object.entries(v.campos).length - 1 && ' | '}
+                                            </span>
+                                        ))}
                                     </div>
 
                                     <div style={{ marginBottom: '4px' }}>
                                         <label>
-                                        Precio:&nbsp;
+                                        <span className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__li__label'>Precio:</span>&nbsp;
                                         <input
                                             type="number"
                                             value={v.price}
@@ -703,14 +710,14 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                                 nuevasVariantes[i].price = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '120px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
+                                            className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__li__input'
                                         />
                                         </label>
                                     </div>
 
                                     <div style={{ marginBottom: '4px' }}>
                                         <label>
-                                        Stock:&nbsp;
+                                        <span className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__li__label'>Stock:</span>&nbsp;
                                         <input
                                             type="number"
                                             value={v.stock}
@@ -719,7 +726,7 @@ const CreateProductModal = ({setShowCreateProductModal,categories,fetchProducts}
                                                 nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '80px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
+                                            className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__li__input'
                                         />
                                         </label>
                                     </div>

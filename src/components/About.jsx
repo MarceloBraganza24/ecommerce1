@@ -5,11 +5,13 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { fetchWithAuth } from './FetchWithAuth.jsx';
 import NavbarMobile from './NavbarMobile.jsx';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 
 const About = () => {
     const {user,fetchCurrentUser,loadingUser: isLoadingAuth} = useAuth(); // Usás el token desde el contexto
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [userCart, setUserCart] = useState({});
@@ -41,7 +43,7 @@ const About = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 

@@ -635,27 +635,27 @@ const ItemDetailContainer = () => {
                                                 
                                                 return (
                                                     <div key={index} className='itemDetailContainer__itemDetail__infoContainer__info__campoExtra'>
-                                                    <label 
-                                                    className='itemDetailContainer__itemDetail__infoContainer__info__campoExtra__label'
-                                                    htmlFor={`campoExtra-${index}`}
-                                                    >
-                                                    {capitalizeFirstLetter(key)}:
-                                                    </label>
+                                                        <label 
+                                                        className='itemDetailContainer__itemDetail__infoContainer__info__campoExtra__label'
+                                                        htmlFor={`campoExtra-${index}`}
+                                                        >
+                                                        {capitalizeFirstLetter(key)}:
+                                                        </label>
 
-                                                    <select
-                                                    id={`campoExtra-${index}`}
-                                                    className='itemDetailContainer__itemDetail__infoContainer__info__campoExtra__select'
-                                                    value={selectedOptions[key] || ''} // valor seleccionado o vacío
-                                                    onChange={(e) => handleSelectChange(key, e.target.value)}
-                                                    >
-                                                    <option value={key}>{key}</option>
-                                                    {opciones.map((opcion, i) => (
-                                                        <option key={i} value={opcion}>
-                                                        {capitalizeFirstLetter(opcion)}
-                                                        </option>
-                                                    ))}
-                                                    </select>
-                                                </div>
+                                                        <select
+                                                        id={`campoExtra-${index}`}
+                                                        className='itemDetailContainer__itemDetail__infoContainer__info__campoExtra__select'
+                                                        value={selectedOptions[key] || ''} // valor seleccionado o vacío
+                                                        onChange={(e) => handleSelectChange(key, e.target.value)}
+                                                        >
+                                                        <option value={key}>{capitalizeFirstLetter(key)}</option>
+                                                        {opciones.map((opcion, i) => (
+                                                            <option key={i} value={opcion}>
+                                                            {capitalizeFirstLetter(opcion)}
+                                                            </option>
+                                                        ))}
+                                                        </select>
+                                                    </div>
                                                 );
                                             })
                                         }

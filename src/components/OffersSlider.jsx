@@ -51,7 +51,16 @@ const OffersSlider = () => {
       }
     }
 
-    navigate("/products", { state: { filters: appliedFilters } });
+    //navigate("/products", { state: { filters: appliedFilters } });
+    navigate("/products", {
+      state: {
+        categoryId: appliedFilters.category || null,
+        filters: (() => {
+          const { category, ...rest } = appliedFilters;
+          return rest;
+        })(),
+      },
+    });
   };
 
   if (offers.length === 0) return null;
@@ -75,13 +84,16 @@ const OffersSlider = () => {
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {offers.map((offer) => (
+              <>
+              {/* {console.log(offer.filters)} */}
               <img
                 key={offer._id}
                 src={`${offer.image}`}
                 alt="Oferta"
                 onClick={() => handleOfferClick(offer.filters)}
                 className="offersContainer__offersSlider__img"
-              />
+                />
+              </>
             ))}
           </div>
 

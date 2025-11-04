@@ -11,10 +11,12 @@ import SmartLink from './SmartLink';
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
 import BrandsSection from './BrandsSection';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const Cart = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
@@ -78,7 +80,7 @@ const Cart = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 
@@ -525,22 +527,13 @@ const Cart = () => {
 
                 </>
             }
+            <div className="separatorFooter">
+                <div className="separatorFooter__prop"></div>
+            </div>
+
             <div style={{paddingBottom:'20vh', backgroundColor:'#dddddd'}}>
                 <BrandsSection/>
             </div>
-
-            {/* <Footer
-            isLoggedIn={user?.isLoggedIn}
-            logo_store={storeSettings?.siteImages?.logoStore || ""}
-            aboutText={storeSettings?.footerLogoText || ""}
-            phoneNumbers={storeSettings?.phoneNumbers}
-            contactEmail={storeSettings?.contactEmail}
-            socialNetworks={storeSettings?.socialNetworks}
-            copyrightText={storeSettings?.copyrightText}
-            sellerAddresses={sellerAddresses}
-            isLoadingSellerAddresses={isLoadingSellerAddresses}
-            isLoadingStoreSettings={isLoadingStoreSettings}
-            /> */}
 
         </>
       

@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import CreateSaleModal from './CreateSaleModal';
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const Tickets = () => {
     const [billingInfo, setBillingInfo] = useState(null);
@@ -32,7 +34,7 @@ const Tickets = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     const [selectedField, setSelectedField] = useState('all');
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -134,11 +136,12 @@ const Tickets = () => {
 
         return brightness > 128; // <-- usar el mismo umbral que en getContrastingTextColor
     }
+    
 
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 
@@ -738,6 +741,11 @@ const Tickets = () => {
                 </div>
 
             </div>  
+
+            {
+                ticketsOrdenados.length < 3 &&
+                <div className='favoritesContainer__lessThanTwo'></div>
+            }
 
             {
                 createSaleModal &&

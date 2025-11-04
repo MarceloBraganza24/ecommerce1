@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const CPanelProducts = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -18,7 +20,7 @@ const CPanelProducts = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [totalProducts, setTotalProducts] = useState("");
@@ -86,7 +88,7 @@ const CPanelProducts = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 

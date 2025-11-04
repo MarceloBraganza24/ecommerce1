@@ -16,6 +16,8 @@ import CPanelBillingForm from './CPanelBillingForm.jsx';
 
 import CategoriesPage from './CategoriesPage.jsx';
 import NavbarMobile from './NavbarMobile.jsx';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const CPanel = () => {
     const [isScrollForced, setIsScrollForced] = useState(false);
@@ -42,7 +44,7 @@ const CPanel = () => {
     const [loadingBtnUserRegister, setLoadingBtnUserRegister] = useState(false);
     const [loadingBtnDeleteAdmin, setLoadingBtnDeleteAdmin] = useState(null);
     const [loadingBtnUpdateAdmin, setLoadingBtnUpdateAdmin] = useState(null);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [creatingCategory, setCreatingCategory] = useState(false);
     const [loadingBtnSubmitConfigSite, setLoadingBtnSubmitConfigSite] = useState(false);
     const [deletingIdCategory, setDeletingIdCategory] = useState(null);
@@ -965,7 +967,7 @@ const CPanel = () => {
     useEffect(() => {
         if (configurationSiteformData?.primaryColor) {
             const claro = esColorClaro(configurationSiteformData.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [configurationSiteformData]);
 
@@ -2470,9 +2472,9 @@ const CPanel = () => {
                                 (
                                     <ul className='cPanelContainer__existingCoupons__itemCoupons'>
                                         <li className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader'>
-                                            <span className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader__coupon'>Código</span>
-                                            <span className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader__coupon'>Descuento (%)</span>
-                                            <span className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader__coupon'>Fecha de expiración</span>
+                                            <div className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader__coupon'>Código</div>
+                                            <div className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader__coupon'>Descuento (%)</div>
+                                            <div className='cPanelContainer__existingCoupons__itemCoupons__couponsHeader__coupon'>Fecha de expiración</div>
                                         </li>
                                     {couponsByExpirationDate.map((item) => {
                                         const fechaUTC = new Date(item.expiration_date);
@@ -2506,7 +2508,7 @@ const CPanel = () => {
                             <div className="cPanelContainer__createNewCoupons">
 
                                 <div className='cPanelContainer__createNewCoupons__title'>Crear nuevo cupón</div>
-                                <div>Código</div>
+                                <div className='cPanelContainer__createNewCoupons__label'>Código</div>
                                 <input
                                 className='cPanelContainer__createNewCoupons__input'
                                 type="text"
@@ -2515,7 +2517,7 @@ const CPanel = () => {
                                 onChange={(e) => setCodeCoupon(e.target.value)}
                                 required
                                 />
-                                <div>Descuento</div>
+                                <div className='cPanelContainer__createNewCoupons__label'>Descuento</div>
                                 <input
                                     className='cPanelContainer__createNewCoupons__input'
                                     type="number"
@@ -2524,7 +2526,7 @@ const CPanel = () => {
                                     onChange={(e) => setDiscount(e.target.value)}
                                     required
                                     />
-                                <div>Fecha de expiración</div>
+                                <div className='cPanelContainer__createNewCoupons__label'>Fecha de expiración</div>
                                 <input
                                     className='cPanelContainer__createNewCoupons__input'
                                     type="date"

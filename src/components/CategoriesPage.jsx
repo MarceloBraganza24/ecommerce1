@@ -44,9 +44,9 @@ export default function CategoriesPage() {
 
   return (
     <>
-      <div style={{ padding: "20px" }}>
+      <div style={{ padding: "20px 10px" }}>
         <AddCategoryForm categories={categoriesTree} onCreate={handleCreate} />
-        <h2>Listado</h2>
+        <h3>Listado</h3>
         <CategoryTree
           categories={categoriesTree}
           onDelete={handleDelete}

@@ -90,13 +90,7 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
                       <img
                         src={preview || `${category.image}`}
                         alt={category.name}
-                        style={{
-                          width: "30px",
-                          height: "30px",
-                          marginRight: "8px",
-                          objectFit: "cover",
-                          borderRadius: "4px"
-                        }}
+                        className="cPanelContainer__categoriesManagement__categoryContainer__img" 
                       />
                     )}
                     <input
@@ -126,8 +120,8 @@ function CategoryNode({ category, onEdit, onDelete, level }) {
             {category.image && (
               <img 
                 src={category.image} 
-                alt={category.name} 
-                style={{ width: "30px", height: "30px", marginRight: "8px", objectFit: "cover", borderRadius: "4px" }}
+                alt={category.name}
+                className="cPanelContainer__categoriesManagement__categoryContainer__img" 
               />
             )}
             <div className="cPanelContainer__categoriesManagement__categoryContainer__name">{category.name}</div>

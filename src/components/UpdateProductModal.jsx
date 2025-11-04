@@ -64,7 +64,6 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             };
 
             setFormData(formValues);
-            //setVariantes(product.variantes || []);
             const variantesValidas = (product.variantes || []).filter(
                 v =>
                     v.campos &&
@@ -80,7 +79,7 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             // Guardamos snapshot inicial (para comparar luego)
             setInitialData({
                 formData: formValues,
-                variantes: product.variantes || []
+                variantes: variantesValidas
             });
         }
     }, [product]);
@@ -223,13 +222,12 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             });
             return;
         }
-        //console.log(formData)
 
         // 🔎 Comparación antes de enviar
         if (initialData) {
-            const isEqual = 
-                JSON.stringify(initialData.formData) === JSON.stringify(formData) &&
-                JSON.stringify(initialData.variantes) === JSON.stringify(variantes);
+            const isEqual =
+                deepEqual(initialData.formData, formData) &&
+                deepEqual(initialData.variantes, variantes);
 
             if (isEqual) {
                 toast('No tienes cambios para guardar!', {
@@ -313,6 +311,23 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
             setLoading(false);
         }
     };
+
+    const deepEqual = (a, b) => {
+        if (a === b) return true;
+        if (typeof a !== typeof b) return false;
+
+        if (typeof a !== 'object' || a === null || b === null) return false;
+
+        const keysA = Object.keys(a);
+        const keysB = Object.keys(b);
+        if (keysA.length !== keysB.length) return false;
+
+        for (const key of keysA) {
+            if (!deepEqual(a[key], b[key])) return false;
+        }
+        return true;
+    };
+
     
     const handleClickUpload = () => {
         if (formData.images.length >= 6) {
@@ -667,42 +682,54 @@ const UpdateProductModal = ({product,setShowUpdateModal,fetchProducts,categories
                             <ul className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer'>
                                 {
                                     variantes.length > 0 &&
-                                    <strong>Variantes:</strong>  
+                                    <strong className='createProductModalContainer__createProductModal__propsContainer__variantsContainer__title'>Variantes:</strong>  
                                 }
                                 {variantes.map((v, i) => (
-                                    <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }}>
-                                    <div style={{ marginBottom: '4px',whiteSpace: 'pre-line' }}>
-                                        {Object.entries(v.campos).map(([k, val]) => `${capitalizeFirstLetter(k)}: ${val}`).join('\n')}
+                                    <li key={i} style={{ marginBottom: '16px', listStyle: 'none' }} className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer__li'>
+                                    <div style={{ marginBottom: '4px', whiteSpace: 'pre-line' }}>
+                                        {Object.entries(v.campos).map(([k, val], index) => (
+                                            <span key={index}>
+                                            <strong>{capitalizeFirstLetter(k)}:</strong> {val}
+                                            {index < Object.entries(v.campos).length - 1 && '\n'}
+                                            </span>
+                                        ))}
                                     </div>
+
 
                                     <div style={{ marginBottom: '4px' }}>
                                         <label>
-                                        Precio:&nbsp; $&nbsp;
+                                        <span className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer__li__label'>Precio:</span>&nbsp; $&nbsp;
                                         <input
                                             type="number"
                                             value={v.price}
                                             onChange={(e) => {
-                                                const nuevasVariantes = [...variantes];
+                                                // const nuevasVariantes = [...variantes];
+                                                // nuevasVariantes[i].price = parseInt(e.target.value) || 0;
+                                                // setVariantes(nuevasVariantes);
+                                                const nuevasVariantes = variantes.map(v => ({ ...v })); // 🔹 copia profunda
                                                 nuevasVariantes[i].price = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '120px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
+                                            className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer__li__input'
                                         />
                                         </label>
                                     </div>
 
                                     <div style={{ marginBottom: '4px' }}>
                                         <label>
-                                        Stock:&nbsp;
+                                        <span className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer__li__label'>Stock:</span>&nbsp;
                                         <input
                                             type="number"
                                             value={v.stock}
                                             onChange={(e) => {
-                                                const nuevasVariantes = [...variantes];
+                                                // const nuevasVariantes = [...variantes];
+                                                // nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
+                                                // setVariantes(nuevasVariantes);
+                                                const nuevasVariantes = variantes.map(v => ({ ...v }));
                                                 nuevasVariantes[i].stock = parseInt(e.target.value) || 0;
                                                 setVariantes(nuevasVariantes);
                                             }}
-                                            style={{ width: '80px', height:'25px', textAlign: 'center', border:'0.1vh solid black' }}
+                                            className='updateProductModalContainer__updateProductModal__propsContainer__variantsContainer__li__input'
                                         />
                                         </label>
                                     </div>

@@ -8,14 +8,15 @@ import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
 import BrandsSection from './BrandsSection';
 import FeaturedProducts from './FeaturedProducts';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const MyPurchases = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [isLoading, setIsLoading] = useState(true);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
-    //console.log(user)
     const [products, setProducts] = useState([]);
     const [isScrollForced, setIsScrollForced] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -79,7 +80,7 @@ const MyPurchases = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 

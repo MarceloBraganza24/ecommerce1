@@ -6,6 +6,7 @@ import ConfirmationRestoreItemBinProductModal from './ConfirmationRestoreItemBin
 import ConfirmationPermanentDeleteItemBinProductModal from './ConfirmationPermanentDeleteItemBinProductModal';
 
 const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelectedProducts}) => {
+    console.log(product)
     const [loading, setLoading] = useState(false);
     const [loadingBtnRestore, setLoadingBtnRestore] = useState(false);
     const [showItemBinProductModal, setShowItemBinProductModal] = useState(false);
@@ -87,7 +88,7 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
                 </div>
 
                 <div className="binContainer__productsTable__itemContainer__item">
-                    <div className="binContainer__productsTable__itemContainer__item__label">{capitalizeFirstLetter(product.category)}</div>
+                    <div className="binContainer__productsTable__itemContainer__item__label">{capitalizeFirstLetter(product.category?.name)}</div>
                 </div>
 
                 <div className='binContainer__productsTable__itemContainer__btnsContainer'>
@@ -152,11 +153,11 @@ const ItemBinProduct = ({product,fetchDeletedProducts,selectedProducts,setSelect
                     <div className="binContainer__productsTable__itemContainerMobile__item__label">{capitalizeFirstLetter(product.title)}</div>
                 </div>
 
-                <div className="cPanelProductsContainer__productsTable__itemContainer__item">
-                    <div className="cPanelProductsContainer__productsTable__itemContainer__item__label">
+                <div className="binContainer__productsTable__itemContainerMobile__item">
+                    <div className="binContainer__productsTable__itemContainerMobile__item__label">
                         {
                             product.variantes && product.variantes.length != 0 ?
-                            <div onClick={() => setShowItemBinProductModal(true)} style={{cursor:'pointer',fontSize:'12px'}}>Ver stock</div>
+                            <div onClick={() => setShowItemBinProductModal(true)} className='binContainer__productsTable__itemContainerMobile__item__label'>Ver stock</div>
                             :
                             product.stock 
                         }

@@ -49,7 +49,7 @@ const SaleDetailModal = ({userRole,ticket,setShowMoreDetailsTicketModal,fechaHor
                         </>
                     }
 
-                    <div>Productos</div>
+                    <div className='saleDetailModalContainer__saleDetailModal__detailsGrid__productsLabel'>Productos</div>
                     <div className="saleDetailModalContainer__saleDetailModal__detailsGrid__products">
                         
                         {ticket.items.map((item, index) => {
@@ -113,7 +113,7 @@ const SaleDetailModal = ({userRole,ticket,setShowMoreDetailsTicketModal,fechaHor
                                         <div className="saleDetailModalContainer__saleDetailModal__detailsGrid__products__productLine__quantity">
                                             x {item.quantity}
                                         </div>
-                                        <div className="saleDetailModalContainer__saleDetailModal__detailsGrid__products__productLine__quantity">
+                                        <div className="saleDetailModalContainer__saleDetailModal__detailsGrid__products__productLine__price">
                                             ${snapshot?.price || product?.price || '-'}
                                         </div>
                                     </div>

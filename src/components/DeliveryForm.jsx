@@ -8,12 +8,14 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const DeliveryForm = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [loadingDeleteId, setLoadingDeleteId] = useState(null);
     const [loadingSaveDeliveryForm, setLoadingSaveDeliveryForm] = useState(false);
     const [deliveryForms, setDeliveryForms] = useState([]);
@@ -56,58 +58,6 @@ const DeliveryForm = () => {
         libraries:["places"]
     })
 
-    /* useEffect(() => {
-        if (!user || !deliveryForms) return;
-        if(user && deliveryForms) {
-            const deliveryFormsById = deliveryForms.filter(deliveryForm => deliveryForm.owner == user.email)
-            setDeliveryFormsById(deliveryFormsById)
-            
-        }
-        const matchedAddress = deliveryForms?.find(item => 
-            item.street === user?.selected_addresses?.street &&
-            item.street_number === user?.selected_addresses?.street_number &&
-            item.locality === user?.selected_addresses?.locality
-        );
-
-        if (matchedAddress) {
-            setSelectedAddress(matchedAddress);
-            setDeliveryAddressFormData({
-                street: user.selected_addresses.street,
-                street_number: user.selected_addresses.street_number,
-                locality: user.selected_addresses.locality
-            })
-        } else {
-            setSelectedAddress(user?.selected_addresses); // Usa la dirección guardada
-        }
-
-
-    }, [user, deliveryForms]); */
-    /* useEffect(() => {
-        if (!user || !deliveryForms) return;
-
-        const userForms = deliveryForms.filter(d => d.owner === user.email);
-        setDeliveryFormsById(userForms);
-
-        // 🔹 Evita sobreescribir si el usuario ya eligió algo
-        if (!selectedAddress) {
-            const matchedAddress = deliveryForms.find(item =>
-                item.street === user?.selected_addresses?.street &&
-                item.street_number === user?.selected_addresses?.street_number &&
-                item.locality === user?.selected_addresses?.locality
-            );
-
-            if (matchedAddress) {
-                setSelectedAddress(matchedAddress);
-                setDeliveryAddressFormData({
-                    street: matchedAddress.street,
-                    street_number: matchedAddress.street_number,
-                    locality: matchedAddress.locality
-                });
-            } else if (user?.selected_addresses) {
-                setSelectedAddress(user.selected_addresses);
-            }
-        }
-    }, [user, deliveryForms]); */
     useEffect(() => {
         if (!user || !deliveryForms?.length) return;
 
@@ -162,7 +112,7 @@ const DeliveryForm = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 

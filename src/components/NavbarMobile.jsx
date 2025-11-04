@@ -27,7 +27,7 @@ const NavbarMobile = ({user,setSelectedAddress,setUser,isLoadingAuth,isScrollFor
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const iconSize = windowWidth < 640 ? 20 : windowWidth < 769 ? 24 : 30;
+    const iconSize = windowWidth < 640 ? 20 : windowWidth < 769 ? 24 : 22;
 
     useEffect(() => {
         const timeout = setTimeout(() => {

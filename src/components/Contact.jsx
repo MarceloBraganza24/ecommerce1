@@ -5,10 +5,12 @@ import { toast } from 'react-toastify';
 import Spinner from './Spinner';
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from './NavbarMobile';
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const Contact = () => {
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+        const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const [storeSettings, setStoreSettings] = useState({});
     const [isLoadingStoreSettings, setIsLoadingStoreSettings] = useState(true);
     const [categories, setCategories] = useState([]);
@@ -42,7 +44,7 @@ const Contact = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 

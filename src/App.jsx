@@ -31,6 +31,8 @@ import { ShoppingCartContext } from './context/ShoppingCartContext.jsx';
 import ProductsContainer from './components/ProductsContainer.jsx';
 
 import { setFavicon } from "./hooks/setFavicon.js";
+import MyData from './components/MyData.jsx';
+import whatsappIcon from '../src/assets/WhatsApp_icon.png';
 
 function AppContent() {
   const { setToken, fetchCurrentUser,logout } = useAuth();
@@ -195,7 +197,7 @@ function AppContent() {
       )}
 
       <a class="networksContainer">
-          <img onClick={handleBtnWhatsAppIcon} class="networksContainer__network" src="/src/assets/WhatsApp_icon.png" alt="WhatsApp"/>
+          <img onClick={handleBtnWhatsAppIcon} class="networksContainer__network" src={whatsappIcon} alt="WhatsApp"/>
       </a>
 
       <Routes>
@@ -218,6 +220,7 @@ function AppContent() {
         <Route exact path="/sendMail" element={<SendMailPass/>}/>
         <Route exact path="/resetPass" element={<ResetPass/>}/>
         <Route exact path="/products" element={<ProductsContainer/>}/>
+        <Route exact path="/myData" element={<MyData/>}/>
         
       </Routes>
 

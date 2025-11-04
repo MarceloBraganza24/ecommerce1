@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import ItemBinTicket from "./ItemBinTicket";
 import { useAuth } from '../context/AuthContext';
 import NavbarMobile from "./NavbarMobile";
+import cartWhiteIcon from '../assets/cart_white.png';
+import cartBlackIcon from '../assets/cart_black.png';
 
 const Bin = () => {
     const SERVER_URL = import.meta.env.VITE_API_URL;
@@ -19,7 +21,7 @@ const Bin = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [cartIcon, setCartIcon] = useState('/src/assets/cart_white.png');
+    const [cartIcon, setCartIcon] = useState(`${cartWhiteIcon}`);
     const { user, loadingUser: isLoadingAuth,fetchCurrentUser } = useAuth();
     const [categories, setCategories] = useState([]);
     const [userCart, setUserCart] = useState({});
@@ -64,14 +66,14 @@ const Bin = () => {
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             fetchDeletedProducts(productSearch);
-        }, 400); // espera 400ms después de que deja de escribir
+        }, 100); // espera 700ms después de que deja de escribir
         return () => clearTimeout(timeoutId);
     }, [productSearch]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             fetchDeletedTickets(ticketSearch);
-        }, 400); // espera 400ms después de que deja de escribir
+        }, 100); // espera 700ms después de que deja de escribir
         return () => clearTimeout(timeoutId);
     }, [ticketSearch]);
 
@@ -263,7 +265,7 @@ const Bin = () => {
     useEffect(() => {
         if (storeSettings?.primaryColor) {
             const claro = esColorClaro(storeSettings.primaryColor);
-            setCartIcon(claro ? '/src/assets/cart_black.png' : '/src/assets/cart_white.png');
+            setCartIcon(claro ? `${cartBlackIcon}` : `${cartWhiteIcon}`);
         }
     }, [storeSettings]);
 
@@ -1026,6 +1028,7 @@ const Bin = () => {
                                 <>
                                     <ItemBinTicket
                                     ticket={ticket}
+                                    role={user.role}
                                     fetchDeletedTickets={fetchDeletedTickets}
                                     fechaHora={`${formattedDate} ${formattedTime}`}
                                     selectedTickets={selectedTickets}
